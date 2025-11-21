@@ -1,17 +1,24 @@
 
-
 public class Game implements Runnable {
     private Thread gameThread;
     private boolean running = false;
-    public static void main(String[] args) {
-        Frame1 frame = new Frame1("Spawn Keio 2025");
-        
-        frame.pack();
-        frame.setVisible(true);
+    private Frame1 frame;
+
+    public Game() {
+        frame = new Frame1("Spawn Keio 2025");
     }
+    public static void main(String[] args) {
+        Game game = new Game();
+        
+            game.frame.pack();
+            game.frame.setVisible(true);
+            
+            game.start();
+        };
+    
     public synchronized void start() {
         running = true;
-        gameThread = new Thread(this); // 'this' est l'objet Runnable
+        gameThread = new Thread(this); 
         gameThread.start();
     }
     public synchronized void stop() {
@@ -22,10 +29,16 @@ public class Game implements Runnable {
             e.printStackTrace();
         }
     }
-    
+@Override
     public void run() {
         while (running) {
+            update(); 
+            frame.getHomePanel().repaint();
             // Logique principale du jeu
         }
     }
+    private void update() {
+        // Mettre à jour l'état du jeu
+    }
 }
+    

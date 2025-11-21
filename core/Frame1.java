@@ -16,10 +16,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
+
 import javax.swing.SwingConstants;
 import javax.sound.sampled.*;
 import java.io.File;
@@ -37,7 +34,7 @@ public class Frame1 extends JFrame{
         setPreferredSize(new Dimension(700,700));
         setLocation(MAXIMIZED_HORIZ, MAXIMIZED_VERT);
 
-        
+
         hm1 = new Main_Panel(); // fenetre d'accueil
         add(hm1);
 
@@ -46,5 +43,9 @@ public class Frame1 extends JFrame{
         this.setJMenuBar(menuBar);
   
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public Main_Panel getHomePanel() {
+        return hm1;
     }
 }
