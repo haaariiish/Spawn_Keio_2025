@@ -1,4 +1,4 @@
-package rendering;
+
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;

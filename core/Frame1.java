@@ -1,4 +1,4 @@
-package core;
+
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -26,8 +26,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import rendering.Main_Panel;
-import actions.Close;
 
 
 
