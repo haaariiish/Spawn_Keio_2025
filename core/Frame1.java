@@ -1,3 +1,5 @@
+package core;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -24,11 +26,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import rendering.Main_Panel;
+import actions.Close;
 
 
 
 public class Frame1 extends JFrame{
-    private Home_screen hm1;
+    private Main_Panel hm1;
     public Frame1(String title){
         super(title);
         setSize(700,700);
@@ -36,7 +40,7 @@ public class Frame1 extends JFrame{
         setLocation(MAXIMIZED_HORIZ, MAXIMIZED_VERT);
 
         JButton new_game = new JButton("Start new game"); // bouton de nouvelle partie
-        hm1 = new Home_screen(new_game); // fenetre d'accueil
+        hm1 = new Main_Panel(new_game); // fenetre d'accueil
         add(hm1);
 
         JMenuBar menuBar = new JMenuBar();
