@@ -1,4 +1,4 @@
-
+package core;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -22,21 +22,26 @@ import javax.sound.sampled.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import rendering.Main_Panel;
+import rendering.Gamemenubar;
 
 
 
 
 public class Frame1 extends JFrame{
     private Main_Panel hm1;
-    public Frame1(String title){
+    private Game game;
+    
+    public Frame1(String title, Game game) {
         super(title);
+        this.game = game;
         setSize(700,700);
         setPreferredSize(new Dimension(700,700));
         setLocation(MAXIMIZED_HORIZ, MAXIMIZED_VERT);
 
 
-        hm1 = new Main_Panel(); // fenetre d'accueil
-        add(hm1);
+        this.hm1 = new Main_Panel(this); // fenetre d'accueil
+        add(this.hm1);
 
         /* Game Menu bar */
         Gamemenubar menuBar = new Gamemenubar();
@@ -46,6 +51,10 @@ public class Frame1 extends JFrame{
     }
 
     public Main_Panel getHomePanel() {
-        return hm1;
+        return this.hm1;
+    }
+
+    public Game getGame() {
+        return this.game;
     }
 }
