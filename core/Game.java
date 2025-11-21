@@ -47,7 +47,10 @@ public class Game implements Runnable {
         while (running) {
             long startTime = System.currentTimeMillis();
             in_game_time = startTime - lastTime;
-            System.err.println("Game State: " + this.game_state);
+            
+            // Testing code to cycle through game states every second
+
+            /* System.err.println("Game State: " + this.game_state);
             System.out.println("in_game_time: " + in_game_time);
             System.err.println("in_game_time % 5: " + (in_game_time % 5));
             System.err.println((int) in_game_time%5);
@@ -67,10 +70,29 @@ public class Game implements Runnable {
                 case 4 : 
                     this.game_state=GameState.LOADING;
                     break;
+            } */
+           switch (this.game_state) {
+                case HOME:
+                    frame.showPanel("HomeMenu");
+                    frame.refresh();
+                    break;
+                case PLAYING:
+                    frame.showPanel("GamePanel");
+                    frame.refresh();
+                    break;
+                case PAUSE:
+                    // Implement pause panel display
+                    break;
+                case GAMEOVER:
+                    // Implement game over panel display
+                    break;
+                case LOADING:
+                    // Implement loading panel display
+                    break;
             }
             
             update();
-            frame.getHomePanel().repaint();
+            frame.getGamePanel().repaint();
             // Logique principale du jeu
 
             long elapsed = System.currentTimeMillis() - startTime;
