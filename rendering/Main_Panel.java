@@ -80,7 +80,7 @@ public class Main_Panel extends JPanel{
         try {
             // Utilise le ClassLoader pour trouver la ressource dans le projet
             backgroundImage = ImageIO.read(
-                getClass().getResourceAsStream("pixel_art_background_by_isa_draws_d9s3e6d-fullview.jpg")
+                getClass().getResourceAsStream("../assets/background.png")
             );
             System.out.println("Background image loaded successfully.");
         } catch (IOException e) {
@@ -91,6 +91,10 @@ public class Main_Panel extends JPanel{
         catch (IllegalArgumentException e) {
             System.err.println("Error: Image file not found in resources.");
         }
+    }
+
+    public Frame1 getMainFrame() {
+        return this.mainFrame;
     }
 
 }

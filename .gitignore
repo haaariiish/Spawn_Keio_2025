@@ -1,1 +1,7 @@
+# Ignore log files
+
 *log.txt
+
+# Ignore trash files
+.DS_Store
+map/Map_try.java
