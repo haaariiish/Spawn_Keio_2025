@@ -1,14 +1,11 @@
 package map;
 
-import rendering.Main_Panel;
+
 import java.awt.*;
 import java.io.*;
 import java.util.Scanner;
 
 public class Map{
-
-    private int Length=1024; 
-    private int Height=1024;
 
     public static final int EMPTY = 0;
     public static final int WALL = 1;
@@ -17,12 +14,7 @@ public class Map{
     public static final int WATER = 4;
     public static final int SPAWN = 5;
     
-    private static final Color COLOR_EMPTY = new Color(240, 240, 240);
-    private static final Color COLOR_WALL = new Color(80, 80, 80);
-    private static final Color COLOR_DOOR = new Color(139, 69, 19);
-    private static final Color COLOR_SPIKE = Color.RED;
-    private static final Color COLOR_WATER = new Color(100, 149, 237);
-    private static final Color COLOR_SPAWN = new Color(144, 238, 144);
+   
 
 
     private int[][] tiles;
@@ -45,7 +37,7 @@ public class Map{
 
     public boolean isWall(int tileX, int tileY) {
         if (!isValidTile(tileX, tileY)) {
-            return true; // Hors limites = mur solide
+            return true; // out of bounds = solid wall
         }
         return tiles[tileY][tileX] == WALL;
     }
@@ -92,6 +84,65 @@ public class Map{
         }
     }
 
+    // Load a Map ═══════════════════════════════════════════════════════════════
+    
+    //load a 2D array to load map data
+    public void loadFromArray(int[][] mapData) {
+        for (int y = 0; y < heightInTiles && y < mapData.length; y++) {
+            for (int x = 0; x < widthInTiles && x < mapData[y].length; x++) {
+                tiles[y][x] = mapData[y][x];
+            }
+        }
+    }
+    
+    // Load a txt file to load map data
+     // Format: each line = one line in game, each value separated by space
+     
+    public void loadFromFile(String filepath) {
+        try (Scanner scanner = new Scanner(new File(filepath))) {
+            int y = 0;
+            while (scanner.hasNextLine() && y < heightInTiles) {
+                String line = scanner.nextLine().trim();
+                String[] values = line.split("\\s+");
+                
+                for (int x = 0; x < values.length && x < widthInTiles; x++) {
+                    tiles[y][x] = Integer.parseInt(values[x]);
+                }
+                y++;
+            }
+        } catch (IOException e) {
+            System.err.println("Erreur de chargement de map: " + e.getMessage());
+            createDefaultMap();
+        }
+    }
+    
+    
+     // Create a default map layout
+     
+    public void createDefaultMap() {
+        // Border
+        for (int x = 0; x < widthInTiles; x++) {
+            tiles[0][x] = WALL;
+            tiles[heightInTiles - 1][x] = WALL;
+        }
+        for (int y = 0; y < heightInTiles; y++) {
+            tiles[y][0] = WALL;
+            tiles[y][widthInTiles - 1] = WALL;
+        }
+        
+        // obstacles
+        for (int x = 5; x < 8; x++) {
+            tiles[5][x] = WALL;
+            tiles[10][x] = WALL;
+        }
+        
+        // Spawn point
+        tiles[7][10] = SPAWN;
+        
+        // Door
+        tiles[0][10] = DOOR;
+    }
+
     // Utils ------------------------------------------------------------------------------
     private boolean isValidTile(int tileX, int tileY) {
         return tileX >= 0 && tileX < widthInTiles && tileY >= 0 && tileY < heightInTiles;
@@ -105,7 +156,7 @@ public class Map{
                 }
             }
         }
-        return new Point(tileSize, tileSize); // Par défaut
+        return new Point(tileSize, tileSize); // Default
     }
 
     // Getters

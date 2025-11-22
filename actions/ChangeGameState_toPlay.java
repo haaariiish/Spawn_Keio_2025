@@ -1,16 +1,14 @@
 package actions;
-
-
 import core.Game;
 import core.GameState;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 
-public class ChangeGameState implements ActionListener {
+public class ChangeGameState_toPlay implements ActionListener {
     private Game game;
 
-    public ChangeGameState(Game game) {
+    public ChangeGameState_toPlay(Game game) {
         this.game = game;
     }
 

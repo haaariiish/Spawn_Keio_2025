@@ -1,6 +1,6 @@
 package core;
 
-
+import map.Map;
 
 public class Game implements Runnable {
     // private variable
@@ -10,19 +10,17 @@ public class Game implements Runnable {
     private Frame1 frame;
     private GameState game_state=GameState.HOME;
     private GameState previous_state = null; // to track previous state if needed
+    private Map gameMap;
 
 
     public Game() {
         frame = new Frame1("Spawn Keio 2025", this);
     }
 
-
     public static void main(String[] args) {
         Game game = new Game();
-        
             game.frame.pack();
             game.frame.setVisible(true);
-            
             game.start();
         }
     
@@ -45,52 +43,32 @@ public class Game implements Runnable {
     public void run() {
         final int FPS = 60;
         final long frameTime = 1000 / FPS;
-        long in_game_time=0;
-        long lastTime = System.currentTimeMillis();
+        long in_game_time=0; // game be useful ? for animation ? 
+        long lastTime = System.currentTimeMillis(); // current time
         while (running) {
-            long startTime = System.currentTimeMillis();
-            in_game_time = startTime - lastTime;
-            
-            // Testing code to cycle through game states every second
 
-            /* System.err.println("Game State: " + this.game_state);
-            System.out.println("in_game_time: " + in_game_time);
-            System.err.println("in_game_time % 5: " + (in_game_time % 5));
-            System.err.println((int) in_game_time%5);
-            switch ((int) in_game_time%5 ){
-                case 0 :
-                     this.game_state=GameState.HOME;
-                     break;
-                case 1 :
-                     this.game_state=GameState.PLAYING;
-                     break;
-                case 2 :
-                     this.game_state=GameState.PAUSE;
-                     break;
-                case 3 :
-                     this.game_state=GameState.GAMEOVER;
-                     break;
-                case 4 : 
-                    this.game_state=GameState.LOADING;
-                    break;
-            } */
+            long startTime = System.currentTimeMillis(); // start time of the frame
+            in_game_time = startTime - lastTime;
 
             if (game_state != previous_state) {
                 handleStateChange();
+
+                if (game_state == GameState.PLAYING) {
+                    // Initialize or reset game elements here if needed
+                    this.gameMap = new Map(50, 50, 16); // Example: create a new map
+                    this.gameMap.createDefaultMap();
+                }
+
+
                 previous_state = game_state;
             }
-
             
-
             if (game_state == GameState.PLAYING) {
                 frame.getGamePanel().repaint();
                 update();
             }
            
             
-
-
-
             long elapsed = System.currentTimeMillis() - startTime;
             long sleepTime = frameTime - elapsed;
             if (sleepTime > 0) {
@@ -131,8 +109,19 @@ public class Game implements Runnable {
         this.game_state = newState;
 
     }
+
+    // Getters
     public GameState getGameState() {
         return this.game_state;
+    }
+    public Map getGameMap() {
+        return this.gameMap;
+    }
+    public Frame1 getFrame() {
+        return this.frame;
+    }
+    public GameState getPreviousGameState() {
+        return this.previous_state;
     }
 }
     

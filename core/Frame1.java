@@ -1,28 +1,10 @@
 package core;
 
-import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.smartcardio.Card;
-import javax.sound.sampled.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+
 import rendering.Main_Panel;
 import rendering.Gamemenubar;
 import rendering.Home_Menu_Panel;
@@ -53,9 +35,8 @@ public class Frame1 extends JFrame{
         this.cardLayout.show(this.mainContainer, "HomeMenu");
         add(this.mainContainer);
         /* Game Menu bar */
-        Gamemenubar menuBar = new Gamemenubar();
+        Gamemenubar menuBar = new Gamemenubar(this);
         this.setJMenuBar(menuBar);
-  
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
@@ -83,7 +64,6 @@ public class Frame1 extends JFrame{
     public void changeToHomeMenuPanel() {
         this.cardLayout.show(this.mainContainer, "HomeMenu");
     }
-
     
     public Game getGame() {
         return this.game;
