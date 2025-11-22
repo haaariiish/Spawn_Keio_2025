@@ -21,8 +21,11 @@ fi
 echo "Compiling Java sources..."
 # Utiliser -sourcepath . pour permettre la résolution des packages
 javac -d bin -sourcepath . $JAVA_SOURCES
+cp rendering/pixel_art_background_by_isa_draws_d9s3e6d-fullview.jpg bin/rendering/
 
 echo "Compilation terminée. Pour lancer :"
-echo "  java -cp bin core.Game    # ou le nom qualifié du package de votre main"
+echo "  java -cp bin core.Game    or  java -Xcomp -XX:ReservedCodeCacheSize=256m -cp bin core.Game"
 
 exit 0
+
+

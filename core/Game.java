@@ -1,5 +1,7 @@
 package core;
 
+
+
 public class Game implements Runnable {
     // private variable
 
@@ -7,6 +9,7 @@ public class Game implements Runnable {
     private boolean running = false;
     private Frame1 frame;
     private GameState game_state=GameState.HOME;
+    private GameState previous_state = null; // to track previous state if needed
 
 
     public Game() {
@@ -71,29 +74,22 @@ public class Game implements Runnable {
                     this.game_state=GameState.LOADING;
                     break;
             } */
-           switch (this.game_state) {
-                case HOME:
-                    frame.showPanel("HomeMenu");
-                    frame.refresh();
-                    break;
-                case PLAYING:
-                    frame.showPanel("GamePanel");
-                    frame.refresh();
-                    break;
-                case PAUSE:
-                    // Implement pause panel display
-                    break;
-                case GAMEOVER:
-                    // Implement game over panel display
-                    break;
-                case LOADING:
-                    // Implement loading panel display
-                    break;
+
+            if (game_state != previous_state) {
+                handleStateChange();
+                previous_state = game_state;
             }
+
             
-            update();
-            frame.getGamePanel().repaint();
-            // Logique principale du jeu
+
+            if (game_state == GameState.PLAYING) {
+                frame.getGamePanel().repaint();
+                update();
+            }
+           
+            
+
+
 
             long elapsed = System.currentTimeMillis() - startTime;
             long sleepTime = frameTime - elapsed;
@@ -106,9 +102,29 @@ public class Game implements Runnable {
             }
         }
     }
+    private void handleStateChange() {
+        switch (game_state) {
+            case HOME:
+                frame.showPanel("HomeMenu");
+                break;
+            case PLAYING:
+                frame.showPanel("GamePanel");
+                break;
+            case PAUSE:
+                //frame.showPanel("PauseMenu");
+                break;
+            case GAMEOVER:
+                //frame.showPanel("GameOverMenu");
+                break;
+            case LOADING:
+                //frame.showPanel("LoadingScreen");
+                break;
+        }
+        frame.refresh(); //called one time when state changes because repaint is costly
+    }
 
     private void update() {
-        // Mettre à jour l'état du jeu
+        // Update in game objects here
     }
 
     public void changeGameState(GameState newState) {
