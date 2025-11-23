@@ -1,16 +1,21 @@
 package core;
 
 import map.Map;
+import entities.*;
 
 public class Game implements Runnable {
-    // private variable
-
+    // private variable for running the game
     private Thread gameThread;
     private boolean running = false;
     private Frame1 frame;
     private GameState game_state=GameState.HOME;
     private GameState previous_state = null; // to track previous state if needed
     private Map gameMap;
+
+
+    // In-game element
+    private Player player;
+    private Boss currentBoss;
 
 
     public Game() {

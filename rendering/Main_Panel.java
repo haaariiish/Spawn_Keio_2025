@@ -25,9 +25,16 @@ public class Main_Panel extends JPanel{
     private static final Color COLOR_EMPTY = new Color(240, 240, 240);
     private static final Color COLOR_WALL = new Color(80, 80, 80);
     private static final Color COLOR_DOOR = new Color(139, 69, 19);
-    private static final Color COLOR_SPIKE = Color.RED;
+    private static final Color COLOR_SPIKE = Color.ORANGE;
     private static final Color COLOR_WATER = new Color(100, 149, 237);
     private static final Color COLOR_SPAWN = new Color(144, 238, 144);
+    private static final Color COLOR_SPAWN_ENEMY = new Color(178, 34, 34);
+
+
+
+    private static final Color COLOR_PLAYER = Color.YELLOW;
+    private static final Color COLOR_ENEMY = Color.RED;
+
 
     private Frame1 mainFrame;
 
@@ -123,6 +130,10 @@ public class Main_Panel extends JPanel{
                         break;
                     case Map.WATER:
                         g.setColor(COLOR_WATER);
+                        break;
+                    case Map.ENEMY_SPAWN:
+                        g.setColor(COLOR_SPAWN_ENEMY);
+                        break;
                     default:
                         g.setColor(java.awt.Color.LIGHT_GRAY);
                         break;

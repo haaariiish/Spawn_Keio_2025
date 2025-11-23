@@ -13,6 +13,7 @@ public class Map{
     public static final int SPIKE = 3;
     public static final int WATER = 4;
     public static final int SPAWN = 5;
+    public static final int ENEMY_SPAWN = 6;
     
    
 
@@ -47,7 +48,7 @@ public class Map{
     }
 
     public boolean collidesWithWall(int x, int y, int width, int height) {
-        // Vérifier les 4 coins + milieux des côtés. /Corners
+        //Corners , verify if you are near a corner
         int[][] checkPoints = {
             {x, y},                          // Coin haut-gauche
             {x + width, y},                  // Coin haut-droit
@@ -138,6 +139,8 @@ public class Map{
         
         // Spawn point
         tiles[7][10] = SPAWN;
+
+        tiles[6][10] = ENEMY_SPAWN;
         
         // Door
         tiles[0][10] = DOOR;
