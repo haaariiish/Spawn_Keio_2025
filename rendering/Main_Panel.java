@@ -43,6 +43,9 @@ public class Main_Panel extends JPanel{
 
     public Main_Panel(Frame1 mainFrame) { 
         this.mainFrame = mainFrame;
+        setFocusable(true);
+        setRequestFocusEnabled(true);
+        
         loadResources(this.getWidth(), this.getHeight());
         setDoubleBuffered(true); // Enable double buffering for smoother rendering ( Not sure if needed )
     }

@@ -1,5 +1,8 @@
 package entities;
 
+import input.InputHandler;
+import map.Map;
+
 public class Player extends Moving_Entity{
     private String name = "Test_H";
 
@@ -14,7 +17,68 @@ public class Player extends Moving_Entity{
         this.setHeightinPixel(height);
     }
 
+    public void update_input(Map map, InputHandler input) {
+        // 1. Gérer les inputs
+        handleInput(input);
+        
+        // 2. Appliquer le mouvement avec collision
+        this.update(map);
+    }
+
+
+    public void handleInput(InputHandler input){
+         if (input.isMovingLeft()) {
+            this.moveLeft();
+        } 
+        if (input.isMovingRight()) {
+            this.moveRight();
+        }
+        if (input.isMovingUp()) {
+            this.moveUp();
+        }
+        if (input.isMovingDown()) {
+            this.moveDown();
+        }
+        if (input.getHorizontalDirection()==1){ 
+            if (input.getVerticalDirection()==1){
+            this.setFacing(Direction.UP_RIGHT);
+            }
+            else if (input.getVerticalDirection()==-1){
+            this.setFacing(Direction.DOWN_RIGHT);
+            }
+            else if (input.getVerticalDirection()==0){
+            this.setFacing(Direction.RIGHT);
+            }
+    }
+        else if (input.getHorizontalDirection()==0){
+            if (input.getVerticalDirection()==1){
+            this.setFacing(Direction.UP);
+            }
+            else if (input.getVerticalDirection()==-1){
+            this.setFacing(Direction.DOWN);
+            }
+            
+        }
+        else if (input.getHorizontalDirection()==-1){
+            if (input.getVerticalDirection()==1){
+            this.setFacing(Direction.UP_LEFT);
+            }
+            else if (input.getVerticalDirection()==-1){
+            this.setFacing(Direction.DOWN_LEFT);
+            }
+            else if (input.getVerticalDirection()==0){
+            this.setFacing(Direction.LEFT);
+            }
+        }
+        
+
+            
+        }
+
+    }
     
 
 
-}
+
+
+

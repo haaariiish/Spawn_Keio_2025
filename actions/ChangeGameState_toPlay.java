@@ -14,9 +14,9 @@ public class ChangeGameState_toPlay implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        game.reset();
         System.out.println("Changing game state to: Playing");
         game.changeGameState(GameState.PLAYING);
+        game.reset();
     }
     
 }

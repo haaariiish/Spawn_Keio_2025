@@ -4,10 +4,14 @@ import java.awt.CardLayout;
 import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 
 import rendering.Main_Panel;
 import rendering.Gamemenubar;
 import rendering.Home_Menu_Panel;
+
+
 
 
 
@@ -20,15 +24,22 @@ public class Frame1 extends JFrame{
     private Game game;
     
     public Frame1(String title, Game game) {
+        //Get the screen size
         super(title);
+
+        setFocusable(true);
+
+        
+        Dimension tailleEcran = Toolkit.getDefaultToolkit().getScreenSize();
         this.game = game;
-        setSize(700,700);
-        setPreferredSize(new Dimension(700,700));
+        setSize(tailleEcran);
+        setPreferredSize(tailleEcran);
         setLocation(MAXIMIZED_HORIZ, MAXIMIZED_VERT);
 
         
         this.game_panel = new Main_Panel(this); // game panel
         this.homeMenuPanel = new Home_Menu_Panel(this); // home menu panel
+        this.homeMenuPanel.setFocusable(false);
 
         this.mainContainer.add(this.homeMenuPanel, "HomeMenu");
         this.mainContainer.add(this.game_panel, "GamePanel");

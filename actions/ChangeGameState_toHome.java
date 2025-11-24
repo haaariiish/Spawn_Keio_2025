@@ -14,9 +14,10 @@ public class ChangeGameState_toHome implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        game.reset();
+        
         System.out.println("Changing game state to: Home");
         game.changeGameState(GameState.HOME);
+        game.reset();
         if (game.getPreviousGameState() == GameState.PLAYING) {
             // Reset main panel when returning to home from playing state
             game.getFrame().getGamePanel().reset();

@@ -1,13 +1,24 @@
 package core;
 
 import map.Map;
+import input.InputHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.swing.SwingUtilities;
+import java.awt.event.*;
+
+
+import org.w3c.dom.events.MouseEvent;
+
 import java.awt.Point;
 
+
 import entities.*;
+
+
 
 public class Game implements Runnable {
     // private variable for running the game
@@ -19,6 +30,9 @@ public class Game implements Runnable {
     private Map gameMap;
     private int in_game_time=0;
 
+
+    //Input Handler
+    private InputHandler inputHandler;
 
     // In-game element
     private Player player;
@@ -36,7 +50,18 @@ public class Game implements Runnable {
 
 
     public Game() {
+        
+        
         this.frame = new Frame1("Spawn Keio 2025", this);
+        this.inputHandler = new InputHandler();
+        this.frame.addKeyListener(inputHandler);
+        this.frame.getGamePanel().addKeyListener(inputHandler);
+        this.frame.getGamePanel().setFocusable(true);
+        
+
+    
+
+
         this.enemies = new ArrayList<>();
         //playerProjectiles = new ArrayList<>();
         //enemyProjectiles = new ArrayList<>();
@@ -48,9 +73,32 @@ public class Game implements Runnable {
 
     // reset in-game map and mob
     public void reset(){
-        this.gameMap = null;
-        this.player = null;
-        this.enemies = null;
+        
+        this.enemies = new ArrayList<>();
+        this.inputHandler = new InputHandler();
+        this.frame.addKeyListener(inputHandler);
+        this.frame.getGamePanel().addKeyListener(inputHandler);
+        this.frame.getGamePanel().setFocusable(true);
+
+        SwingUtilities.invokeLater(() -> {
+            this.frame.requestFocus();
+            this.frame.getGamePanel().requestFocusInWindow();
+        });
+
+        if (this.game_state==GameState.HOME){
+            this.gameMap = null;
+            this.player = null;
+        }
+        else if(this.game_state==GameState.PLAYING){
+            // Same as when starting to play
+            this.gameMap = new Map(50, 50, 20); 
+            this.gameMap.createDefaultMap();
+                    
+            Point spawnPoint = this.gameMap.getSpawnPoint();
+            this.player = new Player(spawnPoint.getX(),spawnPoint.getY(),10,10,100,1,1,10);
+            spawnPoint = null;
+        }
+        
         System.gc();
     }
 
@@ -107,7 +155,7 @@ public class Game implements Runnable {
             
             if (game_state == GameState.PLAYING) {
                 frame.getGamePanel().repaint();
-                update();
+                this.update();
             }
 
             if(game_state == GameState.HOME){
@@ -124,6 +172,8 @@ public class Game implements Runnable {
                     Thread.currentThread().interrupt();
                 }
             }
+            //this.update(); depend on what I want to do with update ?
+            this.inputHandler.printPressedKeys();
         }
     }
     private void handleStateChange() {
@@ -133,6 +183,7 @@ public class Game implements Runnable {
                 break;
             case PLAYING:
                 frame.showPanel("GamePanel");
+                frame.getGamePanel().requestFocusInWindow();
                 break;
             case PAUSE:
                 //frame.showPanel("PauseMenu");
@@ -149,6 +200,7 @@ public class Game implements Runnable {
 
     private void update() {
         // Update in game objects here
+        this.player.update_input(gameMap, inputHandler);
 
     }
 
@@ -177,6 +229,10 @@ public class Game implements Runnable {
 
     public Player getPlayer(){
         return this.player;
+    }
+
+    public InputHandler getInputHandler() {
+        return inputHandler;
     }
 
     

@@ -2,12 +2,13 @@ package entities;
 
 import map.Map;
 
+
 import java.awt.Point;
 
 public class Moving_Entity extends Basic_Entity{
 
     // Speed
-    private double speed=0; // pixels per frame ? 
+    private double speed=4; // pixels per frame ? 
 
     // Direction of speed
     private double velocityX = 0; 
@@ -15,6 +16,10 @@ public class Moving_Entity extends Basic_Entity{
 
     // friction (to limitate the speed of the entity)
     private double friction = 0.85;
+    private Direction facing = Direction.DOWN;
+    private boolean is_moving = false;
+
+
 
     public Moving_Entity(){
         super();
@@ -37,6 +42,14 @@ public class Moving_Entity extends Basic_Entity{
         this.friction = friction;
     }
 
+    public void setMoving(boolean moving_really){
+        this.is_moving = moving_really;
+    }
+
+    public void setFacing(Direction face){
+        this.facing = face;
+    }
+
     // Getters -----------------------------------------------------------------
     public double getVelocityX(){
         return this.velocityX;
@@ -54,7 +67,13 @@ public class Moving_Entity extends Basic_Entity{
         return this.friction;
     }
 
+    public Direction getFacing(){
+        return this.facing;
+    }
 
+    public boolean getMoving(){
+        return this.is_moving;
+    }
 
 
     //Moving in the Map ----------------------------------------------------------------------------------------------
