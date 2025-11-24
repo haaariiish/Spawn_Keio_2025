@@ -16,6 +16,8 @@ import java.io.IOException;
 
 
 public class Main_Panel extends JPanel{
+
+    // Map coloring
     
     private BufferedImage backgroundImage;// the image loaded from resources
     private int lastWidth = -1;
@@ -30,7 +32,7 @@ public class Main_Panel extends JPanel{
     private static final Color COLOR_SPAWN = new Color(144, 238, 144);
     private static final Color COLOR_SPAWN_ENEMY = new Color(178, 34, 34);
 
-
+    // Entity color
 
     private static final Color COLOR_PLAYER = Color.YELLOW;
     private static final Color COLOR_ENEMY = Color.RED;
@@ -52,6 +54,7 @@ public class Main_Panel extends JPanel{
         lastWidth = -1;
         lastHeight = -1;
         loadResources(this.getWidth(), this.getHeight());
+        System.gc();
     }
     
     @Override
@@ -94,7 +97,6 @@ public class Main_Panel extends JPanel{
 
         lastWidth = currentWidth;
         lastHeight = currentHeight;
-    
    
     }
      // This way is far more efficient than scaling the image every frame because scaling is costly in term of performance 
@@ -142,6 +144,8 @@ public class Main_Panel extends JPanel{
                            map.getTileSize(), map.getTileSize());
             }
         }
+        g.setColor(COLOR_PLAYER);
+        g.fillOval((int) Math.round(mainFrame.getGame().getPlayer().getX()),(int) Math.round(mainFrame.getGame().getPlayer().getY()),mainFrame.getGame().getPlayer().getWidthInPixels(),mainFrame.getGame().getPlayer().getHeightInPixels());
         
 
         

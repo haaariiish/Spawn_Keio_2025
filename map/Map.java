@@ -155,7 +155,7 @@ public class Map{
         for (int y = 0; y < heightInTiles; y++) {
             for (int x = 0; x < widthInTiles; x++) {
                 if (tiles[y][x] == SPAWN) {
-                    return new Point(x * tileSize, y * tileSize);
+                    return new Point(x * tileSize +tileSize/2, y * tileSize + tileSize/2);
                 }
             }
         }

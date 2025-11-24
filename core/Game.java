@@ -1,6 +1,12 @@
 package core;
 
 import map.Map;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.awt.Point;
+
 import entities.*;
 
 public class Game implements Runnable {
@@ -11,15 +17,41 @@ public class Game implements Runnable {
     private GameState game_state=GameState.HOME;
     private GameState previous_state = null; // to track previous state if needed
     private Map gameMap;
+    private int in_game_time=0;
 
 
     // In-game element
     private Player player;
-    private Boss currentBoss;
+    
+    //private Boss currentBoss;
+
+    private List<Enemy> enemies;
+
+    //private List<Projectile> playerProjectiles;
+    //private List<Projectile> enemyProjectiles;
+    //private List<Item> items;
+    //private List<Particle> particles;
+
+    //private Map<String, Enemy> enemyMap;
 
 
     public Game() {
-        frame = new Frame1("Spawn Keio 2025", this);
+        this.frame = new Frame1("Spawn Keio 2025", this);
+        this.enemies = new ArrayList<>();
+        //playerProjectiles = new ArrayList<>();
+        //enemyProjectiles = new ArrayList<>();
+        //items = new ArrayList<>();
+        //particles = new ArrayList<>();
+        
+        //enemyMap = new HashMap<>();
+    }
+
+    // reset in-game map and mob
+    public void reset(){
+        this.gameMap = null;
+        this.player = null;
+        this.enemies = null;
+        System.gc();
     }
 
     public static void main(String[] args) {
@@ -48,20 +80,25 @@ public class Game implements Runnable {
     public void run() {
         final int FPS = 60;
         final long frameTime = 1000 / FPS;
-        long in_game_time=0; // game be useful ? for animation ? 
+        this.in_game_time=0; // game be useful ? for animation ? 
         long lastTime = System.currentTimeMillis(); // current time
         while (running) {
 
             long startTime = System.currentTimeMillis(); // start time of the frame
-            in_game_time = startTime - lastTime;
+            in_game_time =(int) (startTime - lastTime);
 
             if (game_state != previous_state) {
                 handleStateChange();
 
                 if (game_state == GameState.PLAYING) {
                     // Initialize or reset game elements here if needed
-                    this.gameMap = new Map(50, 50, 16); // Example: create a new map
+                    this.gameMap = new Map(50, 50, 20); // Example: create a new map
                     this.gameMap.createDefaultMap();
+                    // Player initialization
+
+                    Point spawnPoint = this.gameMap.getSpawnPoint();
+                    this.player = new Player(spawnPoint.getX(),spawnPoint.getY(),10,10,100,1,1,10);
+                    spawnPoint = null;
                 }
 
 
@@ -71,6 +108,10 @@ public class Game implements Runnable {
             if (game_state == GameState.PLAYING) {
                 frame.getGamePanel().repaint();
                 update();
+            }
+
+            if(game_state == GameState.HOME){
+                frame.getHomeMenuPanel().repaint();
             }
            
             
@@ -108,13 +149,14 @@ public class Game implements Runnable {
 
     private void update() {
         // Update in game objects here
+
     }
+
 
     public void changeGameState(GameState newState) {
         this.game_state = newState;
 
     }
-
     // Getters
     public GameState getGameState() {
         return this.game_state;
@@ -128,5 +170,15 @@ public class Game implements Runnable {
     public GameState getPreviousGameState() {
         return this.previous_state;
     }
+
+    public int getInGameTime(){
+        return this.in_game_time;
+    }
+
+    public Player getPlayer(){
+        return this.player;
+    }
+
+    
 }
     
