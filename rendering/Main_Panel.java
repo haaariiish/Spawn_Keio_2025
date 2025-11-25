@@ -114,8 +114,12 @@ public class Main_Panel extends JPanel{
             g.drawString("Map not loaded.", 300, 350);
             return;
         }
-        for (int y = 0; y < map.getHeightInTiles(); y++) {
-            for (int x = 0; x < map.getWidthInTiles(); x++) {
+
+        int xplayer = (int) Math.round(mainFrame.getGame().getPlayer().getX());
+        int yplayer = (int) Math.round(mainFrame.getGame().getPlayer().getY());
+
+        for (int y = 0; Math.abs(yplayer/map.getTileSize()-y) < map.getHeightInTiles()/2; y++) {
+            for (int x = 0; Math.abs(x -xplayer/map.getTileSize() )< map.getWidthInTiles()/2; x++) {
                 int tileType = map.getTileAt(x, y);
                 switch (tileType) {
                     case Map.WALL:
@@ -143,12 +147,12 @@ public class Main_Panel extends JPanel{
                         g.setColor(java.awt.Color.LIGHT_GRAY);
                         break;
                 }
-                g.fillRect(x * map.getTileSize(), y * map.getTileSize(), 
+                g.fillRect(x * map.getTileSize() +  map.getWidthInPixels()/2 -xplayer, y * map.getTileSize() +map.getHeightInPixels()/2 -yplayer, 
                            map.getTileSize(), map.getTileSize());
             }
         }
         g.setColor(COLOR_PLAYER);
-        g.fillOval((int) Math.round(mainFrame.getGame().getPlayer().getX()),(int) Math.round(mainFrame.getGame().getPlayer().getY()),mainFrame.getGame().getPlayer().getWidthInPixels(),mainFrame.getGame().getPlayer().getHeightInPixels());
+        g.fillOval(map.getWidthInPixels()/2,map.getHeightInPixels()/2,mainFrame.getGame().getPlayer().getWidthInPixels(),mainFrame.getGame().getPlayer().getHeightInPixels());
         
 
         

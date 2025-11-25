@@ -91,11 +91,11 @@ public class Game implements Runnable {
         }
         else if(this.game_state==GameState.PLAYING){
             // Same as when starting to play
-            this.gameMap = new Map(50, 50, 20); 
+            this.gameMap = new Map(100, 100, 20); 
             this.gameMap.createDefaultMap();
                     
             Point spawnPoint = this.gameMap.getSpawnPoint();
-            this.player = new Player(spawnPoint.getX(),spawnPoint.getY(),10,10,100,1,1,10);
+            this.player = new Player(spawnPoint.getX(),spawnPoint.getY(),20,20,100,1,1,10);
             spawnPoint = null;
         }
         
@@ -140,7 +140,7 @@ public class Game implements Runnable {
 
                 if (game_state == GameState.PLAYING) {
                     // Initialize or reset game elements here if needed
-                    this.gameMap = new Map(50, 50, 20); // Example: create a new map
+                    this.gameMap = new Map(100, 100, 40);  // Example: create a new map
                     this.gameMap.createDefaultMap();
                     // Player initialization
 
