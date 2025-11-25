@@ -34,7 +34,7 @@ public class Main_Panel extends JPanel{
 
     // Entity color
 
-    private static final Color COLOR_PLAYER = Color.YELLOW;
+    private static final Color COLOR_PLAYER = Color.BLACK;
     private static final Color COLOR_ENEMY = Color.RED;
 
 

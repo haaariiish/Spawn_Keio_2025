@@ -100,6 +100,7 @@ public class Moving_Entity extends Basic_Entity{
         // Slow down in any case to have a cap for our speed
         velocityX *= this.friction;
         velocityY *= this.friction;
+        
     }
 
     // Velocity update
