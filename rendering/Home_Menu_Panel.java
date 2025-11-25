@@ -22,6 +22,6 @@ public class Home_Menu_Panel extends JPanel {
 @Override
     protected void paintComponent(Graphics g) {
     super.paintComponent(g);
-    g.drawString(""+this.mainFrame.getGame().getInGameTime(), this.mainFrame.getWidth()/2, this.mainFrame.getHeight()/2);
+    g.drawString("The game is opened since "+this.mainFrame.getGame().getOpenTime()+" frames", this.mainFrame.getWidth()/2, this.mainFrame.getHeight()/2);
     }
 }

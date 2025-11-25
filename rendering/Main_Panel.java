@@ -202,7 +202,8 @@ public class Main_Panel extends JPanel{
         g.drawString("Attack: "+this.mainFrame.getGame().getPlayer().getAttack() ,10, 110);
         g.drawString("Speed: "+this.mainFrame.getGame().getPlayer().getSpeed() ,10, 125);
         g.drawString(String.format("Velocity (x,y): (%.0f, %.0f)",this.mainFrame.getGame().getPlayer().getVelocityX() ,this.mainFrame.getGame().getPlayer().getVelocityY() ),10, 140);
-        g.drawString("In Game Time: "+this.mainFrame.getGame().getInGameTime() ,10, 165);
+        g.drawString("Opened Time: "+this.mainFrame.getGame().getOpenTime() ,10, 165);
+        g.drawString("In Game Time: "+this.mainFrame.getGame().getInGameTime() ,10, 180);
     }
 
 
