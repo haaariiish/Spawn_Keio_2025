@@ -25,7 +25,7 @@ public class Main_Panel extends JPanel{
     
     private BufferedImage backgroundImage;// the image loaded from resources
     private int lastWidth = -1;
-    private int lastHeight = -1; //to avoid unnecessary rescaling of the image, the chache code will check if the size has changed before recalculate size
+    private int lastHeight = -1; //to avoid unnecessary rescaling of the image, the cache code will check if the size has changed before recalculate size
     private BufferedImage scaledBackground; // cached scaled image
 
     private static final Color COLOR_EMPTY = new Color(240, 240, 240);
@@ -186,7 +186,8 @@ public class Main_Panel extends JPanel{
     }
 
     private void drawDebugInfo(Graphics2D g, Player player, int cameraX, int cameraY) {
-        g.setColor(Color.WHITE);
+        
+        g.setColor(defineRainbow());
         g.setFont(new Font("Monospaced", Font.PLAIN, 12));
         
         g.drawString(String.format("Player: (%.0f, %.0f)", player.getX(), player.getY()), 10, 20);
@@ -233,5 +234,11 @@ public class Main_Panel extends JPanel{
     public BufferedImage getBackgroundImage() {
         return this.backgroundImage;
     }
+
+    // Custom color
+    public Color defineRainbow(){
+        return new Color(((50+ this.mainFrame.getGame().getInGameTime())/20)%255,(this.mainFrame.getGame().getInGameTime()/20)%255 ,(300+this.mainFrame.getGame().getInGameTime()/50)%255);
+
+    };
 
 }

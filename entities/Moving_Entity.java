@@ -16,7 +16,6 @@ public class Moving_Entity extends Basic_Entity{
 
     // friction (to limitate the speed of the entity)
     private double friction = 0.85;
-    private Direction facing = Direction.DOWN;
     private boolean is_moving = false;
 
 
@@ -46,10 +45,7 @@ public class Moving_Entity extends Basic_Entity{
         this.is_moving = moving_really;
     }
 
-    public void setFacing(Direction face){
-        this.facing = face;
-    }
-
+    
     // Getters -----------------------------------------------------------------
     public double getVelocityX(){
         return this.velocityX;
@@ -67,10 +63,7 @@ public class Moving_Entity extends Basic_Entity{
         return this.friction;
     }
 
-    public Direction getFacing(){
-        return this.facing;
-    }
-
+    
     public boolean getMoving(){
         return this.is_moving;
     }

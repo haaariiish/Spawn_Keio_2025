@@ -1,5 +1,7 @@
 package entities;
 
+import java.util.Random;
+
 public class Basic_Entity {
 
     // Position of the entity ----------------------------------------------------------------------------------------------------------------------------------
@@ -10,12 +12,18 @@ public class Basic_Entity {
     private int width=0;
     private int height=0;
 
+    private Direction facing = Direction.DOWN;
+
 
     // Stats -----------------------------------------------------------------
-    private int hp=0;
-    private int defense=0; // Same unit as hp for now
-    private int attack=0; // Same unit as hp for now
-    private int range=0; // in pixel
+    private int hp=1;
+    private int defense=1; // Same unit as hp for now
+    private int attack=1; // Same unit as hp for now
+    private int range=1; // in pixel
+    private int bullet_fast = 40; // initial speed of a bullet
+    private boolean is_dead=false; // Is an entity dead
+
+    private boolean is_undying=false; // to implement future damage method
 
     // Constructor -----------------------------------------------------------------
 
@@ -47,6 +55,22 @@ public class Basic_Entity {
     }
     public void setWidthinPixel(int width){
         this.width = width;
+    }
+
+    public void setBulletFast(int new_BP){
+        this.bullet_fast = new_BP;
+    }
+
+    public void setIsUndying(boolean undying){
+        this.is_undying = undying;
+    }
+
+    public void kill(){
+        this.is_dead = true;
+    }
+
+    public void setFacing(Direction face){
+        this.facing = face;
     }
 
 
@@ -82,6 +106,30 @@ public class Basic_Entity {
     public int getHP(){
         return this.hp;
     }
+
+    public boolean getIsDead(){
+        return this.is_dead;
+    }
+
+    public int getBulletFast(){
+        return this.bullet_fast;
+    }
+
+    public boolean getIsUndying(){
+        return this.is_undying;
+    }
+
+    // More Specific and practical
+    public void take_damage(int damage){
+        if (!is_undying){
+            this.hp -= damage;
+        }
+    }
+
+    public Direction getFacing(){
+        return this.facing;
+    }
+
 
 
 }

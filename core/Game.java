@@ -48,6 +48,8 @@ public class Game implements Runnable {
         this.frame.getGamePanel().addKeyListener(inputHandler);
         this.frame.getGamePanel().setFocusable(true);
 
+        this.gameworld = new GameWorld(2000, 2000, 40, this);
+
         
     }
 
@@ -66,7 +68,7 @@ public class Game implements Runnable {
         });
 
         if (this.game_state==GameState.HOME){
-            this.gameworld = new GameWorld(2000, 2000, 40, this);
+            this.gameworld.reset();
         }
         else if(this.game_state==GameState.PLAYING){
             // Same as when starting to play
@@ -117,7 +119,7 @@ public class Game implements Runnable {
                 if (game_state == GameState.PLAYING) {
                     game_opening = System.currentTimeMillis();
                     // Initialize or reset game elements here if needed
-                    this.gameworld = new GameWorld(2000,2000,40,this);
+                    this.gameworld.restart();
                 }
 
                 previous_state = game_state;
@@ -168,13 +170,10 @@ public class Game implements Runnable {
         }
         frame.refresh(); //called one time when state changes because repaint is costly
     }
-
     private void update() {
         // Update in game objects here
         this.gameworld.update(inputHandler);
-
     }
-
 
     public void changeGameState(GameState newState) {
         this.game_state = newState;
@@ -209,7 +208,6 @@ public class Game implements Runnable {
     public InputHandler getInputHandler() {
         return inputHandler;
     }
-
     
 }
     

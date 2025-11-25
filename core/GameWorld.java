@@ -17,7 +17,7 @@ public class GameWorld {
     private Map map;
     private List<Enemy> enemies;
     private Game game;
-    private int in_game_time=0;
+    
     //private Boss currentBoss;
     //private List<Projectile> playerProjectiles;
     //private List<Projectile> enemyProjectiles;
@@ -36,20 +36,6 @@ public class GameWorld {
         this.game = game;
         this.tileSize = tileSize;
         
-        // Initialisation of the map ( default map for now)
-        map = new Map(this.worldWidth / this.tileSize, this.worldHeight / this.tileSize, this.tileSize);
-        map.createDefaultMap();
-
-
-        // Initialisation of lists
-
-        enemies = new ArrayList<>();
-        
-        
-        //  spawn point
-        Point spawn = map.getSpawnPoint();
-        player = new Player(spawn.x, spawn.y,20,20,100,1,1,10);
-        
         // Spawn of some Ennemy (to implement)
         //spawnEnemy(200, 200);
         //spawnEnemy(300, 250);
@@ -58,15 +44,13 @@ public class GameWorld {
     public void reset(){
         this.player = null;
         this.enemies = null;
-        this.in_game_time =0;
+        
     }
 
     public void restart(){
         // Initialisation of the map ( default map for now)
         map = new Map(this.worldWidth / this.tileSize, this.worldHeight / this.tileSize, this.tileSize);
         map.createDefaultMap();
-        this.in_game_time=0;
-
 
         // Initialisation of lists
 
@@ -74,7 +58,7 @@ public class GameWorld {
         
         //  spawn point
         Point spawn = map.getSpawnPoint();
-        player = new Player(spawn.x, spawn.y,20,20,100,1,1,10);
+        player = new Player(spawn.x, spawn.y,20,20,100,1,1,100);
     }
 
     public void update(InputHandler input){
