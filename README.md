@@ -4,8 +4,17 @@ This game will be a 2D game shooter where you will be able to see your character
 
 ## Build and launch game 
 
-The `./build.sh` script with the following command:
+Execute the `./build.sh` script with the following command to build the game if the bin folder is not in the repository:
 
 ```
 bash ./build.sh
 ```
+
+Then to play, you just need the following command :
+
+```
+java -cp bin core.Game 
+```
+
+
+
