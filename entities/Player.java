@@ -40,10 +40,10 @@ public class Player extends Moving_Entity{
             this.moveDown();
         }
         if (input.getHorizontalDirection()==1){ 
-            if (input.getVerticalDirection()==1){
+            if (input.getVerticalDirection()==-1){
             this.setFacing(Direction.UP_RIGHT);
             }
-            else if (input.getVerticalDirection()==-1){
+            else if (input.getVerticalDirection()==1){
             this.setFacing(Direction.DOWN_RIGHT);
             }
             else if (input.getVerticalDirection()==0){
@@ -51,28 +51,26 @@ public class Player extends Moving_Entity{
             }
     }
         else if (input.getHorizontalDirection()==0){
-            if (input.getVerticalDirection()==1){
+            if (input.getVerticalDirection()==-1){
             this.setFacing(Direction.UP);
             }
-            else if (input.getVerticalDirection()==-1){
+            else if (input.getVerticalDirection()==1){
             this.setFacing(Direction.DOWN);
             }
             
         }
         else if (input.getHorizontalDirection()==-1){
-            if (input.getVerticalDirection()==1){
+            if (input.getVerticalDirection()==-1){
             this.setFacing(Direction.UP_LEFT);
             }
-            else if (input.getVerticalDirection()==-1){
+            else if (input.getVerticalDirection()==1){
             this.setFacing(Direction.DOWN_LEFT);
             }
             else if (input.getVerticalDirection()==0){
             this.setFacing(Direction.LEFT);
             }
         }
-        
 
-            
         }
 
     }

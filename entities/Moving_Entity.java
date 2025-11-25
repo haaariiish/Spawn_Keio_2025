@@ -8,7 +8,7 @@ import java.awt.Point;
 public class Moving_Entity extends Basic_Entity{
 
     // Speed
-    private double speed=4; // pixels per frame ? 
+    private double speed=10; // pixels per frame ? 
 
     // Direction of speed
     private double velocityX = 0; 
@@ -80,21 +80,32 @@ public class Moving_Entity extends Basic_Entity{
 
     public void update(Map map) {
         // Calculer la nouvelle position
-        double newX = this.getX() + velocityX;
-        double newY = this.getY()+ velocityY;
-        
-        // Vérifier collision HORIZONTALE
-        if (!map.collidesWithWall((int)newX, (int)this.getY(), this.getWidthInPixels(), this.getHeightInPixels())) {
-            this.setX(newX); // if there is no wall
-        } else {
-            velocityX = 0; //  if there is a Wall
+
+        int steps = (int)Math.ceil(Math.max(Math.abs(velocityX), Math.abs(velocityY)));
+        steps = Math.max(1, Math.min(steps, 20));
+        double stepX = velocityX / steps;
+        double stepY = velocityY / steps;
+
+        for (int i = 0; i < steps; i++) {
+            // Mouvement horizontal
+            double testX = this.getX() + stepX;
+            if (!map.collidesWithWall((int)testX, (int)this.getY(), this.getWidthInPixels(), this.getHeightInPixels())) {
+                this.setX(testX);
+            } else {
+                velocityX = 0;
+                break; // Arrêter si collision
+            }
         }
         
-        // Vérifier collision VERTICALE (séparément pour sliding sur les murs)
-        if (!map.collidesWithWall((int)this.getX(), (int)newY, this.getWidthInPixels(), this.getHeightInPixels())) {
-            this.setY(newY);
-        } else {
-            velocityY = 0;
+        for (int i = 0; i < steps; i++) {
+            // Mouvement vertical
+            double testY = this.getY() + stepY;
+            if (!map.collidesWithWall((int)this.getX(), (int)testY, this.getWidthInPixels(), this.getHeightInPixels())) {
+                this.setY(testY);
+            } else {
+                velocityY = 0;
+                break;
+            }
         }
         
         // Slow down in any case to have a cap for our speed

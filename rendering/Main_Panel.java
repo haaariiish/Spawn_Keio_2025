@@ -2,16 +2,20 @@ package rendering;
 
 import core.Frame1;
 import map.Map;
+import entities.Player;
 
 import javax.swing.JPanel;
 import java.awt.RenderingHints;
 import java.awt.Graphics;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
+
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
+
 
 
 
@@ -115,11 +119,24 @@ public class Main_Panel extends JPanel{
             return;
         }
 
-        int xplayer = (int) Math.round(mainFrame.getGame().getPlayer().getX());
-        int yplayer = (int) Math.round(mainFrame.getGame().getPlayer().getY());
+        Player player = mainFrame.getGame().getPlayer();
 
-        for (int y = 0; Math.abs(yplayer/map.getTileSize()-y) < map.getHeightInTiles()/2; y++) {
-            for (int x = 0; Math.abs(x -xplayer/map.getTileSize() )< map.getWidthInTiles()/2; x++) {
+        int xplayer = (int) Math.round(player.getX());
+        int yplayer = (int) Math.round(player.getY());
+
+        int screenWidth = getWidth();
+        int screenHeight = getHeight();
+
+        int cameraX = xplayer - screenWidth / 2 + player.getWidthInPixels() / 2;
+        int cameraY = yplayer - screenHeight / 2 + player.getHeightInPixels() / 2;
+
+        int startTileX = Math.max(0, cameraX / map.getTileSize());
+        int startTileY = Math.max(0, cameraY / map.getTileSize());
+        int endTileX = Math.min(map.getWidthInTiles(), (cameraX + screenWidth) / map.getTileSize()+ 1);
+        int endTileY = Math.min(map.getHeightInTiles(), (cameraY + screenHeight) / map.getTileSize() + 1);
+
+        for (int y = startTileY; y < endTileY; y++) {
+            for (int x = startTileX; x<endTileX; x++) {
                 int tileType = map.getTileAt(x, y);
                 switch (tileType) {
                     case Map.WALL:
@@ -147,16 +164,45 @@ public class Main_Panel extends JPanel{
                         g.setColor(java.awt.Color.LIGHT_GRAY);
                         break;
                 }
-                g.fillRect(x * map.getTileSize() +  map.getWidthInPixels()/2 -xplayer, y * map.getTileSize() +map.getHeightInPixels()/2 -yplayer, 
+                // To draw the map, according to the player position 
+                int screenX = x * map.getTileSize() - cameraX;
+                int screenY = y * map.getTileSize() - cameraY; 
+                g.fillRect(screenX, screenY, 
                            map.getTileSize(), map.getTileSize());
+                g.setColor(Color.RED);
+                g.drawRect(screenX, screenY, map.getTileSize(), map.getTileSize());
+                
             }
         }
+        // TO center the camera to the exact position of the player
+        int playerScreenX = screenWidth / 2 - player.getWidthInPixels() / 2;
+        int playerScreenY = screenHeight / 2 - player.getHeightInPixels() / 2;
         g.setColor(COLOR_PLAYER);
-        g.fillOval(map.getWidthInPixels()/2,map.getHeightInPixels()/2,mainFrame.getGame().getPlayer().getWidthInPixels(),mainFrame.getGame().getPlayer().getHeightInPixels());
+        g.fillOval(playerScreenX,playerScreenY,mainFrame.getGame().getPlayer().getWidthInPixels(),mainFrame.getGame().getPlayer().getHeightInPixels());
         
+        // DEBUG information just in case
+        drawDebugInfo(g, player, cameraX, cameraY);
+        
+    }
 
+    private void drawDebugInfo(Graphics2D g, Player player, int cameraX, int cameraY) {
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 12));
         
-        
+        g.drawString(String.format("Player: (%.0f, %.0f)", player.getX(), player.getY()), 10, 20);
+        g.drawString(String.format("Camera: (%d, %d)", cameraX, cameraY), 10, 35);
+        g.drawString(String.format("Screen: %dx%d", getWidth(), getHeight()), 10, 50);
+
+        // SHOW stats
+        //System.out.println("Facing: "+this.mainFrame.getGame().getPlayer().getFacing());
+        //System.out.println("HP"+ this.mainFrame.getGame().getPlayer().getHP());
+        g.drawString("Facing: "+this.mainFrame.getGame().getPlayer().getFacing(), 10, 65);
+        g.drawString("HP: "+this.mainFrame.getGame().getPlayer().getHP() ,10, 80);
+        g.drawString("Defense: "+this.mainFrame.getGame().getPlayer().getDefense() ,10, 95);
+        g.drawString("Attack: "+this.mainFrame.getGame().getPlayer().getAttack() ,10, 110);
+        g.drawString("Speed: "+this.mainFrame.getGame().getPlayer().getSpeed() ,10, 125);
+        g.drawString(String.format("Velocity (x,y): (%.0f, %.0f)",this.mainFrame.getGame().getPlayer().getVelocityX() ,this.mainFrame.getGame().getPlayer().getVelocityY() ),10, 140);
+        g.drawString("In Game Time: "+this.mainFrame.getGame().getInGameTime() ,10, 165);
     }
 
 
