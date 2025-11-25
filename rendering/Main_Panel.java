@@ -3,6 +3,7 @@ package rendering;
 import core.Frame1;
 import map.Map;
 import entities.Player;
+import entities.Projectiles;
 
 import javax.swing.JPanel;
 import java.awt.RenderingHints;
@@ -15,6 +16,7 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
+import java.util.List;
 
 
 
@@ -180,6 +182,12 @@ public class Main_Panel extends JPanel{
         g.setColor(COLOR_PLAYER);
         g.fillOval(playerScreenX,playerScreenY,mainFrame.getGame().getPlayer().getWidthInPixels(),mainFrame.getGame().getPlayer().getHeightInPixels());
         
+        // projectiles
+        List<Projectiles> projectilesList = mainFrame.getGame().getGameWorld().getListProjectiles();
+        for (int i = projectilesList.size() - 1; i >= 0; i--){
+            projectilesList.get(i).render(g, cameraX,cameraY);;
+        }
+
         // DEBUG information just in case
         drawDebugInfo(g, player, cameraX, cameraY);
         
@@ -238,7 +246,6 @@ public class Main_Panel extends JPanel{
     // Custom color
     public Color defineRainbow(){
         return new Color(((50+ this.mainFrame.getGame().getInGameTime())/20)%255,(this.mainFrame.getGame().getInGameTime()/20)%255 ,(300+this.mainFrame.getGame().getInGameTime()/50)%255);
-
     };
 
 }

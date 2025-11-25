@@ -180,6 +180,10 @@ public class Game implements Runnable {
 
     }
     // Getters
+
+    public GameWorld getGameWorld(){
+        return this.gameworld;
+    }
     public GameState getGameState() {
         return this.game_state;
     }

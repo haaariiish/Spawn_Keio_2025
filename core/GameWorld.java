@@ -7,6 +7,8 @@ import input.InputHandler;
 import entities.Boss;
 import entities.Enemy;
 import entities.Player;
+import entities.Projectiles;
+import entities.Simple_Projectiles;
 import map.Map;
 
 import java.awt.Point;
@@ -17,9 +19,12 @@ public class GameWorld {
     private Map map;
     private List<Enemy> enemies;
     private Game game;
+
+    //private float spawn proabilities;
+
     
     //private Boss currentBoss;
-    //private List<Projectile> playerProjectiles;
+    private List<Projectiles> projectilesList;
     //private List<Projectile> enemyProjectiles;
     //private List<Item> items;
     //private List<Particle> particles;
@@ -55,6 +60,7 @@ public class GameWorld {
         // Initialisation of lists
 
         enemies = new ArrayList<>();
+        projectilesList = new ArrayList<>();
         
         //  spawn point
         Point spawn = map.getSpawnPoint();
@@ -63,6 +69,11 @@ public class GameWorld {
 
     public void update(InputHandler input){
         this.player.update_input(this.map, input);
+
+        if (input.isShootPressed()){
+            playerShoot();
+        }
+        updateProjectiles();
     }
 
 
@@ -96,8 +107,38 @@ public class GameWorld {
         return this.tileSize;
     }
 
+    public List<Projectiles> getListProjectiles(){
+        return this.projectilesList;
+    }
+
+
     //SETTERS
 
+    // UPDATERS OF FEATURES
 
+    public void playerShoot(){
+        Projectiles proj ;
+        switch(player.getProjectilesTypes()){
+            case Simple_Projectiles:
+                proj = new Simple_Projectiles(player, 5, 5, 1);
+                break;
+            default:
+                proj = new Simple_Projectiles(player, 3, 3, 5);
+                break;
+        }
+        projectilesList.add(proj);
+        
+    }
+    public void updateProjectiles(){
+        for (int i = projectilesList.size() - 1; i >= 0; i--) {
+            Projectiles proj = projectilesList.get(i);
+            proj.update(map);
+            if (proj.toDestroy()) {
+                projectilesList.remove(i);
+            }
+        }
+    }
+    //public void update_enemy(){}
+    // public void handleCollisions(){}
 
 }

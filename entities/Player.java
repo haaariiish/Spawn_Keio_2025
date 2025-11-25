@@ -26,6 +26,9 @@ public class Player extends Moving_Entity{
     }
 
 
+
+    // Input managing
+
     public void handleInput(InputHandler input){
          if (input.isMovingLeft()) {
             this.moveLeft();
