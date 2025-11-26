@@ -1,5 +1,7 @@
 package entities;
 
+import java.awt.Graphics;
+
 import input.InputHandler;
 import map.Map;
 
@@ -15,6 +17,7 @@ public class Player extends Moving_Entity{
         this.setY(y);
         this.setWidthinPixel(width);
         this.setHeightinPixel(height);
+        this.setBounds();
     }
 
     public void update_input(Map map, InputHandler input) {
@@ -75,6 +78,11 @@ public class Player extends Moving_Entity{
         }
 
         }
+
+    public void render(Graphics g, int x, int y){
+        g.fillOval(x, y, this.getWidthInPixels(), this.getHeightInPixels());
+        g.drawRect(x, y, this.getWidthInPixels(), this.getHeightInPixels());
+    }
 
     }
     

@@ -1,5 +1,6 @@
 package entities;
 
+import java.awt.Rectangle;
 import java.util.Random;
 
 
@@ -15,6 +16,7 @@ public class Basic_Entity {
 
     private Direction facing = Direction.DOWN;
 
+    private Rectangle bound;
 
     // Stats -----------------------------------------------------------------
     private int hp=1;
@@ -37,6 +39,10 @@ public class Basic_Entity {
     }
     public void setY(double y){
         this.y = y;
+    }
+
+    public void setBound(){
+        this.bound = new Rectangle((int) this.x,(int) this.y,width,height);
     }
     public void setRange(int range){
         this.range = range;
@@ -75,6 +81,10 @@ public class Basic_Entity {
 
     public void setProjectilesTypes(ProjectilesTypes pt){
         this.projectilesTypes = pt;
+    }
+
+    public void setBounds(){
+        this.bound = new Rectangle((int) this.x,(int) this.y,width,height);
     }
 
 
@@ -136,13 +146,15 @@ public class Basic_Entity {
         if (!is_undying){
             this.hp -= damage;
         }
-        if (this.hp==0){
+        if (this.hp<0){
             this.is_dead=true;
         }
     }
 
     
-
+    public Rectangle getBounds(){
+        return this.bound;
+    }
 
 
 }

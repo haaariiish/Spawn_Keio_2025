@@ -190,7 +190,8 @@ public class Main_Panel extends JPanel{
         // Draw the player 
 
         g.setColor(COLOR_PLAYER);
-        g.fillOval(playerScreenX,playerScreenY,mainFrame.getGame().getPlayer().getWidthInPixels(),mainFrame.getGame().getPlayer().getHeightInPixels());
+        mainFrame.getGame().getPlayer().render(g, playerScreenX, playerScreenY);
+        //g.fillOval(playerScreenX,playerScreenY,mainFrame.getGame().getPlayer().getWidthInPixels(),mainFrame.getGame().getPlayer().getHeightInPixels());
         
         // projectiles
         List<Projectiles> projectilesList = mainFrame.getGame().getGameWorld().getListProjectiles();
@@ -205,7 +206,7 @@ public class Main_Panel extends JPanel{
 
     private void drawDebugInfo(Graphics2D g, Player player, int cameraX, int cameraY) {
         
-        g.setColor(defineRainbow());
+        g.setColor(Color.WHITE);
         g.setFont(new Font("Monospaced", Font.PLAIN, 12));
         
         g.drawString(String.format("Player: (%.0f, %.0f)", player.getX(), player.getY()), 10, 20);
@@ -224,6 +225,7 @@ public class Main_Panel extends JPanel{
         g.drawString("Opened Time: "+this.mainFrame.getGame().getOpenTime() ,10, 165);
         g.drawString("In Game Time: "+this.mainFrame.getGame().getInGameTime() ,10, 180);
         g.drawString("Number of Enemy in the Area "+this.mainFrame.getGame().getGameWorld().getEnemy().size(),10, 195);
+        g.drawString("Score: "+this.mainFrame.getGame().getGameWorld().getScore(),10, 210);
     }
 
 

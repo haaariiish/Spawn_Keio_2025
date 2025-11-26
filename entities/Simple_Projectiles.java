@@ -9,6 +9,7 @@ public class Simple_Projectiles extends Projectiles{
         super(source_Entity);
         this.setWidth(w);
         this.setHeight(h);
+        this.setBounds();
         this.setFriction(friction);
     }
     @Override
@@ -39,10 +40,8 @@ public class Simple_Projectiles extends Projectiles{
                 this.setVelocityY(0); 
                 break;
             }
-        }
 
-        
-        
+        }
         // Slow down in any case to have a cap for our speed
         this.setVelocityX(this.getFriction()*this.getVelocityX());
         this.setVelocityY(this.getFriction()*this.getVelocityY());
@@ -50,17 +49,21 @@ public class Simple_Projectiles extends Projectiles{
         if (this.getRangeLeft()>1){
             this.setRangeLeft(this.getRangeLeft()-1);
         }
+        this.setBounds();
         }
     }
 
     @Override
         public void render(Graphics g, int x, int y){
             if (this.getVertical()){
-                g.drawOval(((int) this.getX())-x,((int) this.getY())-y, this.getWidth(), this.getHeight());
+                g.fillOval(((int) this.getX())-x,((int) this.getY())-y, this.getWidth(), this.getHeight());
+                g.drawRect(((int) this.getX())-x,((int) this.getY())-y, this.getWidth(), this.getHeight());
             }
             else{
-                g.drawOval(((int) this.getX())-x,((int) this.getY())-y, this.getHeight(), this.getWidth());
+                g.fillOval(((int) this.getX())-x,((int) this.getY())-y, this.getHeight(), this.getWidth());
+                g.drawRect(((int) this.getX())-x,((int) this.getY())-y, this.getHeight(), this.getWidth());
             }
+            
         }
 
 

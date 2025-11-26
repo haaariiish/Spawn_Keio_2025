@@ -8,6 +8,7 @@ import java.awt.Point;
 public class Moving_Entity extends Basic_Entity{
 
     // Speed
+    private int lifeTime = 0;
     private double speed=10; // pixels per frame ? 
 
     // Direction of speed
@@ -45,6 +46,10 @@ public class Moving_Entity extends Basic_Entity{
         this.is_moving = moving_really;
     }
 
+    public void setLifeTime(int life){
+        this.lifeTime = life;
+    }
+
     
     // Getters -----------------------------------------------------------------
     public double getVelocityX(){
@@ -61,6 +66,10 @@ public class Moving_Entity extends Basic_Entity{
 
     public double getFriction(){
         return this.friction;
+    }
+
+    public int getLifeTime(){
+        return this.lifeTime;
     }
 
     
@@ -104,7 +113,9 @@ public class Moving_Entity extends Basic_Entity{
         // Slow down in any case to have a cap for our speed
         velocityX *= this.friction;
         velocityY *= this.friction;
-        
+
+        lifeTime+= 1;
+        this.setBounds();
     }
 
     // Velocity update

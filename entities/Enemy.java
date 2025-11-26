@@ -9,6 +9,8 @@ public class Enemy extends Moving_Entity{
 
 
 
+
+
     public Enemy(double x, double y, int width, int height, int hp, int attack, int defense,int range){
         super();
         this.setHP(hp);
@@ -18,6 +20,7 @@ public class Enemy extends Moving_Entity{
         this.setY(y);
         this.setWidthinPixel(width);
         this.setHeightinPixel(height);
+        this.setBounds();
     }
 
     public void update_velocity(Player player){
@@ -48,11 +51,20 @@ public class Enemy extends Moving_Entity{
 
     public void update_position(Map map, Player player){
         update_velocity(player);
-        this.take_damage(1);
         update(map);
     }
+    // For now I use taht to limit the existence of the 
+    public void naturalDeath(){
+        if (this.getLifeTime()==50000){
+            this.kill();
+        }
+    }
+    
+
+
     public void render(Graphics g,int x, int y){
         g.fillOval((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
+        g.drawRect((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
     }
 
 }

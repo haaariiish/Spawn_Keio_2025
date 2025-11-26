@@ -2,6 +2,7 @@ package core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.Rectangle;
 
 import input.InputHandler;
 import entities.Boss;
@@ -16,11 +17,12 @@ import java.awt.Point;
 //A new class to divide the management of the game structure and the global management done by game
 public class GameWorld {
     private Player player;
+    private int score=0;
     private Map map;
     private List<Enemy> enemies;
     private Game game;
 
-    private double spawnEnemyproba=0.5;
+    private double spawnEnemyproba=1;
     
     //private Boss currentBoss;
     private List<Projectiles> projectilesList;
@@ -69,14 +71,20 @@ public class GameWorld {
 
     public void update(InputHandler input,int which_frame_in_cyle){
         this.player.update_input(this.map, input);
+        //System.out.println("Player bounds: " + this.player.getBounds());
         updateEnemiesPosition(this.map,this.player);
-        if (which_frame_in_cyle%30==0){ // If we are in a precise moment, the game will try to make spawn some enemies
+        if (which_frame_in_cyle%5==0){ // If we are in a precise moment, the game will try to make spawn some enemies
         updateEnemiesSpawn(this.map);
         }
         if (input.isShootPressed()){
             playerShoot();
         }
         updateProjectiles();
+
+        handleCollisions();
+        updateEnemiesDeath();
+
+ 
     }
 
 
@@ -110,6 +118,10 @@ public class GameWorld {
         return this.tileSize;
     }
 
+    public int getScore(){
+        return this.score;
+    }
+
     public List<Projectiles> getListProjectiles(){
         return this.projectilesList;
     }
@@ -136,6 +148,8 @@ public class GameWorld {
         for (int i = projectilesList.size() - 1; i >= 0; i--) {
             Projectiles proj = projectilesList.get(i);
             proj.update(map);
+            //System.out.println("Projectile bounds: " + proj.getBounds());
+            proj.setBounds();
             if (proj.toDestroy()) {
                 projectilesList.remove(i);
             }
@@ -149,11 +163,16 @@ public class GameWorld {
  
     public void updateEnemiesSpawn(Map map){
         for (int i = map.getEnemySpawnPoints().size() - 1; i >= 0; i--) {
+            if (enemies.size()>10){
+                return ;
+            }
             if (Math.random()<this.spawnEnemyproba){
                 Enemy n_enemy = new Enemy(map.getEnemySpawnPoints().get(i).x, map.getEnemySpawnPoints().get(i).y,15,15,20,1,1,10);
-                n_enemy.setSpeed(5);
+                //initialisation of enemies but random
+                n_enemy.setSpeed(6*Math.random()+5);
                 enemies.add(n_enemy);
             }
+            
         }
     }
 
@@ -161,10 +180,30 @@ public class GameWorld {
         for (int i = enemies.size() - 1; i >= 0; i--) {
             if (enemies.get(i).getIsDead()){
                 enemies.remove(i);
+                score++;
             }
         }
     }
-}
-    // public void handleCollisions(){}
 
+    public void handleCollisions(){
+        Rectangle playerBounds = player.getBounds();
+        for (int i = projectilesList.size() - 1; i >= 0; i--) {
+            Projectiles proj = projectilesList.get(i);
+            if (proj.getBounds().intersects(playerBounds)) {
+                    player.take_damage(proj.getSourceEntity().getAttack());
+                    projectilesList.remove(i);
+                }
+            for (int j = enemies.size() - 1; j >= 0; j--) {
+                Enemy enemy = enemies.get(j);
+                if (proj.getBounds().intersects(enemy.getBounds())) {
+                    enemy.take_damage(proj.getSourceEntity().getAttack());
+                    projectilesList.remove(i);
+                }
+            }
+            
+        }
+
+    }
+
+}
 

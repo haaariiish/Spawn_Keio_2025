@@ -2,12 +2,16 @@ package entities;
 
 import map.Map;
 import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.text.Normalizer.Form;
 
 
 public abstract class Projectiles {
     
     private Basic_Entity source_Entity;
 
+
+    private Rectangle bounds;
     // Direction of speed
     private int living_time;
     private double velocityX  ; 
@@ -27,41 +31,56 @@ public abstract class Projectiles {
     public Projectiles(Basic_Entity source){
         this.source_Entity = source;
         this.range_left = source.getRange();
-        this.x = this.source_Entity.getX();
-        this.y = this.source_Entity.getY();
-
+        
+        double factorX = 0;
+        double factorY = 0;
         // I'll define the base velocity of my projectile
         Direction facing_source = this.source_Entity.getFacing();
         switch (facing_source){
             case UP :
                 this.velocityY = -this.source_Entity.getBulletFast();
+                factorY = -this.source_Entity.getHeightInPixels() -5 ;
                 break;
             case DOWN_LEFT :
                 this.velocityY = this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
                 this.velocityX = -this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
+                factorY = this.source_Entity.getHeightInPixels()+10;
+                factorX = -this.source_Entity.getHeightInPixels()+10;
                 break;
             case DOWN_RIGHT :
                 this.velocityY = this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
                 this.velocityX = this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
+                factorY = this.source_Entity.getHeightInPixels()+10;
+                factorX = this.source_Entity.getHeightInPixels()+10;
                 break;
             case UP_LEFT :
                 this.velocityY = -this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
                 this.velocityX = -this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
+                factorY = -this.source_Entity.getHeightInPixels()+10;
+                factorX = -this.source_Entity.getHeightInPixels()+10;
                 break;
             case UP_RIGHT :
                 this.velocityY = -this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
                 this.velocityX = this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
+                factorY = -this.source_Entity.getHeightInPixels()+10;
+                factorX = this.source_Entity.getHeightInPixels()+10;
                 break;
             case DOWN :
                 this.velocityY = this.source_Entity.getBulletFast();
+                factorY = this.source_Entity.getHeightInPixels()+10;
+                
                 break;
             case LEFT :
                 this.velocityX = -this.source_Entity.getBulletFast();
+                factorX = -this.source_Entity.getHeightInPixels()+10;
                 break;
             case RIGHT :
                 this.velocityX = +this.source_Entity.getBulletFast();
+                factorX = this.source_Entity.getHeightInPixels()+10;
                 break;
         }
+        this.x = this.source_Entity.getX() + factorY;
+        this.y = this.source_Entity.getY() + factorX;
     }
         
         
@@ -117,6 +136,10 @@ public abstract class Projectiles {
         return  Math.abs(this.velocityX)==Math.abs(this.velocityY);
     }
 
+    public Rectangle getBounds(){
+        return this.bounds;
+    }
+
 
     //SETTERS 
     public void setX(double x){
@@ -155,6 +178,9 @@ public abstract class Projectiles {
     public void setBounceAble(boolean bounce){
         this.bounce_able = bounce;
     }
+    public void setBounds(){
+        this.bounds = new Rectangle((int) this.x,(int) this.y,this.width,this.height);
+    }
 
     // SOME utils 
 
@@ -171,6 +197,8 @@ public abstract class Projectiles {
     public abstract void render(Graphics g, int x, int y);
     
     }
+
+    
 
 
 
