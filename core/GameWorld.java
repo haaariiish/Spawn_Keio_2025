@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 
 import input.InputHandler;
 import entities.Boss;
+import entities.Direction;
 import entities.Enemy;
 import entities.Player;
 import entities.Projectiles;
@@ -34,6 +35,8 @@ public class GameWorld {
     private int worldWidth;
     private int worldHeight;
     private int tileSize;
+    private static final int PLAYER_SHOOT_COOLDOWN_FRAMES = 5;
+    private int playerShootCooldown = 0;
 
     public GameWorld(int worldWidth, int worldHeight, int tileSize,Game game) {
         this.worldWidth = worldWidth;
@@ -50,11 +53,13 @@ public class GameWorld {
     public void reset(){
         this.player = null;
         this.enemies = null;
+        this.score = 0;
         
     }
 
     public void restart(){
         // Initialisation of the map ( default map for now)
+        this.score = 0;
         map = new Map(this.worldWidth / this.tileSize, this.worldHeight / this.tileSize, this.tileSize);
         map.createDefaultMap();
 
@@ -75,15 +80,16 @@ public class GameWorld {
         if (which_frame_in_cyle%5==0){ // If we are in a precise moment, the game will try to make spawn some enemies
         updateEnemiesSpawn(this.map);
         }
-        if (input.isShootPressed()){
-            playerShoot();
+        if (playerShootCooldown > 0) {
+            playerShootCooldown--;
         }
+        handlePlayerShooting(input);
         updateProjectiles();
 
         handleCollisions();
         updateEnemiesDeath();
+        checkPlayerStatus();
 
- 
     }
 
 
@@ -203,7 +209,110 @@ public class GameWorld {
                 projectilesList.remove(i);
             }
         }
+        for (int j = enemies.size() - 1; j >= 0; j--) {
+                Enemy enemy = enemies.get(j);
+                if (enemy.getBounds().intersects(player.getBounds())) {
+                    player.take_damage(enemy.getAttack());
+                }
+            }
 
+    }
+
+    private void checkPlayerStatus(){
+        if (player == null) {
+            return;
+        }
+        if (player.getIsDead() || player.getHP() <= 0) {
+            if (projectilesList != null) {
+                projectilesList.clear();
+            }
+            game.changeGameState(GameState.GAMEOVER);
+        }
+    }
+
+    private void handlePlayerShooting(InputHandler input){
+        if (player == null) {
+            return;
+        }
+        boolean attemptedShot = false;
+        Direction aimDirection = null;
+
+        Direction arrowDirection = input.getShootDirectionFromArrows();
+        if (arrowDirection != null) {
+            aimDirection = arrowDirection;
+            attemptedShot = true;
+        } else if (input.isMouseShootPressed()) {
+            aimDirection = determineMouseDirection(input);
+            attemptedShot = aimDirection != null;
+        } else if (input.isShootPressed()) {
+            aimDirection = player.getFacing();
+            attemptedShot = true;
+        }
+
+        if (attemptedShot && playerShootCooldown == 0) {
+            if (aimDirection != null) {
+                player.setFacing(aimDirection);
+            }
+            playerShoot();
+            playerShootCooldown = PLAYER_SHOOT_COOLDOWN_FRAMES;
+        }
+    }
+
+    private Direction determineMouseDirection(InputHandler input){
+        if (player == null) {
+            return null;
+        }
+        if (game == null || game.getFrame() == null) {
+            return null;
+        }
+        java.awt.Component panel = game.getFrame().getGamePanel();
+        if (panel == null) {
+            return null;
+        }
+        java.awt.Point mouse = input.getMousePosition();
+        if (mouse == null) {
+            return null;
+        }
+
+        int panelWidth = panel.getWidth();
+        int panelHeight = panel.getHeight();
+        if (panelWidth == 0 || panelHeight == 0) {
+            return null;
+        }
+
+        double playerCenterX = player.getX() + player.getWidthInPixels() / 2.0;
+        double playerCenterY = player.getY() + player.getHeightInPixels() / 2.0;
+        double cameraX = playerCenterX - panelWidth / 2.0;
+        double cameraY = playerCenterY - panelHeight / 2.0;
+
+        double targetX = cameraX + mouse.x;
+        double targetY = cameraY + mouse.y;
+
+        double dx = targetX - playerCenterX;
+        double dy = targetY - playerCenterY;
+
+        if (Math.abs(dx) < 0.001 && Math.abs(dy) < 0.001) {
+            return null;
+        }
+
+        boolean horizontal = Math.abs(dx) >= Math.abs(dy) * 0.5;
+        boolean vertical = Math.abs(dy) >= Math.abs(dx) * 0.5;
+
+        if (vertical && horizontal) {
+            if (dx > 0 && dy < 0) {
+                return Direction.UP_RIGHT;
+            } else if (dx > 0 && dy > 0) {
+                return Direction.DOWN_RIGHT;
+            } else if (dx < 0 && dy < 0) {
+                return Direction.UP_LEFT;
+            } else {
+                return Direction.DOWN_LEFT;
+            }
+        } else if (Math.abs(dx) >= Math.abs(dy)) {
+            return dx >= 0 ? Direction.RIGHT : Direction.LEFT;
+        } else {
+            return dy >= 0 ? Direction.DOWN : Direction.UP;
+        }
     }
 
 }

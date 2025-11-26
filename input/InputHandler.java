@@ -1,18 +1,26 @@
 package input;
 
+import entities.Direction;
+
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 
-public class InputHandler implements KeyListener{
+public class InputHandler implements KeyListener, MouseListener, MouseMotionListener{
     // Set of keys for key still used
     private Set<Integer> pressedKeys;
 
     // Set of key that is only use in a frame
     private Set<Integer> justPressedKeys;
+    private volatile boolean leftMousePressed = false;
+    private volatile Point currentMousePosition = new Point(0, 0);
     
     public InputHandler() {
         pressedKeys = Collections.synchronizedSet(new HashSet<>());
@@ -58,7 +66,7 @@ public class InputHandler implements KeyListener{
     //for the shooting it's nice (for one instant input action)
 
     public boolean isKeyJustPressed(int keyCode) {
-        return justPressedKeys.contains(keyCode);
+        return justPressedKeys.remove(keyCode);
     }
     
     /**
@@ -66,25 +74,25 @@ public class InputHandler implements KeyListener{
      * Clean the key just pushed
      */
     public void update() {
-        justPressedKeys.clear();
+        // no-op: justPressed keys are consumed when queried
     }
 
 
     // Basic Methods to get the input of moving
     public boolean isMovingLeft() {
-        return isKeyPressed(KeyEvent.VK_LEFT) || isKeyPressed(KeyEvent.VK_Q) ;
+        return isKeyPressed(KeyEvent.VK_Q) || isKeyPressed(KeyEvent.VK_A);
     }
     
     public boolean isMovingRight() {
-        return isKeyPressed(KeyEvent.VK_RIGHT) || isKeyPressed(KeyEvent.VK_D);
+        return isKeyPressed(KeyEvent.VK_D);
     }
     
     public boolean isMovingUp() {
-        return isKeyPressed(KeyEvent.VK_UP) || isKeyPressed(KeyEvent.VK_Z) ;
+        return isKeyPressed(KeyEvent.VK_Z) || isKeyPressed(KeyEvent.VK_W) ;
     }
     
     public boolean isMovingDown() {
-        return isKeyPressed(KeyEvent.VK_DOWN) || isKeyPressed(KeyEvent.VK_S);
+        return isKeyPressed(KeyEvent.VK_S) || isKeyPressed(KeyEvent.VK_X);
     }
 
     public int getHorizontalDirection() {
@@ -118,6 +126,40 @@ public class InputHandler implements KeyListener{
     public boolean isPausePressed() {
         return isKeyJustPressed(KeyEvent.VK_ESCAPE);
     }
+
+    public boolean isMouseShootPressed() {
+        return leftMousePressed;
+    }
+
+    public Point getMousePosition() {
+        return currentMousePosition;
+    }
+
+    public Direction getShootDirectionFromArrows() {
+        boolean up = isKeyPressed(KeyEvent.VK_UP);
+        boolean down = isKeyPressed(KeyEvent.VK_DOWN);
+        boolean left = isKeyPressed(KeyEvent.VK_LEFT);
+        boolean right = isKeyPressed(KeyEvent.VK_RIGHT);
+
+        if (up && right) {
+            return Direction.UP_RIGHT;
+        } else if (up && left) {
+            return Direction.UP_LEFT;
+        } else if (down && right) {
+            return Direction.DOWN_RIGHT;
+        } else if (down && left) {
+            return Direction.DOWN_LEFT;
+        } else if (up) {
+            return Direction.UP;
+        } else if (down) {
+            return Direction.DOWN;
+        } else if (left) {
+            return Direction.LEFT;
+        } else if (right) {
+            return Direction.RIGHT;
+        }
+        return null;
+    }
     
     // Debug
 
@@ -134,5 +176,41 @@ public class InputHandler implements KeyListener{
             System.out.print(KeyEvent.getKeyText(key) + " ");
         }
         System.out.println();
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            leftMousePressed = true;
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            leftMousePressed = false;
+        }
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        currentMousePosition = e.getPoint();
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        currentMousePosition = e.getPoint();
     }
 }

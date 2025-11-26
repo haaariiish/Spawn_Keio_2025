@@ -44,9 +44,7 @@ public class Game implements Runnable {
         
         this.frame = new Frame1("Spawn Keio 2025", this);
         this.inputHandler = new InputHandler();
-        this.frame.addKeyListener(inputHandler);
-        this.frame.getGamePanel().addKeyListener(inputHandler);
-        this.frame.getGamePanel().setFocusable(true);
+        attachInputHandlers();
 
         this.gameworld = new GameWorld(2000, 2000, 40, this);
 
@@ -57,10 +55,9 @@ public class Game implements Runnable {
     public void reset(){
         
         
+        detachInputHandlers(this.inputHandler);
         this.inputHandler = new InputHandler();
-        this.frame.addKeyListener(inputHandler);
-        this.frame.getGamePanel().addKeyListener(inputHandler);
-        this.frame.getGamePanel().setFocusable(true);
+        attachInputHandlers();
 
         SwingUtilities.invokeLater(() -> {
             this.frame.requestFocus();
@@ -113,10 +110,14 @@ public class Game implements Runnable {
             long startTime = System.currentTimeMillis(); // start time of the frame
             open_time =(int) (startTime - lastTime);
 
+            if ((game_state == GameState.PLAYING || game_state == GameState.PAUSE) && inputHandler.isPausePressed()) {
+                togglePause();
+            }
+
             if (game_state != previous_state) {
                 handleStateChange();
 
-                if (game_state == GameState.PLAYING) {
+                if (game_state == GameState.PLAYING && previous_state != GameState.PAUSE) {
                     game_opening = System.currentTimeMillis();
                     // Initialize or reset game elements here if needed
                     this.gameworld.restart();
@@ -133,6 +134,10 @@ public class Game implements Runnable {
 
             if(game_state == GameState.HOME){
                 frame.getHomeMenuPanel().repaint();
+            } else if (game_state == GameState.PAUSE){
+                frame.getPauseMenuPanel().repaint();
+            } else if (game_state == GameState.GAMEOVER){
+                frame.getGameOverPanel().repaint();
             }
            
             
@@ -159,10 +164,11 @@ public class Game implements Runnable {
                 frame.getGamePanel().requestFocusInWindow();
                 break;
             case PAUSE:
-                //frame.showPanel("PauseMenu");
+                frame.showPanel("PauseMenu");
                 break;
             case GAMEOVER:
-                //frame.showPanel("GameOverMenu");
+                frame.getGameOverPanel().refreshStats();
+                frame.showPanel("GameOverMenu");
                 break;
             case LOADING:
                 //frame.showPanel("LoadingScreen");
@@ -178,6 +184,20 @@ public class Game implements Runnable {
     public void changeGameState(GameState newState) {
         this.game_state = newState;
 
+    }
+    
+    public void resumeGame() {
+        if (this.game_state == GameState.PAUSE) {
+            changeGameState(GameState.PLAYING);
+        }
+    }
+
+    private void togglePause() {
+        if (this.game_state == GameState.PLAYING) {
+            changeGameState(GameState.PAUSE);
+        } else if (this.game_state == GameState.PAUSE) {
+            resumeGame();
+        }
     }
     // Getters
 
@@ -211,6 +231,31 @@ public class Game implements Runnable {
 
     public InputHandler getInputHandler() {
         return inputHandler;
+    }
+
+    private void attachInputHandlers() {
+        if (this.frame == null || this.inputHandler == null) {
+            return;
+        }
+        this.frame.addKeyListener(inputHandler);
+        if (this.frame.getGamePanel() != null) {
+            this.frame.getGamePanel().addKeyListener(inputHandler);
+            this.frame.getGamePanel().addMouseListener(inputHandler);
+            this.frame.getGamePanel().addMouseMotionListener(inputHandler);
+            this.frame.getGamePanel().setFocusable(true);
+        }
+    }
+
+    private void detachInputHandlers(InputHandler handler) {
+        if (handler == null || this.frame == null) {
+            return;
+        }
+        this.frame.removeKeyListener(handler);
+        if (this.frame.getGamePanel() != null) {
+            this.frame.getGamePanel().removeKeyListener(handler);
+            this.frame.getGamePanel().removeMouseListener(handler);
+            this.frame.getGamePanel().removeMouseMotionListener(handler);
+        }
     }
     
 }
