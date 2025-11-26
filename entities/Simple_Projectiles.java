@@ -55,15 +55,24 @@ public class Simple_Projectiles extends Projectiles{
 
     @Override
         public void render(Graphics g, int x, int y){
+            int proj_cameraX = ((int) this.getX())-x;
+            int proj_cameraY = ((int) this.getY())-y;
+            int wide = 0;
+            int up = 0;
+             
             if (this.getVertical()){
-                g.fillOval(((int) this.getX())-x,((int) this.getY())-y, this.getWidth(), this.getHeight());
-                g.drawRect(((int) this.getX())-x,((int) this.getY())-y, this.getWidth(), this.getHeight());
+                 wide = this.getWidth();
+                 up = this.getHeight();
+               
             }
             else{
-                g.fillOval(((int) this.getX())-x,((int) this.getY())-y, this.getHeight(), this.getWidth());
-                g.drawRect(((int) this.getX())-x,((int) this.getY())-y, this.getHeight(), this.getWidth());
+                wide = this.getHeight();
+                up = this.getWidth();
             }
             
+            
+            g.fillOval(proj_cameraX,proj_cameraY, wide, up);
+            g.drawRect(proj_cameraX,proj_cameraY, wide, up);
         }
 
 

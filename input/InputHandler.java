@@ -2,6 +2,7 @@ package input;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,8 +15,8 @@ public class InputHandler implements KeyListener{
     private Set<Integer> justPressedKeys;
     
     public InputHandler() {
-        pressedKeys = new HashSet<>();
-        justPressedKeys = new HashSet<>();
+        pressedKeys = Collections.synchronizedSet(new HashSet<>());
+        justPressedKeys = Collections.synchronizedSet(new HashSet<>());
     }
 
 
@@ -121,12 +122,17 @@ public class InputHandler implements KeyListener{
     // Debug
 
     public void printPressedKeys() {
-        if (!pressedKeys.isEmpty()) {
-            System.out.print("Touches pressées : ");
-            for (int key : pressedKeys) {
-                System.out.print(KeyEvent.getKeyText(key) + " ");
+        Set<Integer> snapshot;
+        synchronized (pressedKeys) {
+            if (pressedKeys.isEmpty()) {
+                return;
             }
-            System.out.println();
+            snapshot = new HashSet<>(pressedKeys);
         }
+        System.out.print("Touches pressées : ");
+        for (int key : snapshot) {
+            System.out.print(KeyEvent.getKeyText(key) + " ");
+        }
+        System.out.println();
     }
 }

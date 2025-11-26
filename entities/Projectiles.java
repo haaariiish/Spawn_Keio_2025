@@ -39,30 +39,30 @@ public abstract class Projectiles {
         switch (facing_source){
             case UP :
                 this.velocityY = -this.source_Entity.getBulletFast();
-                factorY = -this.source_Entity.getHeightInPixels() -5 ;
+                factorY = -(this.source_Entity.getHeightInPixels() +10);
                 break;
             case DOWN_LEFT :
                 this.velocityY = this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
                 this.velocityX = -this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
                 factorY = this.source_Entity.getHeightInPixels()+10;
-                factorX = -this.source_Entity.getHeightInPixels()+10;
+                factorX = -(this.source_Entity.getHeightInPixels()+10);
                 break;
             case DOWN_RIGHT :
                 this.velocityY = this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
                 this.velocityX = this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
-                factorY = this.source_Entity.getHeightInPixels()+10;
-                factorX = this.source_Entity.getHeightInPixels()+10;
+                factorY = (this.source_Entity.getHeightInPixels()+10);
+                factorX = (this.source_Entity.getHeightInPixels()+10);
                 break;
             case UP_LEFT :
                 this.velocityY = -this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
                 this.velocityX = -this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
-                factorY = -this.source_Entity.getHeightInPixels()+10;
-                factorX = -this.source_Entity.getHeightInPixels()+10;
+                factorY = -(this.source_Entity.getHeightInPixels()+10);
+                factorX = -(this.source_Entity.getHeightInPixels()+10);
                 break;
             case UP_RIGHT :
                 this.velocityY = -this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
                 this.velocityX = this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
-                factorY = -this.source_Entity.getHeightInPixels()+10;
+                factorY = -(this.source_Entity.getHeightInPixels()+10);
                 factorX = this.source_Entity.getHeightInPixels()+10;
                 break;
             case DOWN :
@@ -72,15 +72,19 @@ public abstract class Projectiles {
                 break;
             case LEFT :
                 this.velocityX = -this.source_Entity.getBulletFast();
-                factorX = -this.source_Entity.getHeightInPixels()+10;
+                factorX = -(this.source_Entity.getHeightInPixels()+10);
                 break;
             case RIGHT :
                 this.velocityX = +this.source_Entity.getBulletFast();
                 factorX = this.source_Entity.getHeightInPixels()+10;
                 break;
         }
-        this.x = this.source_Entity.getX() + factorY;
-        this.y = this.source_Entity.getY() + factorX;
+        /*System.out.println("factorY: "+factorY);
+        System.out.println("factorX: "+factorX);
+        System.out.println("velocityX: "+velocityX);
+        System.out.println("velocityY: "+velocityY);*/
+        this.x = source_Entity.getX() + factorX;
+        this.y = source_Entity.getY() + factorY;
     }
         
         

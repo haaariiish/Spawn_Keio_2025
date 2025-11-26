@@ -22,8 +22,7 @@ public class GameWorld {
     private List<Enemy> enemies;
     private Game game;
 
-    private double spawnEnemyproba=1;
-    
+    private double spawnEnemyproba=0.2;
     //private Boss currentBoss;
     private List<Projectiles> projectilesList;
     //private List<Projectile> enemyProjectiles;
@@ -128,7 +127,6 @@ public class GameWorld {
 
 
     //SETTERS
-
     // UPDATERS OF FEATURES
 
     public void playerShoot(){
@@ -167,9 +165,9 @@ public class GameWorld {
                 return ;
             }
             if (Math.random()<this.spawnEnemyproba){
-                Enemy n_enemy = new Enemy(map.getEnemySpawnPoints().get(i).x, map.getEnemySpawnPoints().get(i).y,15,15,20,1,1,10);
+                Enemy n_enemy = new Enemy(map.getEnemySpawnPoints().get(i).x, map.getEnemySpawnPoints().get(i).y,15,15,5,1,1,10);
                 //initialisation of enemies but random
-                n_enemy.setSpeed(6*Math.random()+5);
+                n_enemy.setSpeed(Math.random()*5);
                 enemies.add(n_enemy);
             }
             
@@ -189,18 +187,21 @@ public class GameWorld {
         Rectangle playerBounds = player.getBounds();
         for (int i = projectilesList.size() - 1; i >= 0; i--) {
             Projectiles proj = projectilesList.get(i);
+            boolean hitSomething = false;
             if (proj.getBounds().intersects(playerBounds)) {
-                    player.take_damage(proj.getSourceEntity().getAttack());
-                    projectilesList.remove(i);
-                }
+                player.take_damage(proj.getSourceEntity().getAttack());
+                hitSomething = true;
+            }
             for (int j = enemies.size() - 1; j >= 0; j--) {
                 Enemy enemy = enemies.get(j);
                 if (proj.getBounds().intersects(enemy.getBounds())) {
                     enemy.take_damage(proj.getSourceEntity().getAttack());
-                    projectilesList.remove(i);
+                    hitSomething = true;
                 }
             }
-            
+            if (hitSomething) {
+                projectilesList.remove(i);
+            }
         }
 
     }
