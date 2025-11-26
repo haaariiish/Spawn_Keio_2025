@@ -136,6 +136,9 @@ public class Basic_Entity {
         if (!is_undying){
             this.hp -= damage;
         }
+        if (this.hp==0){
+            this.is_dead=true;
+        }
     }
 
     

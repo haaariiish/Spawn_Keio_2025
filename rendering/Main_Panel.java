@@ -179,13 +179,23 @@ public class Main_Panel extends JPanel{
         // TO center the camera to the exact position of the player
         int playerScreenX = screenWidth / 2 - player.getWidthInPixels() / 2;
         int playerScreenY = screenHeight / 2 - player.getHeightInPixels() / 2;
+
+        // Enemies drawing
+
+        g.setColor(COLOR_ENEMY);
+        for (int i = mainFrame.getGame().getGameWorld().getEnemy().size()-1;i>=0;i--){
+             mainFrame.getGame().getGameWorld().getEnemy().get(i).render(g, cameraX,cameraY);
+        }
+        
+        // Draw the player 
+
         g.setColor(COLOR_PLAYER);
         g.fillOval(playerScreenX,playerScreenY,mainFrame.getGame().getPlayer().getWidthInPixels(),mainFrame.getGame().getPlayer().getHeightInPixels());
         
         // projectiles
         List<Projectiles> projectilesList = mainFrame.getGame().getGameWorld().getListProjectiles();
         for (int i = projectilesList.size() - 1; i >= 0; i--){
-            projectilesList.get(i).render(g, cameraX,cameraY);;
+            projectilesList.get(i).render(g, cameraX,cameraY);
         }
 
         // DEBUG information just in case
@@ -213,6 +223,7 @@ public class Main_Panel extends JPanel{
         g.drawString(String.format("Velocity (x,y): (%.0f, %.0f)",this.mainFrame.getGame().getPlayer().getVelocityX() ,this.mainFrame.getGame().getPlayer().getVelocityY() ),10, 140);
         g.drawString("Opened Time: "+this.mainFrame.getGame().getOpenTime() ,10, 165);
         g.drawString("In Game Time: "+this.mainFrame.getGame().getInGameTime() ,10, 180);
+        g.drawString("Number of Enemy in the Area "+this.mainFrame.getGame().getGameWorld().getEnemy().size(),10, 195);
     }
 
 

@@ -172,7 +172,7 @@ public class Game implements Runnable {
     }
     private void update() {
         // Update in game objects here
-        this.gameworld.update(inputHandler);
+        this.gameworld.update(inputHandler,this.getInGameTime());
     }
 
     public void changeGameState(GameState newState) {

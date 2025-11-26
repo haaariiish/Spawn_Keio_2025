@@ -1,8 +1,10 @@
 package map;
 
 
-import java.awt.*;
+import java.awt.Point;
+import java.util.List;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Map{
@@ -160,6 +162,18 @@ public class Map{
             }
         }
         return new Point(tileSize, tileSize); // Default
+    }
+
+    public List<Point> getEnemySpawnPoints(){
+        List<Point> spawn_pointsList= new ArrayList<>();
+        for (int y = 0; y < heightInTiles; y++) {
+            for (int x = 0; x < widthInTiles; x++) {
+                if (tiles[y][x] == ENEMY_SPAWN) {
+                    spawn_pointsList.add(new Point(x * tileSize +tileSize/2, y * tileSize + tileSize/2));
+                }
+            }
+        }
+        return spawn_pointsList;
     }
 
     // Getters

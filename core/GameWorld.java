@@ -20,8 +20,7 @@ public class GameWorld {
     private List<Enemy> enemies;
     private Game game;
 
-    //private float spawn proabilities;
-
+    private double spawnEnemyproba=0.5;
     
     //private Boss currentBoss;
     private List<Projectiles> projectilesList;
@@ -41,6 +40,7 @@ public class GameWorld {
         this.game = game;
         this.tileSize = tileSize;
         
+    
         // Spawn of some Ennemy (to implement)
         //spawnEnemy(200, 200);
         //spawnEnemy(300, 250);
@@ -67,9 +67,12 @@ public class GameWorld {
         player = new Player(spawn.x, spawn.y,20,20,100,1,1,100);
     }
 
-    public void update(InputHandler input){
+    public void update(InputHandler input,int which_frame_in_cyle){
         this.player.update_input(this.map, input);
-
+        updateEnemiesPosition(this.map,this.player);
+        if (which_frame_in_cyle%30==0){ // If we are in a precise moment, the game will try to make spawn some enemies
+        updateEnemiesSpawn(this.map);
+        }
         if (input.isShootPressed()){
             playerShoot();
         }
@@ -138,7 +141,30 @@ public class GameWorld {
             }
         }
     }
-    //public void update_enemy(){}
+    public void updateEnemiesPosition(Map map, Player player){
+        for (int i = enemies.size() - 1; i >= 0; i--) {
+            enemies.get(i).update_position(map, player);
+        }
+    }
+ 
+    public void updateEnemiesSpawn(Map map){
+        for (int i = map.getEnemySpawnPoints().size() - 1; i >= 0; i--) {
+            if (Math.random()<this.spawnEnemyproba){
+                Enemy n_enemy = new Enemy(map.getEnemySpawnPoints().get(i).x, map.getEnemySpawnPoints().get(i).y,15,15,20,1,1,10);
+                n_enemy.setSpeed(5);
+                enemies.add(n_enemy);
+            }
+        }
+    }
+
+    public void updateEnemiesDeath(){
+        for (int i = enemies.size() - 1; i >= 0; i--) {
+            if (enemies.get(i).getIsDead()){
+                enemies.remove(i);
+            }
+        }
+    }
+}
     // public void handleCollisions(){}
 
-}
+
