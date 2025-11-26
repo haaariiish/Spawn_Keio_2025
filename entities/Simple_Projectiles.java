@@ -9,7 +9,7 @@ public class Simple_Projectiles extends Projectiles{
         super(source_Entity);
         this.setWidth(w);
         this.setHeight(h);
-        this.setBounds();
+        this.alignWithSource();
         this.setFriction(friction);
     }
     @Override
@@ -57,22 +57,9 @@ public class Simple_Projectiles extends Projectiles{
         public void render(Graphics g, int x, int y){
             int proj_cameraX = ((int) this.getX())-x;
             int proj_cameraY = ((int) this.getY())-y;
-            int wide = 0;
-            int up = 0;
-             
-            if (this.getVertical()){
-                 wide = this.getWidth();
-                 up = this.getHeight();
-               
-            }
-            else{
-                wide = this.getHeight();
-                up = this.getWidth();
-            }
-            
-            
-            g.fillOval(proj_cameraX,proj_cameraY, wide, up);
-            g.drawRect(proj_cameraX,proj_cameraY, wide, up);
+
+            g.fillOval(proj_cameraX,proj_cameraY, this.getWidth(), this.getHeight());
+            g.drawRect(proj_cameraX,proj_cameraY, this.getWidth(), this.getHeight());
         }
 
 

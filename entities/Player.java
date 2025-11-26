@@ -33,51 +33,30 @@ public class Player extends Moving_Entity{
     // Input managing
 
     public void handleInput(InputHandler input){
-         if (input.isMovingLeft()) {
+        boolean moved = false;
+        if (input.isMovingLeft()) {
             this.moveLeft();
+            moved = true;
         } 
         if (input.isMovingRight()) {
             this.moveRight();
+            moved = true;
         }
         if (input.isMovingUp()) {
             this.moveUp();
+            moved = true;
         }
         if (input.isMovingDown()) {
             this.moveDown();
-        }
-        if (input.getHorizontalDirection()==1){ 
-            if (input.getVerticalDirection()==-1){
-            this.setFacing(Direction.UP_RIGHT);
-            }
-            else if (input.getVerticalDirection()==1){
-            this.setFacing(Direction.DOWN_RIGHT);
-            }
-            else if (input.getVerticalDirection()==0){
-            this.setFacing(Direction.RIGHT);
-            }
-    }
-        else if (input.getHorizontalDirection()==0){
-            if (input.getVerticalDirection()==-1){
-            this.setFacing(Direction.UP);
-            }
-            else if (input.getVerticalDirection()==1){
-            this.setFacing(Direction.DOWN);
-            }
-            
-        }
-        else if (input.getHorizontalDirection()==-1){
-            if (input.getVerticalDirection()==-1){
-            this.setFacing(Direction.UP_LEFT);
-            }
-            else if (input.getVerticalDirection()==1){
-            this.setFacing(Direction.DOWN_LEFT);
-            }
-            else if (input.getVerticalDirection()==0){
-            this.setFacing(Direction.LEFT);
-            }
+            moved = true;
         }
 
+        int horizontal = input.getHorizontalDirection();
+        int vertical = input.getVerticalDirection();
+        if (moved && (horizontal != 0 || vertical != 0)) {
+            this.setFacingAngle(Math.atan2(vertical, horizontal));
         }
+    }
 
     public void render(Graphics g, int x, int y){
         g.fillOval(x, y, this.getWidthInPixels(), this.getHeightInPixels());

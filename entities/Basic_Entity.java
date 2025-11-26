@@ -15,6 +15,7 @@ public class Basic_Entity {
     private int height=0;
 
     private Direction facing = Direction.DOWN;
+    private double facingAngle = Direction.DOWN.toAngle();
 
     private Rectangle bound;
 
@@ -77,6 +78,12 @@ public class Basic_Entity {
 
     public void setFacing(Direction face){
         this.facing = face;
+        this.facingAngle = face.toAngle();
+    }
+
+    public void setFacingAngle(double angle){
+        this.facingAngle = Direction.normalize(angle);
+        this.facing = Direction.fromAngle(this.facingAngle);
     }
 
     public void setProjectilesTypes(ProjectilesTypes pt){
@@ -135,6 +142,10 @@ public class Basic_Entity {
 
     public Direction getFacing(){
         return this.facing;
+    }
+
+    public double getFacingAngle(){
+        return this.facingAngle;
     }
     
     public ProjectilesTypes getProjectilesTypes(){

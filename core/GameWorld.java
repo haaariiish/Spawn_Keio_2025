@@ -6,10 +6,12 @@ import java.awt.Rectangle;
 
 import input.InputHandler;
 import entities.Boss;
-import entities.Direction;
+import entities.ChargerEnemy;
 import entities.Enemy;
+import entities.HeavyEnemy;
 import entities.Player;
 import entities.Projectiles;
+import entities.RangedEnemy;
 import entities.Simple_Projectiles;
 import map.Map;
 
@@ -38,6 +40,9 @@ public class GameWorld {
     private static final int PLAYER_SHOOT_COOLDOWN_FRAMES = 5;
     private int playerShootCooldown = 0;
 
+    private int playerDamageCooldown = 0;
+    private static final int PLAYER_DAMAGE_COOLDOWN_FRAMES = 10;
+
     public GameWorld(int worldWidth, int worldHeight, int tileSize,Game game) {
         this.worldWidth = worldWidth;
         this.worldHeight = worldHeight;
@@ -60,6 +65,8 @@ public class GameWorld {
     public void restart(){
         // Initialisation of the map ( default map for now)
         this.score = 0;
+        this.playerShootCooldown = 0;
+        this.playerDamageCooldown = 0;
         map = new Map(this.worldWidth / this.tileSize, this.worldHeight / this.tileSize, this.tileSize);
         map.createDefaultMap();
 
@@ -83,10 +90,14 @@ public class GameWorld {
         if (playerShootCooldown > 0) {
             playerShootCooldown--;
         }
+        
         handlePlayerShooting(input);
         updateProjectiles();
 
         handleCollisions();
+        if (playerDamageCooldown > 0) {
+            playerDamageCooldown--;
+        }
         updateEnemiesDeath();
         checkPlayerStatus();
 
@@ -161,7 +172,11 @@ public class GameWorld {
     }
     public void updateEnemiesPosition(Map map, Player player){
         for (int i = enemies.size() - 1; i >= 0; i--) {
-            enemies.get(i).update_position(map, player);
+            Enemy enemy = enemies.get(i);
+            Projectiles shot = enemy.updateBehavior(map, player);
+            if (shot != null) {
+                projectilesList.add(shot);
+            }
         }
     }
  
@@ -171,10 +186,10 @@ public class GameWorld {
                 return ;
             }
             if (Math.random()<this.spawnEnemyproba){
-                Enemy n_enemy = new Enemy(map.getEnemySpawnPoints().get(i).x, map.getEnemySpawnPoints().get(i).y,15,15,5,1,1,10);
-                //initialisation of enemies but random
-                n_enemy.setSpeed(Math.random()*5);
-                enemies.add(n_enemy);
+                Enemy n_enemy = createRandomEnemy(map.getEnemySpawnPoints().get(i));
+                if (n_enemy != null) {
+                    enemies.add(n_enemy);
+                }
             }
             
         }
@@ -200,7 +215,7 @@ public class GameWorld {
             }
             for (int j = enemies.size() - 1; j >= 0; j--) {
                 Enemy enemy = enemies.get(j);
-                if (proj.getBounds().intersects(enemy.getBounds())) {
+                if (proj.getSourceEntity() != enemy && proj.getBounds().intersects(enemy.getBounds())) {
                     enemy.take_damage(proj.getSourceEntity().getAttack());
                     hitSomething = true;
                 }
@@ -209,12 +224,15 @@ public class GameWorld {
                 projectilesList.remove(i);
             }
         }
+        if (playerDamageCooldown == 0) {
         for (int j = enemies.size() - 1; j >= 0; j--) {
                 Enemy enemy = enemies.get(j);
                 if (enemy.getBounds().intersects(player.getBounds())) {
                     player.take_damage(enemy.getAttack());
                 }
             }
+            playerDamageCooldown = PLAYER_DAMAGE_COOLDOWN_FRAMES;
+        }
 
     }
 
@@ -235,30 +253,28 @@ public class GameWorld {
             return;
         }
         boolean attemptedShot = false;
-        Direction aimDirection = null;
+        Double aimAngle = null;
 
-        Direction arrowDirection = input.getShootDirectionFromArrows();
-        if (arrowDirection != null) {
-            aimDirection = arrowDirection;
+        Double arrowAngle = input.getShootAngleFromArrows();
+        if (arrowAngle != null) {
+            aimAngle = arrowAngle;
             attemptedShot = true;
         } else if (input.isMouseShootPressed()) {
-            aimDirection = determineMouseDirection(input);
-            attemptedShot = aimDirection != null;
+            aimAngle = determineMouseAngle(input);
+            attemptedShot = aimAngle != null;
         } else if (input.isShootPressed()) {
-            aimDirection = player.getFacing();
+            aimAngle = player.getFacingAngle();
             attemptedShot = true;
         }
 
-        if (attemptedShot && playerShootCooldown == 0) {
-            if (aimDirection != null) {
-                player.setFacing(aimDirection);
-            }
+        if (attemptedShot && aimAngle != null && playerShootCooldown == 0) {
+            player.setFacingAngle(aimAngle);
             playerShoot();
             playerShootCooldown = PLAYER_SHOOT_COOLDOWN_FRAMES;
         }
     }
 
-    private Direction determineMouseDirection(InputHandler input){
+    private Double determineMouseAngle(InputHandler input){
         if (player == null) {
             return null;
         }
@@ -295,23 +311,20 @@ public class GameWorld {
             return null;
         }
 
-        boolean horizontal = Math.abs(dx) >= Math.abs(dy) * 0.5;
-        boolean vertical = Math.abs(dy) >= Math.abs(dx) * 0.5;
+        return Math.atan2(dy, dx);
+    }
 
-        if (vertical && horizontal) {
-            if (dx > 0 && dy < 0) {
-                return Direction.UP_RIGHT;
-            } else if (dx > 0 && dy > 0) {
-                return Direction.DOWN_RIGHT;
-            } else if (dx < 0 && dy < 0) {
-                return Direction.UP_LEFT;
-            } else {
-                return Direction.DOWN_LEFT;
-            }
-        } else if (Math.abs(dx) >= Math.abs(dy)) {
-            return dx >= 0 ? Direction.RIGHT : Direction.LEFT;
+    private Enemy createRandomEnemy(Point spawnPoint){
+        double roll = Math.random();
+        if (roll < 0.4) {
+            ChargerEnemy charger = new ChargerEnemy(spawnPoint.x, spawnPoint.y);
+            return charger;
+        } else if (roll < 0.75) {
+            RangedEnemy ranged = new RangedEnemy(spawnPoint.x, spawnPoint.y);
+            return ranged;
         } else {
-            return dy >= 0 ? Direction.DOWN : Direction.UP;
+            HeavyEnemy heavy = new HeavyEnemy(spawnPoint.x, spawnPoint.y);
+            return heavy;
         }
     }
 

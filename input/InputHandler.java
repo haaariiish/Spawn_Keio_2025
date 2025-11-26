@@ -1,7 +1,5 @@
 package input;
 
-import entities.Direction;
-
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -20,7 +18,7 @@ public class InputHandler implements KeyListener, MouseListener, MouseMotionList
     // Set of key that is only use in a frame
     private Set<Integer> justPressedKeys;
     private volatile boolean leftMousePressed = false;
-    private volatile Point currentMousePosition = new Point(0, 0);
+    private volatile Point currentMousePosition = null;
     
     public InputHandler() {
         pressedKeys = Collections.synchronizedSet(new HashSet<>());
@@ -135,30 +133,25 @@ public class InputHandler implements KeyListener, MouseListener, MouseMotionList
         return currentMousePosition;
     }
 
-    public Direction getShootDirectionFromArrows() {
-        boolean up = isKeyPressed(KeyEvent.VK_UP);
-        boolean down = isKeyPressed(KeyEvent.VK_DOWN);
-        boolean left = isKeyPressed(KeyEvent.VK_LEFT);
-        boolean right = isKeyPressed(KeyEvent.VK_RIGHT);
-
-        if (up && right) {
-            return Direction.UP_RIGHT;
-        } else if (up && left) {
-            return Direction.UP_LEFT;
-        } else if (down && right) {
-            return Direction.DOWN_RIGHT;
-        } else if (down && left) {
-            return Direction.DOWN_LEFT;
-        } else if (up) {
-            return Direction.UP;
-        } else if (down) {
-            return Direction.DOWN;
-        } else if (left) {
-            return Direction.LEFT;
-        } else if (right) {
-            return Direction.RIGHT;
+    public Double getShootAngleFromArrows() {
+        int dx = 0;
+        int dy = 0;
+        if (isKeyPressed(KeyEvent.VK_RIGHT)) {
+            dx += 1;
         }
-        return null;
+        if (isKeyPressed(KeyEvent.VK_LEFT)) {
+            dx -= 1;
+        }
+        if (isKeyPressed(KeyEvent.VK_DOWN)) {
+            dy += 1;
+        }
+        if (isKeyPressed(KeyEvent.VK_UP)) {
+            dy -= 1;
+        }
+        if (dx == 0 && dy == 0) {
+            return null;
+        }
+        return Math.atan2(dy, dx);
     }
     
     // Debug

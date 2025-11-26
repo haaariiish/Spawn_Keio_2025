@@ -21,8 +21,7 @@ public abstract class Projectiles {
     private int height ;
     private double x;
     private double y ;
-    private boolean isVertical;
-    private boolean isDiagonal;
+    private double directionAngle;
 
     private boolean bounce_able = false;
     // friction (to limitate the speed of the entity)
@@ -31,60 +30,12 @@ public abstract class Projectiles {
     public Projectiles(Basic_Entity source){
         this.source_Entity = source;
         this.range_left = source.getRange();
-        
-        double factorX = 0;
-        double factorY = 0;
-        // I'll define the base velocity of my projectile
-        Direction facing_source = this.source_Entity.getFacing();
-        switch (facing_source){
-            case UP :
-                this.velocityY = -this.source_Entity.getBulletFast();
-                factorY = -(this.source_Entity.getHeightInPixels() +10);
-                break;
-            case DOWN_LEFT :
-                this.velocityY = this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
-                this.velocityX = -this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
-                factorY = this.source_Entity.getHeightInPixels()+10;
-                factorX = -(this.source_Entity.getHeightInPixels()+10);
-                break;
-            case DOWN_RIGHT :
-                this.velocityY = this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
-                this.velocityX = this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
-                factorY = (this.source_Entity.getHeightInPixels()+10);
-                factorX = (this.source_Entity.getHeightInPixels()+10);
-                break;
-            case UP_LEFT :
-                this.velocityY = -this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
-                this.velocityX = -this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
-                factorY = -(this.source_Entity.getHeightInPixels()+10);
-                factorX = -(this.source_Entity.getHeightInPixels()+10);
-                break;
-            case UP_RIGHT :
-                this.velocityY = -this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
-                this.velocityX = this.source_Entity.getBulletFast()*Math.sqrt(2)/2;
-                factorY = -(this.source_Entity.getHeightInPixels()+10);
-                factorX = this.source_Entity.getHeightInPixels()+10;
-                break;
-            case DOWN :
-                this.velocityY = this.source_Entity.getBulletFast();
-                factorY = this.source_Entity.getHeightInPixels()+10;
-                
-                break;
-            case LEFT :
-                this.velocityX = -this.source_Entity.getBulletFast();
-                factorX = -(this.source_Entity.getHeightInPixels()+10);
-                break;
-            case RIGHT :
-                this.velocityX = +this.source_Entity.getBulletFast();
-                factorX = this.source_Entity.getHeightInPixels()+10;
-                break;
-        }
-        /*System.out.println("factorY: "+factorY);
-        System.out.println("factorX: "+factorX);
-        System.out.println("velocityX: "+velocityX);
-        System.out.println("velocityY: "+velocityY);*/
-        this.x = source_Entity.getX() + factorX;
-        this.y = source_Entity.getY() + factorY;
+        this.directionAngle = source.getFacingAngle();
+        double bulletSpeed = this.source_Entity.getBulletFast();
+        this.velocityX = bulletSpeed * Math.cos(this.directionAngle);
+        this.velocityY = bulletSpeed * Math.sin(this.directionAngle);
+        this.x = source_Entity.getX();
+        this.y = source_Entity.getY();
     }
         
         
@@ -130,6 +81,10 @@ public abstract class Projectiles {
 
     public Basic_Entity getSourceEntity(){
         return this.source_Entity;
+    }
+
+    public double getDirectionAngle(){
+        return this.directionAngle;
     }
 
     public boolean getVertical(){
@@ -184,6 +139,22 @@ public abstract class Projectiles {
     }
     public void setBounds(){
         this.bounds = new Rectangle((int) this.x,(int) this.y,this.width,this.height);
+    }
+
+    protected void alignWithSource(){
+        if (this.source_Entity == null || this.width == 0 || this.height == 0) {
+            return;
+        }
+        double entityCenterX = this.source_Entity.getX() + this.source_Entity.getWidthInPixels() / 2.0;
+        double entityCenterY = this.source_Entity.getY() + this.source_Entity.getHeightInPixels() / 2.0;
+        double projectileRadius = Math.max(this.width, this.height) / 2.0;
+        double entityRadius = Math.max(this.source_Entity.getWidthInPixels(), this.source_Entity.getHeightInPixels()) / 2.0;
+        double offset = entityRadius + projectileRadius + 2;
+        double centerX = entityCenterX + Math.cos(this.directionAngle) * offset;
+        double centerY = entityCenterY + Math.sin(this.directionAngle) * offset;
+        this.x = centerX - this.width / 2.0;
+        this.y = centerY - this.height / 2.0;
+        setBounds();
     }
 
     // SOME utils 

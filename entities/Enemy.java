@@ -1,70 +1,72 @@
 package entities;
 
-import map.Map;
 import java.awt.Graphics;
 
+import map.Map;
 
-public class Enemy extends Moving_Entity{
-    private String name= "Ennemy A";
+public abstract class Enemy extends Moving_Entity{
+    private int shootCooldownFrames;
+    private int shootCooldown;
 
-
-
-
-
-    public Enemy(double x, double y, int width, int height, int hp, int attack, int defense,int range){
+    public Enemy(double x, double y, int width, int height, int hp, int attack, int defense,int range,int speed){
         super();
         this.setHP(hp);
         this.setAttack(attack);
         this.setDefense(defense);
+        this.setRange(range);
         this.setX(x);
         this.setY(y);
         this.setWidthinPixel(width);
         this.setHeightinPixel(height);
         this.setBounds();
+        this.setSpeed(speed);
+        this.shootCooldownFrames = 0;
+        this.shootCooldown = 0;
     }
 
-    public void update_velocity(Player player){
-        double xplayer = player.getX();
-        double yplayer = player.getY();
-
-        double vx_with_noise= (Math.random()+0.5)*this.getSpeed();
-        double vy_with_noise = (Math.random()+0.5)*this.getSpeed();
-
-        if(this.getY()-yplayer>this.getRange()){
-                vy_with_noise = -vy_with_noise;
-            }
-            
-        else if (Math.abs(this.getY()-yplayer)<=this.getRange()){
-               vy_with_noise -=  this.getSpeed();
-            }
-
-        if(this.getX()-xplayer>this.getRange()){
-                vx_with_noise = -vx_with_noise;
-            }
-            
-        else if (Math.abs(this.getX()-xplayer)<=this.getRange()){
-               vx_with_noise -=  this.getSpeed();
-            }
-        setVelocityX(vx_with_noise);
-        setVelocityY(vy_with_noise);
+    protected void setShootCooldownFrames(int frames){
+        this.shootCooldownFrames = Math.max(0, frames);
     }
 
-    public void update_position(Map map, Player player){
-        update_velocity(player);
-        update(map);
+    protected boolean isShootReady(){
+        return shootCooldown == 0;
     }
-    // For now I use taht to limit the existence of the 
-    public void naturalDeath(){
-        if (this.getLifeTime()==50000){
-            this.kill();
+
+    protected void resetShootCooldown(){
+        if (shootCooldownFrames > 0){
+            shootCooldown = shootCooldownFrames;
         }
     }
-    
 
+    protected void tickCooldowns(){
+        if (shootCooldown > 0){
+            shootCooldown--;
+        }
+    }
+
+    protected void facePlayer(Player player){
+        double dx = player.getX() - this.getX();
+        double dy = player.getY() - this.getY();
+        if (Math.abs(dx) > 0.001 || Math.abs(dy) > 0.001) {
+            this.setFacingAngle(Math.atan2(dy, dx));
+        }
+    }
+
+    public Projectiles updateBehavior(Map map, Player player){
+        tickCooldowns();
+        updateMovement(player);
+        update(map);
+        return attemptSpecialAction(player);
+    }
+
+    protected abstract void updateMovement(Player player);
+
+    protected Projectiles attemptSpecialAction(Player player){
+        return null;
+    }
 
     public void render(Graphics g,int x, int y){
         g.fillOval((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
         g.drawRect((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
     }
-
 }
