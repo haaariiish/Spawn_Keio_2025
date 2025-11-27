@@ -7,6 +7,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
 public class Map{
 
     public static final int EMPTY = 0;
@@ -14,8 +15,10 @@ public class Map{
     public static final int DOOR = 2;
     public static final int SPIKE = 3;
     public static final int WATER = 4;
-    public static final int SPAWN = 5;
+    
     public static final int ENEMY_SPAWN = 6;
+
+    public static final int SPAWN = 5;
     
    
 
@@ -146,6 +149,10 @@ public class Map{
         
         // Door
         tiles[0][10] = DOOR;
+    }
+
+    public void createMapPerlinNoise(){
+        tiles = new MapGenPerlin(this.heightInTiles, this.widthInTiles).getTiles();
     }
 
     // Utils ------------------------------------------------------------------------------

@@ -69,7 +69,7 @@ public class RangedEnemy extends Enemy {
 
     @Override
     public void render(Graphics g,int x, int y){
-        g.setColor(new Color(255,210 -10* getStunFrame(),255));
+        g.setColor(new Color(255,210 -3* getStunFrame(),255));
         g.fillOval((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
         g.drawRect((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
     }

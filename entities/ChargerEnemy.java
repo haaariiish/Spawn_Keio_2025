@@ -33,7 +33,7 @@ public class ChargerEnemy extends Enemy {
 
     @Override
     public void render(Graphics g,int x, int y){
-        g.setColor(new Color(255-10*getKnockBackFrame(),20,20));
+        g.setColor(new Color(255-5*getKnockBackFrame(),100,20));
         g.fillOval((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
         g.drawRect((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
     }

@@ -26,7 +26,7 @@ public class HeavyEnemy extends Enemy {
     }
 
     public void render(Graphics g,int x, int y){
-        g.setColor(new Color(30,255 - 10*getKnockBackFrame(),0));
+        g.setColor(new Color(100,255 - 5*getKnockBackFrame(),0));
         g.fillOval((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
         g.drawRect((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
     }
