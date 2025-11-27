@@ -25,11 +25,11 @@ public class Basic_Entity {
     private int whichFrame = 0;
 
     // Frames for stun , weight and knockback
-    private static int STUN_COOLDOWN = 3;
+    private static int STUN_COOLDOWN = 20;
     private int actual_stuned_time = 0;
     private boolean isStun = false;
 
-    private static int kNOCKBACK_COOLDOWN = 3;
+    private static int kNOCKBACK_COOLDOWN = 20;
     private int actual_knockback_time = 0;
     private boolean isKnockBack = false;
     private int knockbackIntensity = 0;
@@ -51,6 +51,7 @@ public class Basic_Entity {
     private boolean is_dead=false; // Is an entity dead
     private ProjectilesTypes projectilesTypes = ProjectilesTypes.Simple_Projectiles; // to define what the entity shoot
     private boolean is_undying=false; // to implement future damage method
+    private double impactDirection;
     // Constructor -----------------------------------------------------------------
 
     public Basic_Entity() {
@@ -148,6 +149,10 @@ public class Basic_Entity {
 
     public void setKnockBackIntensity(int intensity){
         this.knockbackIntensity = intensity;
+    }
+
+    public void setImpactDirection(double dir){
+        this.impactDirection = dir;
     }
 
 
@@ -276,6 +281,10 @@ public class Basic_Entity {
 
     public int getKnockBackIntensity(){
         return knockbackIntensity;
+    }
+
+    public double getImpactDirection(){
+        return this.impactDirection;
     }
 
 

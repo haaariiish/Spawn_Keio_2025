@@ -6,6 +6,7 @@ import entities.Player;
 import entities.Projectiles;
 
 import javax.swing.JPanel;
+import java.awt.AlphaComposite;
 import java.awt.RenderingHints;
 import java.awt.Graphics;
 import java.awt.Color;
@@ -207,8 +208,13 @@ public class Main_Panel extends JPanel{
     private void drawDebugInfo(Graphics2D g, Player player, int cameraX, int cameraY) {
         
         g.setColor(Color.GRAY);
+        float alpha = 0.6f;
+        AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+        g.setComposite(ac);
         g.fillRoundRect(0,0, 300, 230, 5, 5);
         g.setColor(Color.BLACK);
+        ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f);
+        g.setComposite(ac);
         g.setFont(new Font("Monospaced", Font.PLAIN, 12));
         
         g.drawString(String.format("Player: (%.0f, %.0f)", player.getX(), player.getY()), 10, 20);

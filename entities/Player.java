@@ -35,27 +35,31 @@ public class Player extends Moving_Entity{
     // Input managing
 
     public void handleInput(InputHandler input){
-        boolean moved = false;
+        boolean moved_horizontal = false;
+        boolean moved_vertical = false;
+        
         if (input.isMovingLeft()) {
             this.moveLeft();
-            moved = true;
+            moved_horizontal = true;
         } 
         if (input.isMovingRight()) {
             this.moveRight();
-            moved = true;
+            moved_horizontal = true;
         }
         if (input.isMovingUp()) {
             this.moveUp();
-            moved = true;
+            moved_vertical = true;
         }
         if (input.isMovingDown()) {
             this.moveDown();
-            moved = true;
+            moved_vertical = true;
         }
+        
+
 
         int horizontal = input.getHorizontalDirection();
         int vertical = input.getVerticalDirection();
-        if (moved && (horizontal != 0 || vertical != 0)) {
+        if ((moved_vertical||moved_horizontal) && (horizontal != 0 || vertical != 0)) {
             this.setFacingAngle(Math.atan2(vertical, horizontal));
         }
     }
@@ -66,7 +70,7 @@ public class Player extends Moving_Entity{
         g.drawRect(x, y, this.getWidthInPixels(), this.getHeightInPixels());
     }
 
-    
+
     
 
     }

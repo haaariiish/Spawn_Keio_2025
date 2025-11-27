@@ -13,8 +13,8 @@ public class ChargerEnemy extends Enemy {
     
  
     protected void updateMovement(Player player) {
-        double vx = 0;
-        double vy = 0;
+        double vx = getVelocityX();
+        double vy = getVelocityY();
         
         if(!this.getStun()){
             facePlayer(player);
@@ -26,19 +26,14 @@ public class ChargerEnemy extends Enemy {
             
             
     }
-        else if(this.getJustKnockBack()){
-            double angle = this.getFacingAngle();
-            vx += -(Math.cos(angle) ) * getKnockBackIntensity()/getWeight();
-            vy += -(Math.sin(angle) ) * getKnockBackIntensity()/getWeight();
-            setJustKnockBack(false);// Faut faire le calcul pour avoir une belle fonction avec poids etc
-        }
+        
         setVelocityX(vx);
         setVelocityY(vy);
     }
 
     @Override
     public void render(Graphics g,int x, int y){
-        g.setColor(Color.RED);
+        g.setColor(new Color(255-10*getKnockBackFrame(),20,20));
         g.fillOval((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
         g.drawRect((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
     }

@@ -11,31 +11,22 @@ public class HeavyEnemy extends Enemy {
     }
 
     protected void updateMovement(Player player) {
-        double vx = 0;
-        double vy = 0;
+        double vx = getVelocityX();
+        double vy = getVelocityY();
         
         if(!this.getStun()){
             facePlayer(player);
             double angle = this.getFacingAngle();
             double speed = this.getSpeed();
-            
             vx += (Math.cos(angle) * speed +Math.random());
-            vy += (Math.sin(angle)* speed)+Math.random();
-            
-            
+            vy += (Math.sin(angle)* speed)+Math.random();   
     }
-        else if(this.getJustKnockBack()){
-            double angle = this.getFacingAngle();
-            vx += -(Math.cos(angle) ) * getKnockBackIntensity()/getWeight();
-            vy += -(Math.sin(angle) ) * getKnockBackIntensity()/getWeight();
-            setJustKnockBack(false);// Faut faire le calcul pour avoir une belle fonction avec poids etc
-        }
         setVelocityX(vx);
         setVelocityY(vy);
     }
 
     public void render(Graphics g,int x, int y){
-        g.setColor(Color.GREEN);
+        g.setColor(new Color(30,255 - 10*getKnockBackFrame(),0));
         g.fillOval((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
         g.drawRect((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
     }

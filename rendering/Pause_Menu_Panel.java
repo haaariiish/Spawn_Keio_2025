@@ -29,9 +29,9 @@ public class Pause_Menu_Panel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JLabel title = createLabel("Pause", 48);
-        JLabel subtitle = createLabel("Le jeu est en pause", 20);
+        JLabel subtitle = createLabel("Pausing game", 20);
 
-        JButton resumeButton = new JButton("Reprendre");
+        JButton resumeButton = new JButton("Resume");
         resumeButton.setAlignmentX(CENTER_ALIGNMENT);
         resumeButton.addActionListener(new ActionListener() {
             @Override
@@ -44,7 +44,7 @@ public class Pause_Menu_Panel extends JPanel {
         restartButton.setAlignmentX(CENTER_ALIGNMENT);
         restartButton.addActionListener(new ChangeGameState_toPlay(mainFrame.getGame()));
 
-        JButton homeButton = new JButton("Menu Principal");
+        JButton homeButton = new JButton("Home Page");
         homeButton.setAlignmentX(CENTER_ALIGNMENT);
         homeButton.addActionListener(new ChangeGameState_toHome(mainFrame.getGame()));
 

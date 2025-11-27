@@ -181,7 +181,7 @@ public abstract class Projectiles {
     // SOME utils 
 
     public boolean isNotMoving(){
-        return (Math.abs(this.velocityX)<=0.1)&&(Math.abs(this.velocityY)<=0.1);
+        return Math.sqrt(this.velocityX*this.velocityX+this.velocityY*this.velocityY)<4;
     }
     public void setToDestroy(){
         this.hasToDestroy=true;

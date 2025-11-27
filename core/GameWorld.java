@@ -150,7 +150,7 @@ public class GameWorld {
         Projectiles proj ;
         switch(player.getProjectilesTypes()){
             case Simple_Projectiles:
-                proj = new Simple_Projectiles(player, 5, 5, 0.9);
+                proj = new Simple_Projectiles(player, 10, 7, 0.95);
                 break;
             default:
                 proj = new Simple_Projectiles(player, 3, 3,2);
@@ -213,6 +213,7 @@ public class GameWorld {
             boolean hitSomething = false;
             if (proj.getBounds().intersects(playerBounds)) {
                 player.take_damage(proj.getSourceEntity().getAttack());
+                player.setImpactDirection(proj.getDirectionAngle());
                 hitSomething = true;
             }
 
@@ -225,7 +226,7 @@ public class GameWorld {
                     enemy.setKnockBackFrame(enemy.getKnockBackCoolDown());
                     enemy.setStunFrame(enemy.getStunCoolDown());
                     enemy.setKnockBackIntensity(enemy.getKnockBackIntensity()+(int) proj.getKnockBack());
-
+                    enemy.setImpactDirection(proj.getDirectionAngle());
                     enemy.take_damage(proj.getSourceEntity().getAttack());
                     hitSomething = true;
                 }
@@ -326,10 +327,10 @@ public class GameWorld {
 
     private Enemy createRandomEnemy(Point spawnPoint){
         double roll = Math.random();
-        if (roll < 0.4) {
+        if (roll < 0.35) {
             ChargerEnemy charger = new ChargerEnemy(spawnPoint.x, spawnPoint.y);
             return charger;
-        } else if (roll < 0.75) {
+        } else if (roll < 0.80) {
             RangedEnemy ranged = new RangedEnemy(spawnPoint.x, spawnPoint.y);
             return ranged;
         } else {

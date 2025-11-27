@@ -9,11 +9,12 @@ public class RangedEnemy extends Enemy {
     private final double fireRange;
     private final double retreatPadding;
     private final double estimatedRange;
+    private double friction_used=0.95;
 
     public RangedEnemy(double x, double y) {
         super(x, y, 14, 14, 20, 2, 1, 1000,(int) Math.round(5+Math.random()));
 
-        this.setBulletFast(12);
+        this.setBulletFast(20);
         this.setShootCooldownFrames(60);
         this.estimatedRange = estimated_distance_future(this.getBulletFast(), 60);
         this.fireRange = this.estimatedRange; // Different from range because of the friciton
@@ -23,8 +24,8 @@ public class RangedEnemy extends Enemy {
     }
 
     protected void updateMovement(Player player) {
-        double vx = 0;
-        double vy = 0;
+        double vx = getVelocityX();
+        double vy = getVelocityY();
         if(!this.getStun()){
             facePlayer(player);
             double angle = this.getFacingAngle();
@@ -42,12 +43,7 @@ public class RangedEnemy extends Enemy {
                 vy+=(-Math.sin(angle) * speed);
             } 
     }
-        else if(this.getJustKnockBack()){
-            double angle = this.getFacingAngle();
-            vx += -(Math.cos(angle) ) * getKnockBackIntensity()/getWeight();
-            vy += -(Math.sin(angle) ) * getKnockBackIntensity()/getWeight();
-            setJustKnockBack(false);// Faut faire le calcul pour avoir une belle fonction avec poids etc
-        }
+        
         setVelocityX(vx);
         setVelocityY(vy);
     }
@@ -61,10 +57,10 @@ public class RangedEnemy extends Enemy {
             resetShootCooldown();
             switch (this.getProjectilesTypes()) {
                 case Simple_Projectiles:
-                    return new Simple_Projectiles(this, 6, 6, 0.9 );
+                    return new Simple_Projectiles(this, 10, 10, this.friction_used );
             
                 default:
-                    return new Simple_Projectiles(this, 6, 6, 0.9 );
+                    return new Simple_Projectiles(this, 6, 6, 0.8 );
             } 
         }
     }
@@ -73,14 +69,14 @@ public class RangedEnemy extends Enemy {
 
     @Override
     public void render(Graphics g,int x, int y){
-        g.setColor(Color.PINK);
+        g.setColor(new Color(255,210 -10* getStunFrame(),255));
         g.fillOval((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
         g.drawRect((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
     }
 
     public double estimated_distance_future(int speed, int frames){
 
-        double distance = speed * (1-Math.pow(0.9,frames))/(1-0.9);
+        double distance = speed * (1-Math.pow(this.friction_used,frames))/(1-this.friction_used);
         return distance;
     }
 }

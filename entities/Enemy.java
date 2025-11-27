@@ -55,6 +55,7 @@ public abstract class Enemy extends Moving_Entity{
     public Projectiles updateBehavior(Map map, Player player){
         tickCooldowns();
         TimerUpdate();
+        gotKnockback();
         updateMovement(player);
         update(map);
         return attemptSpecialAction(player);
@@ -69,5 +70,7 @@ public abstract class Enemy extends Moving_Entity{
     }
 
     public abstract void render(Graphics g,int x, int y );
+
+    
 
 }

@@ -149,8 +149,21 @@ public class Moving_Entity extends Basic_Entity{
         return new Point(tileX, tileY);
     }
 
-// 
-
+// APPLY knockback
+    public void gotKnockback(){
+        double vx = 0;
+        double vy = 0;
+        if(this.getJustKnockBack()){
+            this.setJustKnockBack(false);
+        }
+        if(this.getIsKnockBack()){
+            double angle = this.getImpactDirection();
+            vx += -(Math.cos(angle) ) * getKnockBackIntensity()/getWeight() * (getKnockBackFrame()/getKnockBackCoolDown());
+            vy += -(Math.sin(angle) ) * getKnockBackIntensity()/getWeight() * (getKnockBackFrame()/getKnockBackCoolDown());// Faut faire le calcul pour avoir une belle fonction avec poids etc
+        }
+        setVelocityX(vx);
+        setVelocityY(vy);
+    }
 
     
 }

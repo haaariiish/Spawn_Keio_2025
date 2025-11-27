@@ -11,7 +11,7 @@ public class Simple_Projectiles extends Projectiles{
         this.setHeight(h);
         this.alignWithSource();
         this.setFriction(friction);
-        this.setKnockBack(3);
+        this.setKnockBack(10);
         this.setRecoil(0);
     
     }
@@ -48,7 +48,7 @@ public class Simple_Projectiles extends Projectiles{
 
         }
         // Slow down in any case to have a cap for our speed
-        this.setVelocityX(this.getFriction()*this.getVelocityX());
+        this.setVelocityX((this.getFriction()*this.getVelocityX()));
         this.setVelocityY(this.getFriction()*this.getVelocityY());
         
         if (this.getRangeLeft()>1){
@@ -68,9 +68,6 @@ public class Simple_Projectiles extends Projectiles{
         }
 
     
-        
-
-
     
 }
 

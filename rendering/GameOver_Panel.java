@@ -29,15 +29,15 @@ public class GameOver_Panel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JLabel title = createLabel("Game Over", 48);
-        JLabel subtitle = createLabel("Vous avez été vaincu", 20);
+        JLabel subtitle = createLabel("You are dead", 20);
         scoreLabel = createLabel("Score : 0", 24);
-        timeLabel = createLabel("Temps : 0s", 24);
+        timeLabel = createLabel("You survived : 0s", 24);
 
-        JButton retryButton = new JButton("Réessayer");
+        JButton retryButton = new JButton("Retry");
         retryButton.setAlignmentX(CENTER_ALIGNMENT);
         retryButton.addActionListener(new ChangeGameState_toPlay(mainFrame.getGame()));
 
-        JButton homeButton = new JButton("Menu Principal");
+        JButton homeButton = new JButton("Home Page");
         homeButton.setAlignmentX(CENTER_ALIGNMENT);
         homeButton.addActionListener(new ChangeGameState_toHome(mainFrame.getGame()));
 
@@ -72,7 +72,7 @@ public class GameOver_Panel extends JPanel {
         }
         timeSeconds = mainFrame.getGame().getInGameTime() / 1000;
         scoreLabel.setText("Score : " + score);
-        timeLabel.setText("Temps : " + timeSeconds + "s");
+        timeLabel.setText("Time : " + timeSeconds + "s");
     }
 }
 
