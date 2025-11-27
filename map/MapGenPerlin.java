@@ -87,7 +87,7 @@ public class MapGenPerlin {
 }
 public int getBlockID(double structure, double content) {
         
-    if (structure > 0.10) {
+    if (structure > 0.001) {
         return Map.WALL; 
     }
     
