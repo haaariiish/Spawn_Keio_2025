@@ -54,10 +54,13 @@ public abstract class Enemy extends Moving_Entity{
 
     public Projectiles updateBehavior(Map map, Player player){
         tickCooldowns();
+        TimerUpdate();
         updateMovement(player);
         update(map);
         return attemptSpecialAction(player);
     }
+
+    
 
     protected abstract void updateMovement(Player player);
 
@@ -65,8 +68,6 @@ public abstract class Enemy extends Moving_Entity{
         return null;
     }
 
-    public void render(Graphics g,int x, int y){
-        g.fillOval((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
-        g.drawRect((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
-    }
+    public abstract void render(Graphics g,int x, int y );
+
 }

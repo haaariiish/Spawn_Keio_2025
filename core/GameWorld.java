@@ -77,7 +77,7 @@ public class GameWorld {
         
         //  spawn point
         Point spawn = map.getSpawnPoint();
-        player = new Player(spawn.x, spawn.y,20,20,100,1,1,100);
+        player = new Player(spawn.x, spawn.y,20,20,1000,10,1,100);
     }
 
     public void update(InputHandler input,int which_frame_in_cyle){
@@ -93,7 +93,7 @@ public class GameWorld {
         
         handlePlayerShooting(input);
         updateProjectiles();
-
+        
         handleCollisions();
         if (playerDamageCooldown > 0) {
             playerDamageCooldown--;
@@ -150,10 +150,10 @@ public class GameWorld {
         Projectiles proj ;
         switch(player.getProjectilesTypes()){
             case Simple_Projectiles:
-                proj = new Simple_Projectiles(player, 5, 5, 1);
+                proj = new Simple_Projectiles(player, 5, 5, 0.9);
                 break;
             default:
-                proj = new Simple_Projectiles(player, 3, 3, 5);
+                proj = new Simple_Projectiles(player, 3, 3,2);
                 break;
         }
         projectilesList.add(proj);
@@ -182,7 +182,7 @@ public class GameWorld {
  
     public void updateEnemiesSpawn(Map map){
         for (int i = map.getEnemySpawnPoints().size() - 1; i >= 0; i--) {
-            if (enemies.size()>10){
+            if (enemies.size()>100){
                 return ;
             }
             if (Math.random()<this.spawnEnemyproba){
@@ -206,6 +206,8 @@ public class GameWorld {
 
     public void handleCollisions(){
         Rectangle playerBounds = player.getBounds();
+
+
         for (int i = projectilesList.size() - 1; i >= 0; i--) {
             Projectiles proj = projectilesList.get(i);
             boolean hitSomething = false;
@@ -213,9 +215,17 @@ public class GameWorld {
                 player.take_damage(proj.getSourceEntity().getAttack());
                 hitSomething = true;
             }
+
             for (int j = enemies.size() - 1; j >= 0; j--) {
                 Enemy enemy = enemies.get(j);
                 if (proj.getSourceEntity() != enemy && proj.getBounds().intersects(enemy.getBounds())) {
+                    enemy.setJustKnockBack(true);
+                    enemy.setKnockBack(true);
+                    enemy.setStun(true);
+                    enemy.setKnockBackFrame(enemy.getKnockBackCoolDown());
+                    enemy.setStunFrame(enemy.getStunCoolDown());
+                    enemy.setKnockBackIntensity(enemy.getKnockBackIntensity()+(int) proj.getKnockBack());
+
                     enemy.take_damage(proj.getSourceEntity().getAttack());
                     hitSomething = true;
                 }

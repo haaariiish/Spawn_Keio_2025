@@ -1,11 +1,13 @@
 package entities;
 
 import java.awt.Graphics;
+import java.awt.Color;
 
 import input.InputHandler;
 import map.Map;
 
 public class Player extends Moving_Entity{
+    private static final Color COLOR_PLAYER = Color.BLACK;
     private String name = "Test_H";
 
     public Player(double x, double y, int width, int height, int hp, int attack, int defense,int range){
@@ -59,9 +61,13 @@ public class Player extends Moving_Entity{
     }
 
     public void render(Graphics g, int x, int y){
+        g.setColor(COLOR_PLAYER);
         g.fillOval(x, y, this.getWidthInPixels(), this.getHeightInPixels());
         g.drawRect(x, y, this.getWidthInPixels(), this.getHeightInPixels());
     }
+
+    
+    
 
     }
     

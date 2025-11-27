@@ -1,4 +1,6 @@
 package entities;
+import java.awt.Graphics;
+import java.awt.Color;
 
 public class Boss extends Enemy{
     private String name= "Boss A";
@@ -9,4 +11,12 @@ public class Boss extends Enemy{
     public void updateMovement(Player player){
         return;
     }
+    @Override
+    public void render(Graphics g,int x, int y){
+        /*g.setColor(Color.PURPLE)
+        g.fillOval((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
+        g.drawRect((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );*/
+        return;
+        }
+
 }

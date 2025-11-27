@@ -23,6 +23,11 @@ public abstract class Projectiles {
     private double y ;
     private double directionAngle;
 
+    private double recoil;
+    private double knockback;
+
+    private boolean hasToDestroy;
+
     private boolean bounce_able = false;
     // friction (to limitate the speed of the entity)
     private double friction ;
@@ -99,6 +104,14 @@ public abstract class Projectiles {
         return this.bounds;
     }
 
+    public double getRecoil(){
+        return this.recoil;
+    }
+
+    public double getKnockBack(){
+        return this.knockback;
+    }
+
 
     //SETTERS 
     public void setX(double x){
@@ -141,6 +154,14 @@ public abstract class Projectiles {
         this.bounds = new Rectangle((int) this.x,(int) this.y,this.width,this.height);
     }
 
+    public void setKnockBack(double back){
+        this.knockback = back;
+    }
+
+    public void setRecoil(double recoil){
+        this.recoil = recoil;
+    }
+
     protected void alignWithSource(){
         if (this.source_Entity == null || this.width == 0 || this.height == 0) {
             return;
@@ -160,11 +181,13 @@ public abstract class Projectiles {
     // SOME utils 
 
     public boolean isNotMoving(){
-        return (this.velocityX==0)&&(this.velocityY==0);
+        return (Math.abs(this.velocityX)<=0.1)&&(Math.abs(this.velocityY)<=0.1);
     }
-
+    public void setToDestroy(){
+        this.hasToDestroy=true;
+    }
     public boolean toDestroy(){
-        return isNotMoving()||(this.range_left==0);
+       return (isNotMoving()||(this.range_left==0))||(this.hasToDestroy);
     }
 
     // drawing 
@@ -172,6 +195,9 @@ public abstract class Projectiles {
     public abstract void render(Graphics g, int x, int y);
     
     }
+
+
+    
 
     
 

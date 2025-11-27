@@ -3,17 +3,9 @@ package core;
 import map.Map;
 import input.InputHandler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+
 
 import javax.swing.SwingUtilities;
-import java.awt.event.*;
-
-
-import org.w3c.dom.events.MouseEvent;
-
-import java.awt.Point;
 
 
 import entities.*;
@@ -151,7 +143,7 @@ public class Game implements Runnable {
                 }
             }
             //this.update(); depend on what I want to do with update ?
-            this.inputHandler.printPressedKeys();
+            // this.inputHandler.printPressedKeys(); // Print the pressed key
         }
     }
     private void handleStateChange() {

@@ -19,6 +19,29 @@ public class Basic_Entity {
 
     private Rectangle bound;
 
+
+    //Cycle for animation
+    private static int CYCLE_FRAME = 10;
+    private int whichFrame = 0;
+
+    // Frames for stun , weight and knockback
+    private static int STUN_COOLDOWN = 3;
+    private int actual_stuned_time = 0;
+    private boolean isStun = false;
+
+    private static int kNOCKBACK_COOLDOWN = 3;
+    private int actual_knockback_time = 0;
+    private boolean isKnockBack = false;
+    private int knockbackIntensity = 0;
+
+    // This indicate at which frame the impact between bullet and entity happens
+    private boolean justKnockBack = false; // 
+
+    private int weight = 1;
+    
+
+    // Temporary state for 
+
     // Stats -----------------------------------------------------------------
     private int hp=1;
     private int defense=1; // Same unit as hp for now
@@ -94,6 +117,39 @@ public class Basic_Entity {
         this.bound = new Rectangle((int) this.x,(int) this.y,width,height);
     }
 
+    public void setFrame(int f){
+        this.whichFrame = f;
+    }
+
+    public void setWeight(int w){
+        this.weight= w;
+    }
+
+    public void setStun(boolean s){
+        this.isStun = (actual_stuned_time>0);
+    }
+
+    public void setStunFrame(int f){
+        this.actual_stuned_time = f;
+    }
+
+
+    public void setKnockBack(boolean b){
+        this.isKnockBack = b;
+    }
+
+    public void setJustKnockBack(boolean b){
+        this.justKnockBack = b;
+    }
+
+    public void setKnockBackFrame(int f){
+        this.actual_knockback_time = f;
+    }
+
+    public void setKnockBackIntensity(int intensity){
+        this.knockbackIntensity = intensity;
+    }
+
 
     // Getters -----------------------------------------------------------------
     public double getX(){
@@ -155,10 +211,25 @@ public class Basic_Entity {
     // More Specific and practical
     public void take_damage(int damage){
         if (!is_undying){
-            this.hp -= damage;
+            this.hp -= damage-this.defense;
         }
         if (this.hp<0){
             this.is_dead=true;
+        }
+    }
+
+    public void TimerUpdate(){
+        if (this.actual_knockback_time>0){
+            this.actual_knockback_time-=1;
+            if (this.actual_knockback_time==0){
+                this.isKnockBack = false;
+            }
+        }
+        if (this.actual_stuned_time>0){
+            this.actual_stuned_time-=1;
+            if (this.actual_stuned_time==0){
+                this.isStun = false;
+            }
         }
     }
 
@@ -166,6 +237,49 @@ public class Basic_Entity {
     public Rectangle getBounds(){
         return this.bound;
     }
+
+    public int getFrame(){
+        return this.whichFrame;
+    }
+
+    public int getWeight(){
+        return weight;
+    }
+
+    public boolean getStun(){
+        return this.isStun;
+    }
+
+    public int getStunFrame(){
+        return this.actual_stuned_time;
+    }
+
+    public boolean getIsKnockBack(){
+        return this.isKnockBack;
+    }
+
+    public int getKnockBackFrame(){
+        return this.actual_knockback_time;
+    }
+
+    public boolean getJustKnockBack(){
+        return this.justKnockBack;
+    }
+
+    public int getStunCoolDown(){
+        return STUN_COOLDOWN;
+    }
+
+    public int getKnockBackCoolDown(){
+        return kNOCKBACK_COOLDOWN;
+    }
+
+    public int getKnockBackIntensity(){
+        return knockbackIntensity;
+    }
+
+
+
 
 
 }

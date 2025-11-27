@@ -40,8 +40,8 @@ public class Main_Panel extends JPanel{
 
     // Entity color
 
-    private static final Color COLOR_PLAYER = Color.BLACK;
-    private static final Color COLOR_ENEMY = Color.RED;
+
+
 
 
     private Frame1 mainFrame;
@@ -182,14 +182,14 @@ public class Main_Panel extends JPanel{
 
         // Enemies drawing
 
-        g.setColor(COLOR_ENEMY);
+        
         for (int i = mainFrame.getGame().getGameWorld().getEnemy().size()-1;i>=0;i--){
              mainFrame.getGame().getGameWorld().getEnemy().get(i).render(g, cameraX,cameraY);
         }
         
         // Draw the player 
 
-        g.setColor(COLOR_PLAYER);
+        
         mainFrame.getGame().getPlayer().render(g, playerScreenX, playerScreenY);
         //g.fillOval(playerScreenX,playerScreenY,mainFrame.getGame().getPlayer().getWidthInPixels(),mainFrame.getGame().getPlayer().getHeightInPixels());
         
@@ -206,7 +206,9 @@ public class Main_Panel extends JPanel{
 
     private void drawDebugInfo(Graphics2D g, Player player, int cameraX, int cameraY) {
         
-        g.setColor(Color.WHITE);
+        g.setColor(Color.GRAY);
+        g.fillRoundRect(0,0, 300, 230, 5, 5);
+        g.setColor(Color.BLACK);
         g.setFont(new Font("Monospaced", Font.PLAIN, 12));
         
         g.drawString(String.format("Player: (%.0f, %.0f)", player.getX(), player.getY()), 10, 20);

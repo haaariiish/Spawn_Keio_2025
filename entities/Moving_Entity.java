@@ -19,7 +19,7 @@ public class Moving_Entity extends Basic_Entity{
     private double friction = 0.85;
     private boolean is_moving = false;
 
-
+    // Weight and stun
 
     public Moving_Entity(){
         super();
@@ -121,7 +121,7 @@ public class Moving_Entity extends Basic_Entity{
     // Velocity update
 
     public void moveLeft() {
-        velocityX = -speed;
+        velocityX =- speed;
     }
     
     public void moveRight() {
@@ -129,7 +129,7 @@ public class Moving_Entity extends Basic_Entity{
     }
     
     public void moveUp() {
-        velocityY = -speed;
+        velocityY =- speed;
     }
     
     public void moveDown() {
@@ -148,6 +148,8 @@ public class Moving_Entity extends Basic_Entity{
         int tileY = (int)(this.getY() / tileSize);
         return new Point(tileX, tileY);
     }
+
+// 
 
 
     

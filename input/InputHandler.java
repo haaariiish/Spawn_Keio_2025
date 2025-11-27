@@ -37,7 +37,7 @@ public class InputHandler implements KeyListener, MouseListener, MouseMotionList
         }
         
         pressedKeys.add(key);
-        System.out.println("the following key has been pushed : "+  KeyEvent.getKeyText(e.getKeyCode()));
+        //System.out.println("the following key has been pushed : "+  KeyEvent.getKeyText(e.getKeyCode()));
     }
     
     @Override
