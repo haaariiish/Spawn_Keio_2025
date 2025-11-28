@@ -25,11 +25,11 @@ public class Basic_Entity {
     private int whichFrame = 0;
 
     // Frames for stun , weight and knockback
-    private static int STUN_COOLDOWN = 40;//20
+    private int STUN_COOLDOWN = 40;//20
     private int actual_stuned_time = 0;
     private boolean isStun = false;
 
-    private static int kNOCKBACK_COOLDOWN = 40;//20
+    private int kNOCKBACK_COOLDOWN = 40;//20
     private int actual_knockback_time = 0;
     private boolean isKnockBack = false;
     private int knockbackIntensity = 0;
@@ -155,6 +155,14 @@ public class Basic_Entity {
         this.impactDirection = dir;
     }
 
+    public void setStunCoolDown(int frames){
+        this.STUN_COOLDOWN = frames;
+    }
+
+    public void setKnockBackCoolDown(int frames){
+        this.kNOCKBACK_COOLDOWN = frames;
+    }
+
 
     // Getters -----------------------------------------------------------------
     public double getX(){
@@ -216,9 +224,14 @@ public class Basic_Entity {
     // More Specific and practical
     public void take_damage(int damage){
         if (!is_undying){
-            this.hp -= damage-this.defense;
+            // Prevent "healing" when defense > dazmage and clamp minimum damage to 0
+            int effectiveDamage = damage - this.defense;
+            if (effectiveDamage < 0) {
+                effectiveDamage = 0;
+            }
+            this.hp -= effectiveDamage;
         }
-        if (this.hp<0){
+        if (this.hp <= 0){
             this.is_dead=true;
         }
     }
@@ -228,6 +241,7 @@ public class Basic_Entity {
             this.actual_knockback_time-=1;
             if (this.actual_knockback_time==0){
                 this.isKnockBack = false;
+                this.knockbackIntensity = 0;
             }
         }
         if (this.actual_stuned_time>0){

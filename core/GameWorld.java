@@ -68,7 +68,7 @@ public class GameWorld {
         this.playerShootCooldown = 0;
         this.playerDamageCooldown = 0;
         map = new Map(this.worldWidth / this.tileSize, this.worldHeight / this.tileSize, this.tileSize);
-        map.createMapPerlinNoise();
+        map.createMapPerlinNoise(this.getGame().getOpenTime());
 
         // Initialisation of lists
 

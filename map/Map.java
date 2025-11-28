@@ -151,8 +151,8 @@ public class Map{
         tiles[0][10] = DOOR;
     }
 
-    public void createMapPerlinNoise(){
-        tiles = new MapGenPerlin(this.heightInTiles, this.widthInTiles).getTiles();
+    public void createMapPerlinNoise(long seed){
+        tiles = new MapGenPerlin(this.heightInTiles, this.widthInTiles, seed).getTiles();
     }
 
     // Utils ------------------------------------------------------------------------------

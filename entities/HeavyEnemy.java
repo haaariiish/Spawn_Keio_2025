@@ -6,8 +6,8 @@ import java.awt.Color;
 public class HeavyEnemy extends Enemy {
 
     public HeavyEnemy(double x, double y) {
-        super(x, y, 22, 22, 80, 6, 4, 40,(int) Math.round(4+Math.random()));
-        
+        super(x, y,19, 19, 80, 6, 4, 40,(int) Math.round(4+Math.random()));
+        setStunCoolDown(10);
     }
 
     protected void updateMovement(Player player) {

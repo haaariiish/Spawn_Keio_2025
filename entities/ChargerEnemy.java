@@ -7,11 +7,9 @@ public class ChargerEnemy extends Enemy {
 
     public ChargerEnemy(double x, double y) {
         super(x, y, 15, 15, 25, 2, 1, 30,(int) Math.round(8+Math.random()));
-
+        setStunCoolDown(20);
     }
 
-    
- 
     protected void updateMovement(Player player) {
         double vx = getVelocityX();
         double vy = getVelocityY();

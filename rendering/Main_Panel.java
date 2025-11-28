@@ -18,6 +18,7 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 
 
 
@@ -182,10 +183,12 @@ public class Main_Panel extends JPanel{
         int playerScreenY = screenHeight / 2 - player.getHeightInPixels() / 2;
 
         // Enemies drawing
-
-        
-        for (int i = mainFrame.getGame().getGameWorld().getEnemy().size()-1;i>=0;i--){
-             mainFrame.getGame().getGameWorld().getEnemy().get(i).render(g, cameraX,cameraY);
+        // Take a snapshot of the enemy list to avoid index issues if the game
+        // thread modifies the list while we are rendering on the EDT.
+        List<entities.Enemy> enemySnapshot =
+                new ArrayList<>(mainFrame.getGame().getGameWorld().getEnemy());
+        for (int i = enemySnapshot.size() - 1; i >= 0; i--) {
+            enemySnapshot.get(i).render(g, cameraX, cameraY);
         }
         
         // Draw the player 
@@ -195,9 +198,11 @@ public class Main_Panel extends JPanel{
         //g.fillOval(playerScreenX,playerScreenY,mainFrame.getGame().getPlayer().getWidthInPixels(),mainFrame.getGame().getPlayer().getHeightInPixels());
         
         // projectiles
-        List<Projectiles> projectilesList = mainFrame.getGame().getGameWorld().getListProjectiles();
-        for (int i = projectilesList.size() - 1; i >= 0; i--){
-            projectilesList.get(i).render(g, cameraX,cameraY);
+        // Use a snapshot for projectiles for the same reason as enemies.
+        List<Projectiles> projectilesSnapshot =
+                new ArrayList<>(mainFrame.getGame().getGameWorld().getListProjectiles());
+        for (int i = projectilesSnapshot.size() - 1; i >= 0; i--) {
+            projectilesSnapshot.get(i).render(g, cameraX, cameraY);
         }
 
         // DEBUG information just in case

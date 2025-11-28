@@ -1,6 +1,8 @@
 package map;
-import map.Map;
+
 import java.util.Random;
+
+
 
 public class MapGenPerlin {
 
@@ -12,12 +14,14 @@ public class MapGenPerlin {
     private int width;
     static final long SEED = 12345;
     public int[][] tiles;
+    public long seed = SEED;
 
-    public MapGenPerlin(int h, int w) {
+    public MapGenPerlin(int h, int w, long seed) {
         this.height = h;
         this.width = w;
+        this.seed = seed;
         tiles = new int[height][width];
-        PerlinNoise noiseGen = new PerlinNoise(SEED);
+        PerlinNoise noiseGen = new PerlinNoise(this.seed);
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 double structure = getFractalNoise(noiseGen, x, y, 0.05, 4);
@@ -25,6 +29,7 @@ public class MapGenPerlin {
                 tiles[y][x] = getBlockID(structure, content);
             }
         }
+        placeMapBound();
         placeSpawn();
 
     }
@@ -121,6 +126,16 @@ public int getBlockID(double structure, double content) {
         }
     }
 }
+    public void placeMapBound(){
+        for(int y = 0; y < height; y++){
+            tiles[y][0] =Map.WALL;
+            tiles[y][width-1] =Map.WALL;
+        }
+        for(int x = 0; x < width; x++){
+            tiles[0][x] = Map.WALL;
+            tiles[height-1][x ] = Map.WALL;
+        }
+    }
 }
 
 
