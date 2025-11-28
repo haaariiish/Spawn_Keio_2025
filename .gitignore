@@ -1,6 +1,6 @@
 # Ignore log files
 
-*log.txt
+*log*.txt
 
 # Ignore trash files
 .DS_Store
