@@ -44,6 +44,7 @@ public class Basic_Entity {
 
     // Stats -----------------------------------------------------------------
     private int hp=1;
+    private int max_hp =1;
     private int defense=1; // Same unit as hp for now
     private int attack=1; // Same unit as hp for now
     private int range=1; // in pixel
@@ -161,6 +162,10 @@ public class Basic_Entity {
 
     public void setKnockBackCoolDown(int frames){
         this.kNOCKBACK_COOLDOWN = frames;
+    }
+
+    public void setMaxHp(int max){
+        this.max_hp = max;
     }
 
 
@@ -299,6 +304,10 @@ public class Basic_Entity {
 
     public double getImpactDirection(){
         return this.impactDirection;
+    }
+
+    public int getMaxHP(){
+        return this.max_hp;
     }
 
 

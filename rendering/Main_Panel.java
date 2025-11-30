@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
+import java.awt.BasicStroke;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
@@ -212,14 +213,35 @@ public class Main_Panel extends JPanel{
 
     private void drawDebugInfo(Graphics2D g, Player player, int cameraX, int cameraY) {
         
-        g.setColor(Color.GRAY);
-        float alpha = 0.6f;
-        AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+        AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f);
         g.setComposite(ac);
-        g.fillRoundRect(0,0, 300, 230, 5, 5);
-        g.setColor(Color.BLACK);
+        //HP BAR
+        g.setColor(Color.YELLOW);
+        g.setStroke(new BasicStroke(3.0f));
+        g.drawRoundRect(getWidth()-310,10, 300, 30, 5, 5);
+        g.setColor(new Color(170, 27, 35));
+        g.fillRoundRect(getWidth()-310,10, 300, 30, 5, 5);
+        g.setColor(new Color(227, 27, 35));
+        g.fillRoundRect(getWidth()-310,10,(int) (300*player.getHP()/player.getMaxHP()), 30, 5, 5);
+        
         ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f);
         g.setComposite(ac);
+        g.setColor(Color.GRAY);
+        g.fillRoundRect(getWidth()-310,45, 300, 45, 5, 5);
+        g.setColor(Color.white);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 30));
+        g.drawString("Score: "+this.mainFrame.getGame().getGameWorld().getScore(),getWidth()-310, 80);
+        
+
+        // Rectangle where there are a lot of state
+        g.setColor(Color.GRAY);
+        ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f);
+        g.setComposite(ac);
+        g.fillRoundRect(0,0, 300, 230, 5, 5);
+
+        ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f);
+        g.setComposite(ac);
+        g.setColor(Color.BLACK);
         g.setFont(new Font("Monospaced", Font.PLAIN, 12));
         
         g.drawString(String.format("Player: (%.0f, %.0f)", player.getX(), player.getY()), 10, 20);
@@ -230,7 +252,7 @@ public class Main_Panel extends JPanel{
         //System.out.println("Facing: "+this.mainFrame.getGame().getPlayer().getFacing());
         //System.out.println("HP"+ this.mainFrame.getGame().getPlayer().getHP());
         g.drawString("Facing: "+this.mainFrame.getGame().getPlayer().getFacing(), 10, 65);
-        g.drawString("HP: "+this.mainFrame.getGame().getPlayer().getHP() ,10, 80);
+        //g.drawString("HP: "+this.mainFrame.getGame().getPlayer().getHP() ,10, 80);
         g.drawString("Defense: "+this.mainFrame.getGame().getPlayer().getDefense() ,10, 95);
         g.drawString("Attack: "+this.mainFrame.getGame().getPlayer().getAttack() ,10, 110);
         g.drawString("Speed: "+this.mainFrame.getGame().getPlayer().getSpeed() ,10, 125);
@@ -238,7 +260,7 @@ public class Main_Panel extends JPanel{
         g.drawString("Opened Time: "+this.mainFrame.getGame().getOpenTime() ,10, 165);
         g.drawString("In Game Time: "+this.mainFrame.getGame().getInGameTime() ,10, 180);
         g.drawString("Number of Enemy in the Area "+this.mainFrame.getGame().getGameWorld().getEnemy().size(),10, 195);
-        g.drawString("Score: "+this.mainFrame.getGame().getGameWorld().getScore(),10, 210);
+        //g.drawString("Score: "+this.mainFrame.getGame().getGameWorld().getScore(),10, 210);
     }
 
 

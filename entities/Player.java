@@ -14,6 +14,7 @@ public class Player extends Moving_Entity{
     public Player(double x, double y, int width, int height, int hp, int attack, int defense,int range){
         super();
         this.setHP(hp);
+        this.setMaxHp(hp);
         this.setAttack(attack);
         this.setDefense(defense);
         this.setX(x);
@@ -31,8 +32,6 @@ public class Player extends Moving_Entity{
         // 2. Apply the movement
         this.update(map);
     }
-
-
 
     // Input managing
 

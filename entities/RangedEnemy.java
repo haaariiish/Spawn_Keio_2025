@@ -50,8 +50,8 @@ public class RangedEnemy extends Enemy {
 
     @Override
     protected Projectiles attemptSpecialAction(Player player) {
-        System.out.println(this.getStun());
-        if (!this.getStun()){
+        //System.out.println(this.getStun());
+        if (!this.getStun()){ // If not stun can perform his special action
         double distance = Math.hypot(player.getX() - this.getX(), player.getY() - this.getY());
         if (distance <= fireRange && isShootReady()) {
             resetShootCooldown();

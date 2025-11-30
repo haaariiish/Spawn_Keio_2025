@@ -7,10 +7,12 @@ import map.Map;
 public abstract class Enemy extends Moving_Entity{
     private int shootCooldownFrames;
     private int shootCooldown;
+    private EnemyStates state ;
 
     public Enemy(double x, double y, int width, int height, int hp, int attack, int defense,int range,int speed){
         super();
         this.setHP(hp);
+        this.setMaxHp(hp);
         this.setAttack(attack);
         this.setDefense(defense);
         this.setRange(range);
@@ -63,15 +65,13 @@ public abstract class Enemy extends Moving_Entity{
         return attemptSpecialAction(player);
     }
 
-    
-
-    protected abstract void updateMovement(Player player);
+    protected abstract void updateMovement(Player player); // I want them to move differently for each enemies
 
     protected Projectiles attemptSpecialAction(Player player){
         return null;
     }
 
-    public abstract void render(Graphics g,int x, int y );
+    public abstract void render(Graphics g,int x, int y ); // Abstract method to make each enemy unique
 
     
 

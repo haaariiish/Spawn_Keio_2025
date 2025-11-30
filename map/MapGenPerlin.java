@@ -101,15 +101,15 @@ public class MapGenPerlin {
         return Map.WALL; 
     }
     
-    if (content < 0.25) {
+    if (content < 0.20) {
         return Map.EMPTY;
     }
 
-    if (content > 0.60) {
-        return Map.WATER; 
+    if (content > 0.30) {
+        return Map.SPIKE; 
     }
     if (content > 0.90) {
-        return Map.SPIKE; 
+        return Map.WATER; 
     }
     return Map.ENEMY_SPAWN; 
 }
@@ -151,7 +151,7 @@ public class MapGenPerlin {
                 if(j!=i){
                     Room room2 = rooms.get(j);
                     if ((room2.centerX-room1.centerX)*(room2.centerX-room1.centerX) + (room2.centerY-room1.centerY)*(room2.centerY-room1.centerY)<1000) {
-                        createConnectionSimple(room1.centerX,room1.centerY,room2.centerX,room2.centerY, tiles, 0.05f);
+                        createConnectionSimple(room1.centerX,room1.centerY,room2.centerX,room2.centerY, tiles, 0.01f);
                     }
                 }
             }

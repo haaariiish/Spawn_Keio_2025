@@ -26,7 +26,7 @@ public class GameWorld {
     private List<Enemy> enemies;
     private Game game;
 
-    private double spawnEnemyproba=0.2;
+    private double spawnEnemyproba=0.01;
     //private Boss currentBoss;
     private List<Projectiles> projectilesList;
     //private List<Projectile> enemyProjectiles;
