@@ -1,6 +1,10 @@
 package map;
 
 import java.util.Random;
+import java.util.Queue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ArrayDeque;
 
 
 
@@ -29,6 +33,7 @@ public class MapGenPerlin {
                 tiles[y][x] = getBlockID(structure, content);
             }
         }
+        createCorridor();
         placeMapBound();
         placeSpawn();
 
@@ -90,9 +95,9 @@ public class MapGenPerlin {
 
 
 }
-public int getBlockID(double structure, double content) {
+    public int getBlockID(double structure, double content) {
         
-    if (structure > 0.001) {
+    if (structure > 0.00001) {
         return Map.WALL; 
     }
     
@@ -136,7 +141,192 @@ public int getBlockID(double structure, double content) {
             tiles[height-1][x ] = Map.WALL;
         }
     }
+
+    public void createCorridor(){
+        List<Room> rooms = identifyRooms(tiles, width, height, 6);
+        for (int i=0;i<rooms.size();i++ ){
+            Room room1 = rooms.get(i);
+            for (int j=0;j<rooms.size();j++){
+
+                if(j!=i){
+                    Room room2 = rooms.get(j);
+                    if ((room2.centerX-room1.centerX)*(room2.centerX-room1.centerX) + (room2.centerY-room1.centerY)*(room2.centerY-room1.centerY)<1000) {
+                        createConnectionSimple(room1.centerX,room1.centerY,room2.centerX,room2.centerY, tiles, 0.05f);
+                    }
+                }
+            }
+        }   
+    }
+
+    public void createConnectionSimple(int x1, int y1, int x2, int y2, int[][] tiles, float randomness){
+        Random r = new Random();
+        int currentX = x1;
+        int currentY = y1;
+
+        // avoid a infinite loop
+        int maxSteps = (Math.abs(x1 - x2) + Math.abs(y1 - y2)) * 3; 
+        int steps = 0;
+
+        while ((currentX != x2 || currentY != y2) && steps < maxSteps) {
+            int dx = x2 - currentX;
+            int dy = y2 - currentY;
+
+
+
+            boolean moveX = false;
+            boolean moveY = false;
+            float totalDist = Math.abs(dx) + Math.abs(dy);
+
+
+            if (dx == 0) moveY = true;
+            else if (dy == 0) moveX = true;
+            else {
+                
+                float chanceX = Math.abs(dx) / totalDist;
+                
+                
+                if (r.nextFloat() < chanceX) {
+                    
+                    if (r.nextFloat() > randomness) moveX = true; 
+                    else moveY = true; 
+                } else {
+                    
+                    if (r.nextFloat() > randomness) moveY = true; 
+                    else moveX = true; 
+                }
+            }
+
+            
+
+            if (moveX) {
+                currentX += Integer.signum(dx);
+            } else if (moveY) {
+                currentY += Integer.signum(dy);
+            }
+
+            if (tiles[currentY][currentX]==Map.WALL){
+                tiles[currentY][currentX] = Map.EMPTY;
+            }
+
+
+
+            steps++;
+    }
 }
+
+
+
+    
+
+        // Structure légère pour stocker les infos d'une salle sans copier tous les blocs
+        public static class Room {
+            public int id;
+            public int size; // Nombre de blocs
+            public int centerX, centerY; // Pour relier les salles plus tard
+            
+            public Room(int id) { this.id = id; }
+        }
+        public static List<Room> identifyRooms(int[][] map, int width, int height, int minRoomSize) {
+            List<Room> rooms = new ArrayList<>();
+            
+            // IDs Table to know which tiles are in which "rooms"
+            // 0 = visited, >0 = ID of the room
+            int[][] roomIds = new int[width][height]; 
+            int nextId = 1;
+    
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    
+                    // if EMPTY and not processed
+                    if (map[x][y] == Map.EMPTY && roomIds[x][y] == 0) {
+                        
+                        // FLOOD FILL
+                        Room currentRoom = new Room(nextId);
+                        int tilesCount = 0;
+                        long sumX = 0, sumY = 0; // calculate the center
+    
+                        
+                        Queue<Integer> q = new ArrayDeque<>();
+                        q.add(x + y * width);
+                        roomIds[x][y] = nextId;
+    
+                        while (!q.isEmpty()) {
+                            int index = q.poll();
+                            int cx = index % width;
+                            int cy = index / width;
+    
+                            tilesCount++;
+                            sumX += cx;
+                            sumY += cy;
+    
+                            // verify neighbors
+                            checkNeighbor(map, roomIds, width, height, q, cx + 1, cy, nextId);
+                            checkNeighbor(map, roomIds, width, height, q, cx - 1, cy, nextId);
+                            checkNeighbor(map, roomIds, width, height, q, cx, cy + 1, nextId);
+                            checkNeighbor(map, roomIds, width, height, q, cx, cy - 1, nextId);
+                        }
+                        if (tilesCount >= minRoomSize) {
+                            // if it s a true room 
+                            currentRoom.size = tilesCount;
+                            currentRoom.centerX = (int)(sumX / tilesCount);
+                            currentRoom.centerY = (int)(sumY / tilesCount);
+                            rooms.add(currentRoom);
+                            nextId++;
+                        } else {
+                            // if too small we don't keep it
+                            fillRoomWithWall(map, roomIds, x, y, width,height, nextId); 
+                            
+                        }
+                    }
+                }
+            }
+            return rooms;
+        }
+
+        private static void checkNeighbor(int[][] map, int[][] roomIds, int w, int h, Queue<Integer> q, int x, int y, int id) {
+            if (x >= 0 && x < w && y >= 0 && y < h) {
+                if (map[x][y] == 0 /* EMPTY */ && roomIds[x][y] == 0) {
+                    roomIds[x][y] = id; // Marquer comme visité tout de suite
+                    q.add(x + y * w);
+                }
+            }
+        }
+        private static void fillRoomWithWall(int[][] map, int[][] roomIds, int startX, int startY, int w,int h, int idToFill) {
+
+                        
+                        Queue<Integer> q = new ArrayDeque<>();
+                        q.add(startX + startY * w);
+                        
+                        while (!q.isEmpty()) {
+                            int index = q.poll();
+                            int cx = index % w;
+                            int cy = index / w;
+                            if (map[cx][cy] == 1 /* WALL */) {
+                                continue;
+                            }                            
+                            map[cx][cy] = 1; // WALL
+                    
+                            //we check only the neighbor with the same Id
+                            pushIfSameRoom(q, map, roomIds, cx + 1, cy, w, h, idToFill);
+                            pushIfSameRoom(q, map, roomIds, cx - 1, cy, w, h, idToFill);
+                            pushIfSameRoom(q, map, roomIds, cx, cy + 1, w, h, idToFill);
+                            pushIfSameRoom(q, map, roomIds, cx, cy - 1, w, h, idToFill);
+                        }
+                    }
+                    
+                    // utils for the loop
+                    private static void pushIfSameRoom(Queue<Integer> q, int[][] map, int[][] roomIds, int x, int y, int w, int h, int targetId) {
+                        // Check map boundaries
+                        if (x >= 0 && x < w && y >= 0 && y < h) {
+                           // if the same room and still empty
+                            if (roomIds[x][y] == targetId && map[x][y] == 0 /* EMPTY */) {
+                                q.add(x + y * w);
+                            }
+                        }
+                    }
+       
+
+    }
 
 
 

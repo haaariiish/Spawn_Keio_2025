@@ -9,6 +9,7 @@ import entities.Boss;
 import entities.ChargerEnemy;
 import entities.Enemy;
 import entities.HeavyEnemy;
+import entities.Moving_Entity;
 import entities.Player;
 import entities.Projectiles;
 import entities.RangedEnemy;
@@ -77,11 +78,11 @@ public class GameWorld {
         
         //  spawn point
         Point spawn = map.getSpawnPoint();
-        player = new Player(spawn.x, spawn.y,20,20,1000,10,1,100);
+        player = new Player(spawn.x, spawn.y,19,19,1000,10,1,100);
     }
 
     public void update(InputHandler input,int which_frame_in_cyle){
-        this.player.update_input(this.map, input);
+        this.player.update_input(this.map, input,new ArrayList<Moving_Entity> (this.enemies));
         //System.out.println("Player bounds: " + this.player.getBounds());
         updateEnemiesPosition(this.map,this.player);
         if (which_frame_in_cyle%5==0){ // If we are in a precise moment, the game will try to make spawn some enemies
@@ -173,7 +174,7 @@ public class GameWorld {
     public void updateEnemiesPosition(Map map, Player player){
         for (int i = enemies.size() - 1; i >= 0; i--) {
             Enemy enemy = enemies.get(i);
-            Projectiles shot = enemy.updateBehavior(map, player);
+            Projectiles shot = enemy.updateBehavior(map, player,new ArrayList<Moving_Entity>(enemies));
             if (shot != null) {
                 projectilesList.add(shot);
             }
@@ -225,7 +226,7 @@ public class GameWorld {
                     enemy.setStun(true);
                     enemy.setKnockBackFrame(enemy.getKnockBackCoolDown());
                     enemy.setStunFrame(enemy.getStunCoolDown());
-                    enemy.setKnockBackIntensity(enemy.getKnockBackIntensity()+(int) proj.getKnockBack());
+                    enemy.setKnockBackIntensity(enemy.getKnockBackIntensity()+(int) proj.getKnockBack() * 10);
                     enemy.setImpactDirection(proj.getDirectionAngle());
                     enemy.take_damage(proj.getSourceEntity().getAttack());
                     hitSomething = true;

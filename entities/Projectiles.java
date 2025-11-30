@@ -8,29 +8,40 @@ import java.text.Normalizer.Form;
 
 public abstract class Projectiles {
     
+    //which enity shoot that
     private Basic_Entity source_Entity;
 
-
+    // boundaries
     private Rectangle bounds;
-    // Direction of speed
+    // how many times the projectile exist ( can be usefull in the future)
     private int living_time;
-    private double velocityX  ; 
+    //velocity 
+    private double velocityX  ;
     private double velocityY  ;
+    // Range is not the range but the time (frames) that left to exist before being removed
     private int range_left; 
+    // Dimension
     private int width ;
     private int height ;
+    //pos
     private double x;
     private double y ;
+    // Angle
     private double directionAngle;
 
-    private double recoil;
-    private double knockback;
+    // Some characteristics of the projectiles for the physics of the game
 
-    private boolean hasToDestroy;
+    private double recoil; // the shooting recoil (not implemented)
+    private double knockback; // knockback taken by the entity because of the shoot of enemy
+    private boolean bounce_able = false;// Not used but the goal was to make bounce_able projectiles 
+    private int penetration = 0; 
+    private double friction ;  // friction (to limitate the speed of the entity)
+    
+    private boolean hasToDestroy; // is true, in GameWorld we remove the projectile from the list of projectiles
 
-    private boolean bounce_able = false;
-    // friction (to limitate the speed of the entity)
-    private double friction ;
+    
+    
+    
 
     public Projectiles(Basic_Entity source){
         this.source_Entity = source;
@@ -162,6 +173,7 @@ public abstract class Projectiles {
         this.recoil = recoil;
     }
 
+    // to align the proejctiles with the source
     protected void alignWithSource(){
         if (this.source_Entity == null || this.width == 0 || this.height == 0) {
             return;
@@ -186,6 +198,8 @@ public abstract class Projectiles {
     public void setToDestroy(){
         this.hasToDestroy=true;
     }
+
+    // call this function to define which projectiles to destroy 
     public boolean toDestroy(){
        return (isNotMoving()||(this.range_left==0))||(this.hasToDestroy);
     }

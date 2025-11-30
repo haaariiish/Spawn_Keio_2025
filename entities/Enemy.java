@@ -1,7 +1,7 @@
 package entities;
 
 import java.awt.Graphics;
-
+import java.util.List;
 import map.Map;
 
 public abstract class Enemy extends Moving_Entity{
@@ -52,11 +52,13 @@ public abstract class Enemy extends Moving_Entity{
         }
     }
 
-    public Projectiles updateBehavior(Map map, Player player){
+    public Projectiles updateBehavior(Map map, Player player, List<Moving_Entity> movingEntity){
         tickCooldowns();
         TimerUpdate();
         gotKnockback();
         updateMovement(player);
+        movingEntity.add(player) ;
+        update_collision_withEntities(movingEntity, map);
         update(map);
         return attemptSpecialAction(player);
     }

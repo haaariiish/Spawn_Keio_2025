@@ -2,6 +2,7 @@ package entities;
 
 import java.awt.Graphics;
 import java.awt.Color;
+import java.util.List;
 
 import input.InputHandler;
 import map.Map;
@@ -22,11 +23,12 @@ public class Player extends Moving_Entity{
         this.setBounds();
     }
 
-    public void update_input(Map map, InputHandler input) {
-        // 1. Gérer les inputs
+    public void update_input(Map map, InputHandler input, List<Moving_Entity> movingEntity) {
+        // 1. handle input
         handleInput(input);
-        
-        // 2. Appliquer le mouvement avec collision
+        //update the collision first
+        update_collision_withEntities(movingEntity, map);
+        // 2. Apply the movement
         this.update(map);
     }
 
@@ -64,6 +66,7 @@ public class Player extends Moving_Entity{
         }
     }
 
+    //  Rendering
     public void render(Graphics g, int x, int y){
         g.setColor(COLOR_PLAYER);
         g.fillOval(x, y, this.getWidthInPixels(), this.getHeightInPixels());
