@@ -22,7 +22,7 @@ echo "Compiling Java sources..."
 # Utiliser -sourcepath . pour permettre la résolution des packages
 javac -d bin -sourcepath . $JAVA_SOURCES
 mkdir -p bin/assets
-cp assets/*.* bin/assets/
+cp src/assets/*.* bin/assets/
 
 echo "Compilation terminée. Pour lancer :"
 echo "  java -cp bin core.Game "
