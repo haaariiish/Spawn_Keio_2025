@@ -19,6 +19,7 @@ public class MapGenPerlin {
     static final long SEED = 12345;
     public int[][] tiles;
     public long seed = SEED;
+    private List<Room> rooms_coordinates;
 
     public MapGenPerlin(int h, int w, long seed) {
         this.height = h;
@@ -33,7 +34,7 @@ public class MapGenPerlin {
                 tiles[y][x] = getBlockID(structure, content);
             }
         }
-        createCorridor();
+        rooms_coordinates = createCorridor();
         placeMapBound();
         placeSpawn();
 
@@ -43,6 +44,9 @@ public class MapGenPerlin {
         return this.tiles;
     }
 
+    public List<Room> getRooms(){
+        return this.rooms_coordinates;
+    }
 
     static double getFractalNoise(PerlinNoise gen, double x, double y, double frequency, int octaves) {
         double total = 0;
@@ -116,21 +120,27 @@ public class MapGenPerlin {
 
     public void placeSpawn(){
         double proba = 0.3;
-        while(true){
-        System.out.println("La boucle continue ");
+        // Remove infinite loop and System.out.println to reduce CodeCache usage
+        for (int attempt = 0; attempt < 1000; attempt++) { // Max 1000 attempts
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    if (Math.random() < proba && tiles[y][x] == Map.EMPTY) {
+                        tiles[y][x] = Map.SPAWN;
+                        return;
+                    }
+                }
+            }
+        }
+        // Fallback: place spawn at first empty tile found
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (tiles[y][x]==Map.EMPTY){
-                    System.out.println("x = "+x +" and y =" +y);
-                }
-                if(Math.random()<proba&&tiles[y][x]==Map.EMPTY){
-                    tiles[y][x]=Map.SPAWN;
+                if (tiles[y][x] == Map.EMPTY) {
+                    tiles[y][x] = Map.SPAWN;
                     return;
                 }
             }
         }
     }
-}
     public void placeMapBound(){
         for(int y = 0; y < height; y++){
             tiles[y][0] =Map.WALL;
@@ -142,24 +152,28 @@ public class MapGenPerlin {
         }
     }
 
-    public void createCorridor(){
-        List<Room> rooms = identifyRooms(tiles, width, height, 6);
-        for (int i=0;i<rooms.size();i++ ){
-            Room room1 = rooms.get(i);
-            for (int j=0;j<rooms.size();j++){
+    public List<Room> createCorridor(){
+        this.rooms_coordinates = identifyRooms(tiles, width, height, 6);
+        for (int i=0;i<rooms_coordinates.size();i++ ){
+            Room room1 = rooms_coordinates.get(i);
+            for (int j=0;j<rooms_coordinates.size();j++){
 
                 if(j!=i){
-                    Room room2 = rooms.get(j);
+                    Room room2 = rooms_coordinates.get(j);
                     if ((room2.centerX-room1.centerX)*(room2.centerX-room1.centerX) + (room2.centerY-room1.centerY)*(room2.centerY-room1.centerY)<1000) {
                         createConnectionSimple(room1.centerX,room1.centerY,room2.centerX,room2.centerY, tiles, 0.01f);
                     }
                 }
             }
         }   
+        return rooms_coordinates;
     }
 
+    // Reuse Random instance to avoid allocations
+    private static final Random connectionRandom = new Random();
+    
     public void createConnectionSimple(int x1, int y1, int x2, int y2, int[][] tiles, float randomness){
-        Random r = new Random();
+        Random r = connectionRandom;
         int currentX = x1;
         int currentY = y1;
 
@@ -208,24 +222,12 @@ public class MapGenPerlin {
                 tiles[currentY][currentX] = Map.EMPTY;
             }
 
-
-
             steps++;
     }
 }
 
 
-
-    
-
-        // Structure légère pour stocker les infos d'une salle sans copier tous les blocs
-        public static class Room {
-            public int id;
-            public int size; // Nombre de blocs
-            public int centerX, centerY; // Pour relier les salles plus tard
-            
-            public Room(int id) { this.id = id; }
-        }
+        // Structure légère pour stocker les infos d'une salle sans copier tous les blocs 
         public static List<Room> identifyRooms(int[][] map, int width, int height, int minRoomSize) {
             List<Room> rooms = new ArrayList<>();
             

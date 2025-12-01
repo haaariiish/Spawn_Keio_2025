@@ -124,124 +124,115 @@ public class Moving_Entity extends Basic_Entity{
     }
 
     public void update_collision_withEntities(List<Moving_Entity> moving_Entities, Map map) {
-        for (int i = 0; i < moving_Entities.size(); i++) {
+        int size = moving_Entities.size();
+        Rectangle thisBounds = this.getBounds();
+        double thisX = this.getX();
+        double thisY = this.getY();
+        int thisWidth = this.getWidthInPixels();
+        int thisHeight = this.getHeightInPixels();
+        double thisCenterX = thisX + thisWidth * 0.5;
+        double thisCenterY = thisY + thisHeight * 0.5;
+        
+        for (int i = 0; i < size; i++) {
             Moving_Entity other = moving_Entities.get(i);
             if (other == this) {
                 continue;
             }
             
-            Rectangle thisBounds = this.getBounds();
             Rectangle otherBounds = other.getBounds();
+            if (!thisBounds.intersects(otherBounds)) {
+                continue;
+            }
             
-            if (thisBounds.intersects(otherBounds)) {
-                // Calculate the centers of the two entities
-                double thisCenterX = this.getX() + this.getWidthInPixels() / 2.0;
-                double thisCenterY = this.getY() + this.getHeightInPixels() / 2.0;
-                double otherCenterX = other.getX() + other.getWidthInPixels() / 2.0;
-                double otherCenterY = other.getY() + other.getHeightInPixels() / 2.0;
-                
-                // separation vector
-                double dx = thisCenterX - otherCenterX;
-                double dy = thisCenterY - otherCenterY;
-                double distance = Math.sqrt(dx * dx + dy * dy);
-                
-                // avoid a division by zero error
-                if (distance < 0.001) {
-                    // if the entities are exactly at the same place, separate randomly
-                    dx = Math.random() - 0.5;
-                    dy = Math.random() - 0.5;
-                    distance = Math.sqrt(dx * dx + dy * dy);
-                }
-                
-                // normalize the vector 
-                double nx = dx / distance;
-                double ny = dy / distance;
-                
-                // calculate the depth of the intersection
-                double overlapX = Math.min(
-                    this.getX() + this.getWidthInPixels() - other.getX(),
-                    other.getX() + other.getWidthInPixels() - this.getX()
-                );
-                double overlapY = Math.min(
-                    this.getY() + this.getHeightInPixels() - other.getY(),
-                    other.getY() + other.getHeightInPixels() - this.getY()
-                );
-                
-                // use the smallest overlap for the separation
-                double minOverlap = Math.min(overlapX, overlapY);
-                
-                // calculate the relative weights
-                double thisWeight = this.getWeight();
-                double otherWeight = other.getWeight();
-                double totalWeight = thisWeight + otherWeight;
-                
-                if (totalWeight < 0.001) {
-                    totalWeight = 2.0; // avoid a division by zero error
-                }
-                
-                // Limit the separation to avoid crossing walls
-                // use 50% of the overlap for the immediate separation
-                double separationDistance = Math.min(minOverlap * 0.5, 2.0); // Max 2 pixels of separation
-                double thisSeparation = separationDistance * (otherWeight / totalWeight);
-                double otherSeparation = separationDistance * (thisWeight / totalWeight);
-                
-                // try to separate this entity only if it doesn't cause a collision with a wall
-                double newX = this.getX() + nx * thisSeparation;
-                double newY = this.getY() + ny * thisSeparation;
-                if (map != null && !map.collidesWithWall((int)newX, (int)newY, this.getWidthInPixels(), this.getHeightInPixels())) {
+            // Calculate other entity properties once
+            double otherX = other.getX();
+            double otherY = other.getY();
+            int otherWidth = other.getWidthInPixels();
+            int otherHeight = other.getHeightInPixels();
+            double otherCenterX = otherX + otherWidth * 0.5;
+            double otherCenterY = otherY + otherHeight * 0.5;
+            
+            // Separation vector
+            double dx = thisCenterX - otherCenterX;
+            double dy = thisCenterY - otherCenterY;
+            double distanceSq = dx * dx + dy * dy;
+            
+            // Avoid division by zero
+            if (distanceSq < 0.000001) {
+                dx = Math.random() - 0.5;
+                dy = Math.random() - 0.5;
+                distanceSq = dx * dx + dy * dy;
+            }
+            double distance = Math.sqrt(distanceSq);
+            double invDistance = 1.0 / distance;
+            double nx = dx * invDistance;
+            double ny = dy * invDistance;
+            
+            // Calculate overlap
+            double overlapX = Math.min(thisX + thisWidth - otherX, otherX + otherWidth - thisX);
+            double overlapY = Math.min(thisY + thisHeight - otherY, otherY + otherHeight - thisY);
+            double minOverlap = Math.min(overlapX, overlapY);
+            
+            // Calculate weights
+            double thisWeight = this.getWeight();
+            double otherWeight = other.getWeight();
+            double totalWeight = (thisWeight + otherWeight < 0.001) ? 2.0 : (thisWeight + otherWeight);
+            double thisImpulseFactor = otherWeight / totalWeight;
+            double otherImpulseFactor = thisWeight / totalWeight;
+            
+            // Limit separation
+            double separationDistance = Math.min(minOverlap * 0.5, 2.0);
+            double thisSeparation = separationDistance * thisImpulseFactor;
+            double otherSeparation = separationDistance * otherImpulseFactor;
+            
+            // Try to separate entities (check walls)
+            if (map != null) {
+                double newX = thisX + nx * thisSeparation;
+                double newY = thisY + ny * thisSeparation;
+                if (!map.collidesWithWall((int)newX, (int)newY, thisWidth, thisHeight)) {
                     this.setX(newX);
                     this.setY(newY);
                     this.setBounds();
                 }
                 
-                // try to separate the other entity only if it doesn't cause a collision with a wall
-                double otherNewX = other.getX() - nx * otherSeparation;
-                double otherNewY = other.getY() - ny * otherSeparation;
-                if (map != null && !map.collidesWithWall((int)otherNewX, (int)otherNewY, other.getWidthInPixels(), other.getHeightInPixels())) {
+                double otherNewX = otherX - nx * otherSeparation;
+                double otherNewY = otherY - ny * otherSeparation;
+                if (!map.collidesWithWall((int)otherNewX, (int)otherNewY, otherWidth, otherHeight)) {
                     other.setX(otherNewX);
                     other.setY(otherNewY);
                     other.setBounds();
                 }
+            }
+            
+            // Apply repulsion force
+            double repulsionStrength = Math.min(minOverlap * 0.3, 5.0);
+            double repulseX = nx * repulsionStrength;
+            double repulseY = ny * repulsionStrength;
+            
+            double thisVx = this.getVelocityX();
+            double thisVy = this.getVelocityY();
+            double otherVx = other.getVelocityX();
+            double otherVy = other.getVelocityY();
+            
+            this.setVelocityX(thisVx + repulseX * thisImpulseFactor);
+            this.setVelocityY(thisVy + repulseY * thisImpulseFactor);
+            other.setVelocityX(otherVx - repulseX * otherImpulseFactor);
+            other.setVelocityY(otherVy - repulseY * otherImpulseFactor);
+            
+            // Adjust velocities if approaching
+            double relativeVelX = thisVx - otherVx;
+            double relativeVelY = thisVy - otherVy;
+            double dotProduct = relativeVelX * nx + relativeVelY * ny;
+            
+            if (dotProduct < 0) {
+                double impulse = dotProduct * 0.4;
+                double impulseX = impulse * nx;
+                double impulseY = impulse * ny;
                 
-                // adjust the velocities to create a repulsion force
-                // Repulsion force based on the overlap
-                double repulsionStrength = Math.min(minOverlap * 0.3, 5.0); // Limit max force
-                
-                // calculate the inverse weights for the force distribution
-                double thisImpulseFactor = otherWeight / totalWeight;
-                double otherImpulseFactor = thisWeight / totalWeight;
-                
-                // apply a repulsion force via the velocities
-                this.setVelocityX(this.getVelocityX() + nx * repulsionStrength * thisImpulseFactor);
-                this.setVelocityY(this.getVelocityY() + ny * repulsionStrength * thisImpulseFactor);
-                
-                other.setVelocityX(other.getVelocityX() - nx * repulsionStrength * otherImpulseFactor);
-                other.setVelocityY(other.getVelocityY() - ny * repulsionStrength * otherImpulseFactor);
-                
-                    // adjust the velocities to avoid them to overlap again
-                    // reduce the velocity component that pushes towards the other entity
-                double relativeVelX = this.getVelocityX() - other.getVelocityX();
-                double relativeVelY = this.getVelocityY() - other.getVelocityY();
-                
-                // project the relative velocity on the collision normal
-                double dotProduct = relativeVelX * nx + relativeVelY * ny;
-                
-                // if the entities are approaching, invert the collision component
-                if (dotProduct < 0) {
-                    // restitution coefficient (0.4 = little bounce, more friction)
-                    double restitution = 0.4;
-                    double impulse = dotProduct * restitution;
-                    
-                    // adjust the velocities
-                    double impulseX = impulse * nx;
-                    double impulseY = impulse * ny;
-                    
-                    this.setVelocityX(this.getVelocityX() - impulseX * thisImpulseFactor);
-                    this.setVelocityY(this.getVelocityY() - impulseY * thisImpulseFactor);
-                    
-                    other.setVelocityX(other.getVelocityX() + impulseX * otherImpulseFactor);
-                    other.setVelocityY(other.getVelocityY() + impulseY * otherImpulseFactor);
-                }
+                this.setVelocityX(this.getVelocityX() - impulseX * thisImpulseFactor);
+                this.setVelocityY(this.getVelocityY() - impulseY * thisImpulseFactor);
+                other.setVelocityX(other.getVelocityX() + impulseX * otherImpulseFactor);
+                other.setVelocityY(other.getVelocityY() + impulseY * otherImpulseFactor);
             }
         }
     }

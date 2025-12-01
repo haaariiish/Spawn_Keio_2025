@@ -2,6 +2,7 @@ package entities;
 
 import java.awt.Graphics;
 import java.awt.Color;
+import map.Map;
 
 
 public class RangedEnemy extends Enemy {
@@ -23,7 +24,7 @@ public class RangedEnemy extends Enemy {
         
     }
 
-    protected void updateMovement(Player player) {
+    protected void updateMovement(Player player, Map map) {
         double vx = getVelocityX();
         double vy = getVelocityY();
         if(!this.getStun()){
@@ -32,9 +33,12 @@ public class RangedEnemy extends Enemy {
             double speed = this.getSpeed();
             double dx = player.getX() - this.getX();
             double dy = player.getY() - this.getY();
-            vx += (Math.cos(angle) * speed +Math.random());
-            vy += (Math.sin(angle)* speed)+Math.random();
-            double distance = Math.hypot(dx, dy);
+            // Remove Math.random() calls - they create too much code cache
+            vx += Math.cos(angle) * speed;
+            vy += Math.sin(angle) * speed;
+            // Use distance squared comparison to avoid sqrt
+            double distanceSq = dx * dx + dy * dy;
+            double distance = Math.sqrt(distanceSq);
             if (distance > preferredRange + retreatPadding) {
                 vx += (Math.cos(angle) * speed);
                 vy += (Math.sin(angle) * speed);
@@ -50,10 +54,13 @@ public class RangedEnemy extends Enemy {
 
     @Override
     protected Projectiles attemptSpecialAction(Player player) {
-        //System.out.println(this.getStun());
         if (!this.getStun()){ // If not stun can perform his special action
-        double distance = Math.hypot(player.getX() - this.getX(), player.getY() - this.getY());
-        if (distance <= fireRange && isShootReady()) {
+        double dx = player.getX() - this.getX();
+        double dy = player.getY() - this.getY();
+        double distanceSq = dx * dx + dy * dy;
+        double fireRangeSq = fireRange * fireRange;
+        // Compare squared distances to avoid sqrt
+        if (distanceSq <= fireRangeSq && isShootReady()) {
             resetShootCooldown();
             switch (this.getProjectilesTypes()) {
                 case Simple_Projectiles:
@@ -69,9 +76,18 @@ public class RangedEnemy extends Enemy {
 
     @Override
     public void render(Graphics g,int x, int y){
-        g.setColor(new Color(255,210 -3* getStunFrame(),255));
-        g.fillOval((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
-        g.drawRect((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
+        // Calculate color components without creating new Color object
+        int stunFrame = getStunFrame();
+        int green = 210 - 3 * stunFrame;
+        if (green < 0) green = 0;
+        if (green > 255) green = 255;
+        g.setColor(new Color(255, green, 255));
+        int screenX = (int)this.getX() - x;
+        int screenY = (int)this.getY() - y;
+        int width = this.getWidthInPixels();
+        int height = this.getHeightInPixels();
+        g.fillOval(screenX, screenY, width, height);
+        g.drawRect(screenX, screenY, width, height);
     }
 
     public double estimated_distance_future(int speed, int frames){

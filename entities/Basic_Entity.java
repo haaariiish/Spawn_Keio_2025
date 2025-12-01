@@ -116,7 +116,12 @@ public class Basic_Entity {
     }
 
     public void setBounds(){
-        this.bound = new Rectangle((int) this.x,(int) this.y,width,height);
+        // Reuse existing Rectangle if possible to avoid allocations
+        if (this.bound == null) {
+            this.bound = new Rectangle((int) this.x, (int) this.y, width, height);
+        } else {
+            this.bound.setBounds((int) this.x, (int) this.y, width, height);
+        }
     }
 
     public void setFrame(int f){

@@ -48,6 +48,24 @@ public class Main_Panel extends JPanel{
 
 
     private Frame1 mainFrame;
+    
+    // Reusable lists to avoid allocations during rendering
+    private final List<entities.Enemy> enemyRenderList = new ArrayList<>();
+    private final List<Projectiles> projectilesRenderList = new ArrayList<>();
+    
+    // Reusable objects for debug info to avoid allocations
+    private final AlphaComposite alphaComposite06 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f);
+    private final AlphaComposite alphaComposite08 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f);
+    private final Font font12 = new Font("Monospaced", Font.PLAIN, 12);
+    private final Font font30 = new Font("Monospaced", Font.PLAIN, 30);
+    private final BasicStroke stroke3 = new BasicStroke(3.0f);
+    private final Color colorYellow = Color.YELLOW;
+    private final Color colorGray = Color.GRAY;
+    private final Color colorBlack = Color.BLACK;
+    private final Color colorWhite = Color.WHITE;
+    private final Color colorHP1 = new Color(140, 27, 35);
+    private final Color colorHP2 = new Color(227, 27, 35);
+    private final StringBuilder stringBuilder = new StringBuilder(64);
 
 
     public Main_Panel(Frame1 mainFrame) { 
@@ -80,7 +98,7 @@ public class Main_Panel extends JPanel{
     }
 
     private void drawBackGround(Graphics2D g) {
-        // Dessiner le monde du jeu
+        // draw game world
         //System.out.println("Game is Running...");
 
 
@@ -183,27 +201,25 @@ public class Main_Panel extends JPanel{
         int playerScreenX = screenWidth / 2 - player.getWidthInPixels() / 2;
         int playerScreenY = screenHeight / 2 - player.getHeightInPixels() / 2;
 
-        // Enemies drawing
-        // Take a snapshot of the enemy list to avoid index issues if the game
-        // thread modifies the list while we are rendering on the EDT.
-        List<entities.Enemy> enemySnapshot =
-                new ArrayList<>(mainFrame.getGame().getGameWorld().getEnemy());
-        for (int i = enemySnapshot.size() - 1; i >= 0; i--) {
-            enemySnapshot.get(i).render(g, cameraX, cameraY);
+        // Enemies drawing - reuse list to avoid allocations
+        List<entities.Enemy> enemies = mainFrame.getGame().getGameWorld().getEnemy();
+        enemyRenderList.clear();
+        enemyRenderList.addAll(enemies);
+        int enemySize = enemyRenderList.size();
+        for (int i = enemySize - 1; i >= 0; i--) {
+            enemyRenderList.get(i).render(g, cameraX, cameraY);
         }
         
         // Draw the player 
-
-        
         mainFrame.getGame().getPlayer().render(g, playerScreenX, playerScreenY);
-        //g.fillOval(playerScreenX,playerScreenY,mainFrame.getGame().getPlayer().getWidthInPixels(),mainFrame.getGame().getPlayer().getHeightInPixels());
         
-        // projectiles
-        // Use a snapshot for projectiles for the same reason as enemies.
-        List<Projectiles> projectilesSnapshot =
-                new ArrayList<>(mainFrame.getGame().getGameWorld().getListProjectiles());
-        for (int i = projectilesSnapshot.size() - 1; i >= 0; i--) {
-            projectilesSnapshot.get(i).render(g, cameraX, cameraY);
+        // projectiles - reuse list to avoid allocations
+        List<Projectiles> projectiles = mainFrame.getGame().getGameWorld().getListProjectiles();
+        projectilesRenderList.clear();
+        projectilesRenderList.addAll(projectiles);
+        int projSize = projectilesRenderList.size();
+        for (int i = projSize - 1; i >= 0; i--) {
+            projectilesRenderList.get(i).render(g, cameraX, cameraY);
         }
 
         // DEBUG information just in case
@@ -212,55 +228,88 @@ public class Main_Panel extends JPanel{
     }
 
     private void drawDebugInfo(Graphics2D g, Player player, int cameraX, int cameraY) {
+        // Cache frequently accessed objects
+        core.Game game = mainFrame.getGame();
+        core.GameWorld gameWorld = game.getGameWorld();
+        int screenWidth = getWidth();
         
-        AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f);
-        g.setComposite(ac);
-        //HP BAR
-        g.setColor(Color.YELLOW);
-        g.setStroke(new BasicStroke(3.0f));
-        g.drawRoundRect(getWidth()-310,10, 300, 30, 5, 5);
-        g.setColor(new Color(170, 27, 35));
-        g.fillRoundRect(getWidth()-310,10, 300, 30, 5, 5);
-        g.setColor(new Color(227, 27, 35));
-        g.fillRoundRect(getWidth()-310,10,(int) (300*player.getHP()/player.getMaxHP()), 30, 5, 5);
+        // HP BAR - use simple rectangles instead of roundRect to reduce CodeCache usage
+        g.setComposite(alphaComposite06);
+        g.setColor(colorHP1);
+        g.fillRect(screenWidth - 310, 10, 300, 30);
+        g.setColor(colorYellow);
+        g.setStroke(stroke3);
+        g.drawRect(screenWidth - 310, 10, 300, 30);
+        g.setColor(colorHP2);
+        int hpBarWidth = (int)(300.0 * player.getHP() / player.getMaxHP());
+        if (hpBarWidth > 0) {
+            g.fillRect(screenWidth - 310, 10, hpBarWidth, 30);
+        }
         
-        ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f);
-        g.setComposite(ac);
-        g.setColor(Color.GRAY);
-        g.fillRoundRect(getWidth()-310,45, 300, 45, 5, 5);
-        g.setColor(Color.white);
-        g.setFont(new Font("Monospaced", Font.PLAIN, 30));
-        g.drawString("Score: "+this.mainFrame.getGame().getGameWorld().getScore(),getWidth()-310, 80);
+        // Score box - use simple rectangles instead of roundRect to reduce CodeCache usage
+        g.setComposite(alphaComposite08);
+        g.setColor(colorGray);
+        g.fillRect(screenWidth - 310, 45, 300, 45);
+        g.setColor(colorWhite);
+        g.setFont(font30);
+        stringBuilder.setLength(0);
+        stringBuilder.append("Score: ").append(gameWorld.getScore());
+        g.drawString(stringBuilder.toString(), screenWidth - 310, 80);
         
-
-        // Rectangle where there are a lot of state
-        g.setColor(Color.GRAY);
-        ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f);
-        g.setComposite(ac);
-        g.fillRoundRect(0,0, 300, 230, 5, 5);
-
-        ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f);
-        g.setComposite(ac);
-        g.setColor(Color.BLACK);
-        g.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        // Debug info rectangle - use simple rectangle instead of roundRect
+        g.setColor(colorGray);
+        g.setComposite(alphaComposite06);
+        g.fillRect(0, 0, 300, 230);
         
-        g.drawString(String.format("Player: (%.0f, %.0f)", player.getX(), player.getY()), 10, 20);
-        g.drawString(String.format("Camera: (%d, %d)", cameraX, cameraY), 10, 35);
-        g.drawString(String.format("Screen: %dx%d", getWidth(), getHeight()), 10, 50);
-
-        // SHOW stats
-        //System.out.println("Facing: "+this.mainFrame.getGame().getPlayer().getFacing());
-        //System.out.println("HP"+ this.mainFrame.getGame().getPlayer().getHP());
-        g.drawString("Facing: "+this.mainFrame.getGame().getPlayer().getFacing(), 10, 65);
-        //g.drawString("HP: "+this.mainFrame.getGame().getPlayer().getHP() ,10, 80);
-        g.drawString("Defense: "+this.mainFrame.getGame().getPlayer().getDefense() ,10, 95);
-        g.drawString("Attack: "+this.mainFrame.getGame().getPlayer().getAttack() ,10, 110);
-        g.drawString("Speed: "+this.mainFrame.getGame().getPlayer().getSpeed() ,10, 125);
-        g.drawString(String.format("Velocity (x,y): (%.0f, %.0f)",this.mainFrame.getGame().getPlayer().getVelocityX() ,this.mainFrame.getGame().getPlayer().getVelocityY() ),10, 140);
-        g.drawString("Opened Time: "+this.mainFrame.getGame().getOpenTime() ,10, 165);
-        g.drawString("In Game Time: "+this.mainFrame.getGame().getInGameTime() ,10, 180);
-        g.drawString("Number of Enemy in the Area "+this.mainFrame.getGame().getGameWorld().getEnemy().size(),10, 195);
-        //g.drawString("Score: "+this.mainFrame.getGame().getGameWorld().getScore(),10, 210);
+        g.setComposite(alphaComposite08);
+        g.setColor(colorBlack);
+        g.setFont(font12);
+        
+        // Build strings without String.format to avoid CodeCache fragmentation
+        stringBuilder.setLength(0);
+        stringBuilder.append("Player: (").append((int)player.getX()).append(", ").append((int)player.getY()).append(")");
+        g.drawString(stringBuilder.toString(), 10, 20);
+        
+        stringBuilder.setLength(0);
+        stringBuilder.append("Camera: (").append(cameraX).append(", ").append(cameraY).append(")");
+        g.drawString(stringBuilder.toString(), 10, 35);
+        
+        stringBuilder.setLength(0);
+        stringBuilder.append("Screen: ").append(screenWidth).append("x").append(getHeight());
+        g.drawString(stringBuilder.toString(), 10, 50);
+        
+        // Stats
+        stringBuilder.setLength(0);
+        stringBuilder.append("Facing: ").append(player.getFacing());
+        g.drawString(stringBuilder.toString(), 10, 65);
+        
+        stringBuilder.setLength(0);
+        stringBuilder.append("Defense: ").append(player.getDefense());
+        g.drawString(stringBuilder.toString(), 10, 95);
+        
+        stringBuilder.setLength(0);
+        stringBuilder.append("Attack: ").append(player.getAttack());
+        g.drawString(stringBuilder.toString(), 10, 110);
+        
+        stringBuilder.setLength(0);
+        stringBuilder.append("Speed: ").append(player.getSpeed());
+        g.drawString(stringBuilder.toString(), 10, 125);
+        
+        stringBuilder.setLength(0);
+        stringBuilder.append("Velocity (x,y): (").append((int)player.getVelocityX()).append(", ").append((int)player.getVelocityY()).append(")");
+        g.drawString(stringBuilder.toString(), 10, 140);
+        
+        stringBuilder.setLength(0);
+        stringBuilder.append("Opened Time: ").append(game.getOpenTime());
+        g.drawString(stringBuilder.toString(), 10, 165);
+        
+        stringBuilder.setLength(0);
+        stringBuilder.append("In Game Time: ").append(game.getInGameTime());
+        g.drawString(stringBuilder.toString(), 10, 180);
+        
+        stringBuilder.setLength(0);
+        stringBuilder.append("Number of Enemy in the Area ").append(gameWorld.getEnemy().size());
+        g.drawString(stringBuilder.toString(), 10, 195);
     }
 
 

@@ -3,7 +3,6 @@ package entities;
 import map.Map;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.text.Normalizer.Form;
 
 
 public abstract class Projectiles {
@@ -47,11 +46,13 @@ public abstract class Projectiles {
         this.source_Entity = source;
         this.range_left = source.getRange();
         this.directionAngle = source.getFacingAngle();
-        double bulletSpeed = this.source_Entity.getBulletFast();
-        this.velocityX = bulletSpeed * Math.cos(this.directionAngle);
-        this.velocityY = bulletSpeed * Math.sin(this.directionAngle);
-        this.x = source_Entity.getX();
-        this.y = source_Entity.getY();
+        double bulletSpeed = source.getBulletFast();
+        double cosAngle = Math.cos(this.directionAngle);
+        double sinAngle = Math.sin(this.directionAngle);
+        this.velocityX = bulletSpeed * cosAngle;
+        this.velocityY = bulletSpeed * sinAngle;
+        this.x = source.getX();
+        this.y = source.getY();
     }
         
         
@@ -104,11 +105,17 @@ public abstract class Projectiles {
     }
 
     public boolean getVertical(){
-        return Math.abs(this.velocityX)<Math.abs(this.velocityY);
+        // Cache abs values to avoid multiple calls
+        double absVx = this.velocityX < 0 ? -this.velocityX : this.velocityX;
+        double absVy = this.velocityY < 0 ? -this.velocityY : this.velocityY;
+        return absVx < absVy;
     }
 
     public boolean getDiagonal(){
-        return  Math.abs(this.velocityX)==Math.abs(this.velocityY);
+        // Cache abs values to avoid multiple calls
+        double absVx = this.velocityX < 0 ? -this.velocityX : this.velocityX;
+        double absVy = this.velocityY < 0 ? -this.velocityY : this.velocityY;
+        return absVx == absVy;
     }
 
     public Rectangle getBounds(){
@@ -162,7 +169,12 @@ public abstract class Projectiles {
         this.bounce_able = bounce;
     }
     public void setBounds(){
-        this.bounds = new Rectangle((int) this.x,(int) this.y,this.width,this.height);
+        // Reuse existing Rectangle if possible to avoid allocations
+        if (this.bounds == null) {
+            this.bounds = new Rectangle((int) this.x, (int) this.y, this.width, this.height);
+        } else {
+            this.bounds.setBounds((int) this.x, (int) this.y, this.width, this.height);
+        }
     }
 
     public void setKnockBack(double back){
@@ -173,27 +185,37 @@ public abstract class Projectiles {
         this.recoil = recoil;
     }
 
-    // to align the proejctiles with the source
+    // to align the projectiles with the source
     protected void alignWithSource(){
         if (this.source_Entity == null || this.width == 0 || this.height == 0) {
             return;
         }
-        double entityCenterX = this.source_Entity.getX() + this.source_Entity.getWidthInPixels() / 2.0;
-        double entityCenterY = this.source_Entity.getY() + this.source_Entity.getHeightInPixels() / 2.0;
-        double projectileRadius = Math.max(this.width, this.height) / 2.0;
-        double entityRadius = Math.max(this.source_Entity.getWidthInPixels(), this.source_Entity.getHeightInPixels()) / 2.0;
+        // Cache entity values to avoid multiple method calls
+        double entityX = this.source_Entity.getX();
+        double entityY = this.source_Entity.getY();
+        int entityWidth = this.source_Entity.getWidthInPixels();
+        int entityHeight = this.source_Entity.getHeightInPixels();
+        
+        double entityCenterX = entityX + entityWidth * 0.5;
+        double entityCenterY = entityY + entityHeight * 0.5;
+        double projectileRadius = Math.max(this.width, this.height) * 0.5;
+        double entityRadius = Math.max(entityWidth, entityHeight) * 0.5;
         double offset = entityRadius + projectileRadius + 2;
-        double centerX = entityCenterX + Math.cos(this.directionAngle) * offset;
-        double centerY = entityCenterY + Math.sin(this.directionAngle) * offset;
-        this.x = centerX - this.width / 2.0;
-        this.y = centerY - this.height / 2.0;
+        double cosAngle = Math.cos(this.directionAngle);
+        double sinAngle = Math.sin(this.directionAngle);
+        double centerX = entityCenterX + cosAngle * offset;
+        double centerY = entityCenterY + sinAngle * offset;
+        this.x = centerX - this.width * 0.5;
+        this.y = centerY - this.height * 0.5;
         setBounds();
     }
 
     // SOME utils 
 
     public boolean isNotMoving(){
-        return Math.sqrt(this.velocityX*this.velocityX+this.velocityY*this.velocityY)<4;
+        // Compare squared distance to avoid sqrt
+        double speedSq = this.velocityX * this.velocityX + this.velocityY * this.velocityY;
+        return speedSq < 16.0; // 4^2 = 16
     }
     public void setToDestroy(){
         this.hasToDestroy=true;

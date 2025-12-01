@@ -5,7 +5,6 @@ import java.util.List;
 import java.awt.Rectangle;
 
 import input.InputHandler;
-import entities.Boss;
 import entities.ChargerEnemy;
 import entities.Enemy;
 import entities.HeavyEnemy;
@@ -22,11 +21,12 @@ import java.awt.Point;
 public class GameWorld {
     private Player player;
     private int score=0;
+    private int maxEnemy = 200;
     private Map map;
     private List<Enemy> enemies;
     private Game game;
 
-    private double spawnEnemyproba=0.01;
+    private double spawnEnemyproba=0.005;
     //private Boss currentBoss;
     private List<Projectiles> projectilesList;
     //private List<Projectile> enemyProjectiles;
@@ -43,6 +43,9 @@ public class GameWorld {
 
     private int playerDamageCooldown = 0;
     private static final int PLAYER_DAMAGE_COOLDOWN_FRAMES = 10;
+    
+    // Reusable temporary list to avoid allocations
+    private final List<Moving_Entity> tempMovingEntitiesList = new ArrayList<>();
 
     public GameWorld(int worldWidth, int worldHeight, int tileSize,Game game) {
         this.worldWidth = worldWidth;
@@ -82,7 +85,10 @@ public class GameWorld {
     }
 
     public void update(InputHandler input,int which_frame_in_cyle){
-        this.player.update_input(this.map, input,new ArrayList<Moving_Entity> (this.enemies));
+        // Reuse temporary list instead of creating new one
+        tempMovingEntitiesList.clear();
+        tempMovingEntitiesList.addAll(this.enemies);
+        this.player.update_input(this.map, input, tempMovingEntitiesList);
         //System.out.println("Player bounds: " + this.player.getBounds());
         updateEnemiesPosition(this.map,this.player);
         if (which_frame_in_cyle%5==0){ // If we are in a precise moment, the game will try to make spawn some enemies
@@ -161,20 +167,26 @@ public class GameWorld {
         
     }
     public void updateProjectiles(){
-        for (int i = projectilesList.size() - 1; i >= 0; i--) {
+        int size = projectilesList.size();
+        for (int i = size - 1; i >= 0; i--) {
             Projectiles proj = projectilesList.get(i);
             proj.update(map);
-            //System.out.println("Projectile bounds: " + proj.getBounds());
-            proj.setBounds();
+            // setBounds() is already called inside update(), no need to call it again
             if (proj.toDestroy()) {
                 projectilesList.remove(i);
             }
         }
     }
     public void updateEnemiesPosition(Map map, Player player){
-        for (int i = enemies.size() - 1; i >= 0; i--) {
+        // Reuse temporary list for all enemies
+        tempMovingEntitiesList.clear();
+        tempMovingEntitiesList.addAll(enemies);
+        tempMovingEntitiesList.add(player);
+        
+        int size = enemies.size();
+        for (int i = size - 1; i >= 0; i--) {
             Enemy enemy = enemies.get(i);
-            Projectiles shot = enemy.updateBehavior(map, player,new ArrayList<Moving_Entity>(enemies));
+            Projectiles shot = enemy.updateBehavior(map, player, tempMovingEntitiesList);
             if (shot != null) {
                 projectilesList.add(shot);
             }
@@ -182,22 +194,27 @@ public class GameWorld {
     }
  
     public void updateEnemiesSpawn(Map map){
-        for (int i = map.getEnemySpawnPoints().size() - 1; i >= 0; i--) {
-            if (enemies.size()>100){
-                return ;
+        if (enemies.size() > 100) {
+            return;
+        }
+        List<Point> spawnPoints = map.getEnemySpawnPoints();
+        int size = spawnPoints.size();
+        for (int i = size - 1; i >= 0; i--) {
+            if (enemies.size() > this.maxEnemy) {
+                return;
             }
-            if (Math.random()<this.spawnEnemyproba){
-                Enemy n_enemy = createRandomEnemy(map.getEnemySpawnPoints().get(i));
+            if (Math.random() < this.spawnEnemyproba) {
+                Enemy n_enemy = createRandomEnemy(spawnPoints.get(i));
                 if (n_enemy != null) {
                     enemies.add(n_enemy);
                 }
             }
-            
         }
     }
 
     public void updateEnemiesDeath(){
-        for (int i = enemies.size() - 1; i >= 0; i--) {
+        int size = enemies.size();
+        for (int i = size - 1; i >= 0; i--) {
             if (enemies.get(i).getIsDead()){
                 enemies.remove(i);
                 score++;
@@ -207,45 +224,55 @@ public class GameWorld {
 
     public void handleCollisions(){
         Rectangle playerBounds = player.getBounds();
-
-
-        for (int i = projectilesList.size() - 1; i >= 0; i--) {
+        int projSize = projectilesList.size();
+        
+        for (int i = projSize - 1; i >= 0; i--) {
             Projectiles proj = projectilesList.get(i);
+            Rectangle projBounds = proj.getBounds();
             boolean hitSomething = false;
-            if (proj.getBounds().intersects(playerBounds)) {
+            
+            if (projBounds.intersects(playerBounds)) {
                 player.take_damage(proj.getSourceEntity().getAttack());
                 player.setImpactDirection(proj.getDirectionAngle());
                 hitSomething = true;
             }
 
-            for (int j = enemies.size() - 1; j >= 0; j--) {
-                Enemy enemy = enemies.get(j);
-                if (proj.getSourceEntity() != enemy && proj.getBounds().intersects(enemy.getBounds())) {
-                    enemy.setJustKnockBack(true);
-                    enemy.setKnockBack(true);
-                    enemy.setStun(true);
-                    enemy.setKnockBackFrame(enemy.getKnockBackCoolDown());
-                    enemy.setStunFrame(enemy.getStunCoolDown());
-                    enemy.setKnockBackIntensity(enemy.getKnockBackIntensity()+(int) proj.getKnockBack() * 10);
-                    enemy.setImpactDirection(proj.getDirectionAngle());
-                    enemy.take_damage(proj.getSourceEntity().getAttack());
-                    hitSomething = true;
+            if (!hitSomething) {
+                int enemySize = enemies.size();
+                for (int j = enemySize - 1; j >= 0; j--) {
+                    Enemy enemy = enemies.get(j);
+                    if (proj.getSourceEntity() != enemy && projBounds.intersects(enemy.getBounds())) {
+                        int knockBackIntensity = enemy.getKnockBackIntensity() + (int)(proj.getKnockBack() * 10);
+                        enemy.setJustKnockBack(true);
+                        enemy.setKnockBack(true);
+                        enemy.setStun(true);
+                        enemy.setKnockBackFrame(enemy.getKnockBackCoolDown());
+                        enemy.setStunFrame(enemy.getStunCoolDown());
+                        enemy.setKnockBackIntensity(knockBackIntensity);
+                        enemy.setImpactDirection(proj.getDirectionAngle());
+                        enemy.take_damage(proj.getSourceEntity().getAttack());
+                        hitSomething = true;
+                        break; // Only one hit per projectile
+                    }
                 }
             }
+            
             if (hitSomething) {
                 projectilesList.remove(i);
             }
         }
+        
         if (playerDamageCooldown == 0) {
-        for (int j = enemies.size() - 1; j >= 0; j--) {
+            Rectangle playerRect = player.getBounds();
+            int enemySize = enemies.size();
+            for (int j = enemySize - 1; j >= 0; j--) {
                 Enemy enemy = enemies.get(j);
-                if (enemy.getBounds().intersects(player.getBounds())) {
+                if (enemy.getBounds().intersects(playerRect)) {
                     player.take_damage(enemy.getAttack());
                 }
             }
             playerDamageCooldown = PLAYER_DAMAGE_COOLDOWN_FRAMES;
         }
-
     }
 
     private void checkPlayerStatus(){
@@ -338,6 +365,15 @@ public class GameWorld {
             HeavyEnemy heavy = new HeavyEnemy(spawnPoint.x, spawnPoint.y);
             return heavy;
         }
+    }
+
+
+    public int getMaxEnemy(){
+        return this.maxEnemy;
+    }
+
+    public void setMaxEnemy(int me){
+        this.maxEnemy = me;
     }
 
 }

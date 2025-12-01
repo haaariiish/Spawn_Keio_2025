@@ -58,14 +58,14 @@ public abstract class Enemy extends Moving_Entity{
         tickCooldowns();
         TimerUpdate();
         gotKnockback();
-        updateMovement(player);
-        movingEntity.add(player) ;
+        updateMovement(player,map);
+        // Note: player should already be in the list from GameWorld
         update_collision_withEntities(movingEntity, map);
         update(map);
         return attemptSpecialAction(player);
     }
 
-    protected abstract void updateMovement(Player player); // I want them to move differently for each enemies
+    protected abstract void updateMovement(Player player,Map map); // I want them to move differently for each enemies
 
     protected Projectiles attemptSpecialAction(Player player){
         return null;
@@ -73,6 +73,13 @@ public abstract class Enemy extends Moving_Entity{
 
     public abstract void render(Graphics g,int x, int y ); // Abstract method to make each enemy unique
 
+    public void setEnemyState(EnemyStates state){
+        this.state = state;
+    }
+
+    public EnemyStates getEnemyStates(){
+        return this.state;
+    }
     
 
 }

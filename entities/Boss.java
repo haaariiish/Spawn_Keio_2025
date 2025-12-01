@@ -1,6 +1,7 @@
 package entities;
 import java.awt.Graphics;
 import java.awt.Color;
+import map.Map;
 
 public class Boss extends Enemy{
     private String name= "Boss A";
@@ -8,7 +9,7 @@ public class Boss extends Enemy{
         super(x,y, width, height, hp, attack, defense, range,speed);
     }
 
-    public void updateMovement(Player player){
+    public void updateMovement(Player player,Map map){
         return;
     }
     @Override

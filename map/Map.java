@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 
+
 public class Map{
 
     public static final int EMPTY = 0;
@@ -20,6 +21,7 @@ public class Map{
 
     public static final int SPAWN = 5;
     
+    public List<Room> rooms;
    
 
 
@@ -53,22 +55,22 @@ public class Map{
     }
 
     public boolean collidesWithWall(int x, int y, int width, int height) {
-        //Corners , verify if you are near a corner
-        int[][] checkPoints = {
-            {x, y},                          // Coin haut-gauche
-            {x + width, y},                  // Coin haut-droit
-            {x, y + height},                 // Coin bas-gauche
-            {x + width, y + height},         // Coin bas-droit
-            {x + width/2, y},                // Milieu haut
-            {x + width/2, y + height},       // Milieu bas
-            {x, y + height/2},               // Milieu gauche
-            {x + width, y + height/2}        // Milieu droit
-        };
+        // Check corners and midpoints without creating array
+        int halfWidth = width / 2;
+        int halfHeight = height / 2;
+        int x2 = x + width;
+        int y2 = y + height;
         
-        for (int[] point : checkPoints) {
-            if (isWallAtPixel(point[0], point[1])) {
-                return true;
-            }
+        // Check all 8 points directly
+        if (isWallAtPixel(x, y) ||                    // top-left
+            isWallAtPixel(x2, y) ||                   // top-right
+            isWallAtPixel(x, y2) ||                   // bottom-left
+            isWallAtPixel(x2, y2) ||                  // bottom-right
+            isWallAtPixel(x + halfWidth, y) ||        // top-middle
+            isWallAtPixel(x + halfWidth, y2) ||      // bottom-middle
+            isWallAtPixel(x, y + halfHeight) ||      // left-middle
+            isWallAtPixel(x2, y + halfHeight)) {     // right-middle
+            return true;
         }
         return false;
     }
@@ -152,7 +154,10 @@ public class Map{
     }
 
     public void createMapPerlinNoise(long seed){
-        tiles = new MapGenPerlin(this.heightInTiles, this.widthInTiles, seed).getTiles();
+        MapGenPerlin generation = new MapGenPerlin(this.heightInTiles, this.widthInTiles, seed);
+        tiles = generation.getTiles();
+        this.rooms = generation.getRooms();
+        clearSpawnPointsCache(); // Clear cache when map changes
     }
 
     // Utils ------------------------------------------------------------------------------
@@ -171,16 +176,27 @@ public class Map{
         return new Point(tileSize, tileSize); // Default
     }
 
+    private List<Point> cachedSpawnPoints = null;
+    
     public List<Point> getEnemySpawnPoints(){
-        List<Point> spawn_pointsList= new ArrayList<>();
-        for (int y = 0; y < heightInTiles; y++) {
-            for (int x = 0; x < widthInTiles; x++) {
-                if (tiles[y][x] == ENEMY_SPAWN) {
-                    spawn_pointsList.add(new Point(x * tileSize +tileSize/2, y * tileSize + tileSize/2));
+        // Cache the spawn points list to avoid recreating it
+        if (cachedSpawnPoints == null) {
+            cachedSpawnPoints = new ArrayList<>();
+            int halfTile = tileSize / 2;
+            for (int y = 0; y < heightInTiles; y++) {
+                for (int x = 0; x < widthInTiles; x++) {
+                    if (tiles[y][x] == ENEMY_SPAWN) {
+                        cachedSpawnPoints.add(new Point(x * tileSize + halfTile, y * tileSize + halfTile));
+                    }
                 }
             }
         }
-        return spawn_pointsList;
+        return cachedSpawnPoints;
+    }
+    
+    // Call this when map is regenerated to clear cache
+    public void clearSpawnPointsCache() {
+        cachedSpawnPoints = null;
     }
 
     // Getters

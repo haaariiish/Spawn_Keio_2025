@@ -1,6 +1,7 @@
 package entities;
 import java.awt.Graphics;
 import java.awt.Color;
+import map.Map;
 
 
 public class HeavyEnemy extends Enemy {
@@ -10,7 +11,7 @@ public class HeavyEnemy extends Enemy {
         setStunCoolDown(10);
     }
 
-    protected void updateMovement(Player player) {
+    protected void updateMovement(Player player, Map map) {
         double vx = getVelocityX();
         double vy = getVelocityY();
         
@@ -18,17 +19,27 @@ public class HeavyEnemy extends Enemy {
             facePlayer(player);
             double angle = this.getFacingAngle();
             double speed = this.getSpeed();
-            vx += (Math.cos(angle) * speed +Math.random());
-            vy += (Math.sin(angle)* speed)+Math.random();   
+            // Remove Math.random() to reduce CodeCache usage
+            vx += Math.cos(angle) * speed;
+            vy += Math.sin(angle) * speed;   
     }
         setVelocityX(vx);
         setVelocityY(vy);
     }
 
     public void render(Graphics g,int x, int y){
-        g.setColor(new Color(100,255 - 5*getKnockBackFrame(),0));
-        g.fillOval((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
-        g.drawRect((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
+        // Calculate color without creating new Color every frame
+        int knockBackFrame = getKnockBackFrame();
+        int green = 255 - 5 * knockBackFrame;
+        if (green < 0) green = 0;
+        if (green > 255) green = 255;
+        g.setColor(new Color(100, green, 0));
+        int screenX = (int)this.getX() - x;
+        int screenY = (int)this.getY() - y;
+        int width = this.getWidthInPixels();
+        int height = this.getHeightInPixels();
+        g.fillOval(screenX, screenY, width, height);
+        g.drawRect(screenX, screenY, width, height);
     }
 }
 

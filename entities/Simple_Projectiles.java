@@ -17,55 +17,79 @@ public class Simple_Projectiles extends Projectiles{
     }
     @Override
     public void update(Map map){
-        if (this.getRangeLeft()!=0){
-        int steps = (int)Math.ceil(Math.max(Math.abs(this.getVelocityX()), Math.abs(this.getVelocityY())));
-        steps = Math.max(1, Math.min(steps, 30));
-        double stepX = this.getVelocityX() / steps;
-        double stepY = this.getVelocityY() / steps;
-
-        for (int i = 0; i < steps; i++) {
-            // Mouvement horizontal
-            double testX = this.getX() + stepX;
-            if (!map.collidesWithWall((int)testX, (int)this.getY(), this.getWidth(), this.getHeight())) {
-                this.setX(testX);
-            } else {
-                this.setVelocityX(0);
-                setToDestroy();
-                break; // Arrêter si collision
-            }
+        int rangeLeft = this.getRangeLeft();
+        if (rangeLeft == 0) {
+            return;
         }
         
+        // Cache frequently accessed values
+        double vx = this.getVelocityX();
+        double vy = this.getVelocityY();
+        double x = this.getX();
+        double y = this.getY();
+        int width = this.getWidth();
+        int height = this.getHeight();
+        double friction = this.getFriction();
+        
+        int steps = (int)Math.ceil(Math.max(Math.abs(vx), Math.abs(vy)));
+        steps = Math.max(1, Math.min(steps, 30));
+        double stepX = vx / steps;
+        double stepY = vy / steps;
+
+        // Horizontal movement
         for (int i = 0; i < steps; i++) {
-            // Mouvement vertical
-            double testY = this.getY() + stepY;
-            if (!map.collidesWithWall((int)this.getX(), (int)testY, this.getWidth(), this.getHeight())) {
-                this.setY(testY);
+            double testX = x + stepX;
+            if (!map.collidesWithWall((int)testX, (int)y, width, height)) {
+                x = testX;
             } else {
-                this.setVelocityY(0); 
+                vx = 0;
                 setToDestroy();
                 break;
             }
-
         }
-        // Slow down in any case to have a cap for our speed
-        this.setVelocityX((this.getFriction()*this.getVelocityX()));
-        this.setVelocityY(this.getFriction()*this.getVelocityY());
         
-        if (this.getRangeLeft()>1){
-            this.setRangeLeft(this.getRangeLeft()-1);
+        // Vertical movement
+        for (int i = 0; i < steps; i++) {
+            double testY = y + stepY;
+            if (!map.collidesWithWall((int)x, (int)testY, width, height)) {
+                y = testY;
+            } else {
+                vy = 0; 
+                setToDestroy();
+                break;
+            }
+        }
+        
+        // Apply friction
+        vx *= friction;
+        vy *= friction;
+        this.setVelocityX(vx);
+        this.setVelocityY(vy);
+        
+        // Update position
+        this.setX(x);
+        this.setY(y);
+        
+        // Decrement range
+        if (rangeLeft > 1) {
+            this.setRangeLeft(rangeLeft - 1);
         }
         this.setBounds();
-        }
     }
 
     @Override
-        public void render(Graphics g, int x, int y){
-            int proj_cameraX = ((int) this.getX())-x;
-            int proj_cameraY = ((int) this.getY())-y;
-
-            g.fillOval(proj_cameraX,proj_cameraY, this.getWidth(), this.getHeight());
-            g.drawRect(proj_cameraX,proj_cameraY, this.getWidth(), this.getHeight());
-        }
+    public void render(Graphics g, int x, int y){
+        // Cache values to avoid multiple method calls
+        int projX = (int)this.getX();
+        int projY = (int)this.getY();
+        int width = this.getWidth();
+        int height = this.getHeight();
+        int screenX = projX - x;
+        int screenY = projY - y;
+        
+        g.fillOval(screenX, screenY, width, height);
+        g.drawRect(screenX, screenY, width, height);
+    }
 
     
     
