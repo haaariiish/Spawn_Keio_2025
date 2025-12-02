@@ -21,7 +21,8 @@ import java.awt.Point;
 public class GameWorld {
     private Player player;
     private int score=0;
-    private int maxEnemy = 200;
+    private int initialEnemy =200;
+    private int maxEnemy ;
     private Map map;
     private List<Enemy> enemies;
     private Game game;
@@ -71,12 +72,14 @@ public class GameWorld {
         this.player = null;
         this.enemies = null;
         this.score = 0;
+        this.maxEnemy = initialEnemy;
         
     }
 
     public void restart(){
         // Initialisation of the map ( default map for now)
         this.score = 0;
+        this.maxEnemy = initialEnemy;
         this.playerShootCooldown = 0;
         this.playerDamageCooldown = 0;
         map = new Map(this.worldWidth / this.tileSize, this.worldHeight / this.tileSize, this.tileSize);
@@ -235,7 +238,7 @@ public class GameWorld {
     }
  
     public void updateEnemiesSpawn(Map map){
-        if (enemies.size() > 100) {
+        if (enemies.size() >= maxEnemy) {
             return;
         }
         List<Point> spawnPoints = map.getEnemySpawnPoints();
@@ -259,8 +262,10 @@ public class GameWorld {
             if (enemies.get(i).getIsDead()){
                 enemies.remove(i);
                 score++;
+                
             }
         }
+        maxEnemy = initialEnemy+score;
     }
 
     public void handleCollisions(){
