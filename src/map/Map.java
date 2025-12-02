@@ -7,6 +7,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import entities.Enemy;
+
 
 
 public class Map{
@@ -73,6 +75,35 @@ public class Map{
             return true;
         }
         return false;
+    }
+
+
+    /**
+     * Returns true if an enemy of "typical" size can stand with its center
+     * in tile (tileX, tileY) without colliding with walls.
+     * We approximate all enemies by a bounding box of pathfindingSizePx.
+     */
+    public boolean isWalkableTileForEnemies(int tileX, int tileY, Enemy enemy) {
+        // First, tile itself must not be a wall
+        if (isWall(tileX, tileY)) {
+            return false;
+        }
+
+        // Approximate enemy size for pathfinding.
+        //  biggest mobs, ~19 px , tiles = 40 px
+        // take a boundary box slighly bigger
+        // to avoid colision with wall 
+        final int approxEnemySizePx = 20;                // ~size of enemy
+        final int pathfindingSizePx = Math.min(tileSize - 4, approxEnemySizePx);
+
+        int centerX = tileX * tileSize + tileSize / 2;
+        int centerY = tileY * tileSize + tileSize / 2;
+
+        int half = pathfindingSizePx / 2;
+        int x = centerX - half;
+        int y = centerY - half;
+
+        return !collidesWithWall(x, y, pathfindingSizePx, pathfindingSizePx);
     }
 
      public int getTileAt(int tileX, int tileY) {
@@ -160,8 +191,57 @@ public class Map{
         clearSpawnPointsCache(); // Clear cache when map changes
     }
 
+    public boolean hasLineOfSight(double x0, double y0, double x1, double y1) {
+        int tileX0 = (int)(x0 / tileSize);
+        int tileY0 = (int)(y0 / tileSize);
+        int tileX1 = (int)(x1 / tileSize);
+        int tileY1 = (int)(y1 / tileSize);
+    
+        // if seen
+        if (tileX0 == tileX1 && tileY0 == tileY1) {
+            return true;
+        }
+    
+        int dx = Math.abs(tileX1 - tileX0);
+        int dy = Math.abs(tileY1 - tileY0);
+    
+        int sx = tileX0 < tileX1 ? 1 : -1;
+        int sy = tileY0 < tileY1 ? 1 : -1;
+    
+        int err = dx - dy;
+    
+        int x = tileX0;
+        int y = tileY0;
+    
+        while (true) {
+            // verification if at the start or the beginning
+            if (!(x == tileX0 && y == tileY0) && !(x == tileX1 && y == tileY1)) {
+                // verify if the tile is a wall
+                if (isWall(x, y)) {
+                    return false;  //if wall block the view
+                }
+            }
+    
+            // reach the end 
+            if (x == tileX1 && y == tileY1) {
+                break;
+            }
+    
+            int e2 = 2 * err;
+            if (e2 > -dy) {
+                err -= dy;
+                x += sx;
+            }
+            if (e2 < dx) {
+                err += dx;
+                y += sy;
+            }
+        }
+        
+        return true;  // not wall between them
+    }
     // Utils ------------------------------------------------------------------------------
-    private boolean isValidTile(int tileX, int tileY) {
+    public boolean isValidTile(int tileX, int tileY) {
         return tileX >= 0 && tileX < widthInTiles && tileY >= 0 && tileY < heightInTiles;
     }
 

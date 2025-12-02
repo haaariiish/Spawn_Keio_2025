@@ -2,7 +2,7 @@ package entities;
 import map.Map;
 import java.awt.Graphics;
 import java.awt.Color;
-
+import core.GameWorld;
 public class ChargerEnemy extends Enemy {
 
     public ChargerEnemy(double x, double y) {
@@ -10,21 +10,51 @@ public class ChargerEnemy extends Enemy {
         setStunCoolDown(20);
     }
 
-    protected void updateMovement(Player player,Map map) {
+    protected void updateMovement(Player player, Map map, GameWorld gameWorld) {
         double vx = getVelocityX();
         double vy = getVelocityY();
+        if (!getStun()){
+            double ex = getX() + getWidthInPixels() * 0.5;
+            double ey = getY() + getHeightInPixels() * 0.5;
+            double px = player.getX() + player.getWidthInPixels() * 0.5;
+            double py = player.getY() + player.getHeightInPixels() * 0.5;
         
-        if(!this.getStun()){
-            facePlayer(player);
-            double angle = this.getFacingAngle();
-            double speed = this.getSpeed();
-            // Remove Math.random() to reduce CodeCache usage
-            vx += Math.cos(angle) * speed;
-            vy += Math.sin(angle) * speed;
-            
-            
-    }
+            boolean hasLOS = map.hasLineOfSight(ex, ey, px, py);
         
+            if (hasLOS) {
+                // if there is a direct look of the player
+                double angle = Math.atan2(py - ey, px - ex);
+                setFacingAngle(angle);
+                double speed = getSpeed();
+                vx += Math.cos(angle) * speed;
+                vy += Math.sin(angle) * speed;
+            } else {
+                // if not seen-able, we use djikstra
+                int[] best = Djikstra(gameWorld, map, ex, ey);
+
+                int bestX = best[0];
+                int bestY = best[1];
+                if (bestX != -1 && bestY != -1) {
+                    // calculate the angle to go to the center of the aimed tile
+                    double targetCenterX = bestX * map.getTileSize() + map.getTileSize() * 0.5;
+                    double targetCenterY = bestY * map.getTileSize() + map.getTileSize() * 0.5;
+                    
+                    double angle = Math.atan2(targetCenterY - ey, targetCenterX - ex);
+                    setFacingAngle(angle);
+                    
+                    double speed = getSpeed();
+                    vx += Math.cos(angle) * speed;
+                    vy += Math.sin(angle) * speed;
+                } else {    
+                    // Fallback : naive behavior if nothing of the previous constraints are verified
+                    facePlayer(player);
+                    double speed = getSpeed();
+                    double angle = this.getFacingAngle();
+                    vx += Math.cos(angle) * speed;
+                    vy += Math.sin(angle) * speed;   
+                }
+            }
+            }
         setVelocityX(vx);
         setVelocityY(vy);
     }
@@ -36,13 +66,22 @@ public class ChargerEnemy extends Enemy {
         int red = 255 - 5 * knockBackFrame;
         if (red < 0) red = 0;
         if (red > 255) red = 255;
-        g.setColor(new Color(red, 100, 20));
+        
         int screenX = (int)this.getX() - x;
         int screenY = (int)this.getY() - y;
         int width = this.getWidthInPixels();
         int height = this.getHeightInPixels();
+        int centerX =screenX+width/2 ;
+        int centerY = screenY+height/2;
+        int[] xPoints = {centerX +(int) (width*Math.cos(getFacingAngle())), centerX+ +(int) (width*Math.cos(getFacingAngle()-Math.PI/2)/1.5) , centerX +(int) (width*Math.cos(getFacingAngle()+Math.PI/2)/1.5)};
+        int[] yPoints = {centerY+(int) (height*Math.sin(getFacingAngle())), centerY+(int) (height*Math.sin(getFacingAngle()-Math.PI/2)/1.5)   ,centerY +(int) (height*Math.sin(getFacingAngle()+Math.PI/2)/1.5)}; 
+        g.setColor(Color.BLUE); 
+        g.fillPolygon(xPoints, yPoints, 3); 
+        g.setColor(new Color(red, 100, 20));
         g.fillOval(screenX, screenY, width, height);
-        g.drawRect(screenX, screenY, width, height);
+        //g.drawRect(screenX, screenY, width, height); // hitbox visualisation
+        
+    
     }
 }
 

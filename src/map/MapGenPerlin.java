@@ -153,7 +153,7 @@ public class MapGenPerlin {
     }
 
     public List<Room> createCorridor(){
-        this.rooms_coordinates = identifyRooms(tiles, width, height, 6);
+        this.rooms_coordinates = identifyRooms(tiles, width, height, 2);
         for (int i=0;i<rooms_coordinates.size();i++ ){
             Room room1 = rooms_coordinates.get(i);
             for (int j=0;j<rooms_coordinates.size();j++){

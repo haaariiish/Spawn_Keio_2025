@@ -38,7 +38,7 @@ public class Game implements Runnable {
         this.inputHandler = new InputHandler();
         attachInputHandlers();
 
-        this.gameworld = new GameWorld(2000, 2000, 40, this);
+        this.gameworld = new GameWorld(2000, 2000,40, this);
 
         
     }

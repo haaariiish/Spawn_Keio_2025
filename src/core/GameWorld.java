@@ -47,6 +47,14 @@ public class GameWorld {
     // Reusable temporary list to avoid allocations
     private final List<Moving_Entity> tempMovingEntitiesList = new ArrayList<>();
 
+    // Pathfinding / distance-to-player grid (in tile coordinates)
+    // -1 means unreachable / not yet computed
+    private int[][] distToPlayer = null;
+    private int lastPathFrame = -1000;
+    private int lastPlayerTileX = -1;
+    private int lastPlayerTileY = -1;
+    private boolean pathDirty = true;
+
     public GameWorld(int worldWidth, int worldHeight, int tileSize,Game game) {
         this.worldWidth = worldWidth;
         this.worldHeight = worldHeight;
@@ -78,6 +86,8 @@ public class GameWorld {
 
         enemies = new ArrayList<>();
         projectilesList = new ArrayList<>();
+        distToPlayer = null;
+        pathDirty = true;
         
         //  spawn point
         Point spawn = map.getSpawnPoint();
@@ -89,9 +99,34 @@ public class GameWorld {
         tempMovingEntitiesList.clear();
         tempMovingEntitiesList.addAll(this.enemies);
         this.player.update_input(this.map, input, tempMovingEntitiesList);
+
+        // --- Pathfinding update (distance-to-player grid) ---
+        if (player != null && map != null) {
+            // Use player center to determine tile, not top-left, for better pathing
+            double playerCenterX = player.getX() + player.getWidthInPixels() * 0.5;
+            double playerCenterY = player.getY() + player.getHeightInPixels() * 0.5;
+            int pxTile = (int)(playerCenterX / tileSize);
+            int pyTile = (int)(playerCenterY / tileSize);
+
+            // Mark path as dirty only if the player moved enough in tile space
+            if (lastPlayerTileX == -1 || lastPlayerTileY == -1 ||
+                Math.abs(pxTile - lastPlayerTileX) + Math.abs(pyTile - lastPlayerTileY) >= 2) {
+                pathDirty = true;
+                lastPlayerTileX = pxTile;
+                lastPlayerTileY = pyTile;
+            }
+
+            // Recompute distances at most every 60 frames, and only when needed
+            if (which_frame_in_cyle - lastPathFrame >= 60 && pathDirty) {
+                recomputeDistances(pxTile, pyTile);
+                lastPathFrame = which_frame_in_cyle;
+                pathDirty = false;
+                //System.out.println(distToPlayer);
+            }
+        }
         //System.out.println("Player bounds: " + this.player.getBounds());
         updateEnemiesPosition(this.map,this.player);
-        if (which_frame_in_cyle%5==0){ // If we are in a precise moment, the game will try to make spawn some enemies
+        if (which_frame_in_cyle%30==0){ // If we are in a precise moment, the game will try to make spawn some enemies
         updateEnemiesSpawn(this.map);
         }
         if (playerShootCooldown > 0) {
@@ -149,6 +184,12 @@ public class GameWorld {
         return this.projectilesList;
     }
 
+    // Distance grid getter for enemies (in tile coordinates)
+    // distToPlayer[y][x] gives the distance in tiles from (x,y) to the player, or -1 if unreachable
+    public int[][] getDistToPlayer(){
+        return this.distToPlayer;
+    }
+
 
     //SETTERS
     // UPDATERS OF FEATURES
@@ -186,7 +227,7 @@ public class GameWorld {
         int size = enemies.size();
         for (int i = size - 1; i >= 0; i--) {
             Enemy enemy = enemies.get(i);
-            Projectiles shot = enemy.updateBehavior(map, player, tempMovingEntitiesList);
+            Projectiles shot = enemy.updateBehavior(map, player, tempMovingEntitiesList,this);
             if (shot != null) {
                 projectilesList.add(shot);
             }
@@ -353,12 +394,72 @@ public class GameWorld {
         return Math.atan2(dy, dx);
     }
 
+    // -------------------------------------------------------------------------
+    // Pathfinding helpers (Dijkstra from player position on the tile grid)
+    // -------------------------------------------------------------------------
+
+    private void recomputeDistances(int startTileX, int startTileY){
+        if (map == null) {
+            return;
+        }
+
+        int w = map.getWidthInTiles();
+        int h = map.getHeightInTiles();
+
+        if (distToPlayer == null || distToPlayer.length != h || distToPlayer[0].length != w) {
+            distToPlayer = new int[h][w];
+        }
+
+        // Initialize distances to -1 (unreachable)
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                distToPlayer[y][x] = -1;
+            }
+        }
+
+        // If the starting tile is not walkable for enemies, nothing to do
+        if (map.isWall(startTileX, startTileY)) {
+            return;
+        }
+
+        java.util.ArrayDeque<int[]> queue = new java.util.ArrayDeque<>();
+        distToPlayer[startTileY][startTileX] = 0;
+        queue.add(new int[]{startTileX, startTileY});
+
+        final int[][] DIRS = { {1,0}, {-1,0}, {0,1}, {0,-1}};
+
+        while (!queue.isEmpty()) {
+            int[] cur = queue.poll();
+            int cx = cur[0];
+            int cy = cur[1];
+            int baseDist = distToPlayer[cy][cx];
+
+            for (int[] d : DIRS) {
+                int nx = cx + d[0];
+                int ny = cy + d[1];
+
+                if (nx < 0 || ny < 0 || nx >= w || ny >= h) {
+                    continue;
+                }
+                if (map.isWall(nx, ny)) {
+                    continue;
+                }
+                if (distToPlayer[ny][nx] != -1) {
+                    continue;
+                }
+
+                distToPlayer[ny][nx] = baseDist + 1;
+                queue.add(new int[]{nx, ny});
+            }
+        }
+    }
+
     private Enemy createRandomEnemy(Point spawnPoint){
         double roll = Math.random();
-        if (roll < 0.35) {
+        if (roll < 0.4) {
             ChargerEnemy charger = new ChargerEnemy(spawnPoint.x, spawnPoint.y);
             return charger;
-        } else if (roll < 0.80) {
+        } else if (roll < 0.8) {
             RangedEnemy ranged = new RangedEnemy(spawnPoint.x, spawnPoint.y);
             return ranged;
         } else {

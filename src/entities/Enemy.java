@@ -1,5 +1,7 @@
 package entities;
 
+import core.Game;
+import core.GameWorld;
 import java.awt.Graphics;
 import java.util.List;
 import map.Map;
@@ -54,18 +56,18 @@ public abstract class Enemy extends Moving_Entity{
         }
     }
 
-    public Projectiles updateBehavior(Map map, Player player, List<Moving_Entity> movingEntity){
+    public Projectiles updateBehavior(Map map, Player player, List<Moving_Entity> movingEntity, GameWorld gameWorld){
         tickCooldowns();
         TimerUpdate();
         gotKnockback();
-        updateMovement(player,map);
+        updateMovement(player,map, gameWorld);
         // Note: player should already be in the list from GameWorld
         update_collision_withEntities(movingEntity, map);
         update(map);
         return attemptSpecialAction(player);
     }
 
-    protected abstract void updateMovement(Player player,Map map); // I want them to move differently for each enemies
+    protected abstract void updateMovement(Player player,Map map, GameWorld gameWorld); // I want them to move differently for each enemies
 
     protected Projectiles attemptSpecialAction(Player player){
         return null;
@@ -80,6 +82,57 @@ public abstract class Enemy extends Moving_Entity{
     public EnemyStates getEnemyStates(){
         return this.state;
     }
+
+    public int[] Djikstra(GameWorld gameWorld, Map map,double ex, double ey){
+            int exTile = (int)(ex / map.getTileSize());
+            int eyTile = (int)(ey / map.getTileSize());
+            
+            int bestDist = Integer.MAX_VALUE;
+            int bestX = -1;
+            int bestY = -1;
     
+            int[][] dist = gameWorld.getDistToPlayer();
+            if (dist != null && eyTile >= 0 && eyTile < dist.length &&
+                exTile >= 0 && exTile < dist[0].length) {
+    
+                int currentDist = dist[eyTile][exTile];
+                
+                if (currentDist >= 0) {
+                    // Include diagonal for smoother movement
+                    final int[][] DIRS = { 
+                        {1,0}, {-1,0}, {0,1}, {0,-1},
+                        {1,1}, {1,-1}, {-1,1}, {-1,-1}
+                    };
+                    
+                    for (int[] d : DIRS) {
+                        int nx = exTile + d[0];
+                        int ny = eyTile + d[1];
+                        
+                        if (nx < 0 || ny < 0 ||
+                            nx >= map.getWidthInTiles() || ny >= map.getHeightInTiles()) {
+                            continue;
+                        }
+                        
+                        // Verify diagonals
+                        boolean isDiagonal = (d[0] != 0 && d[1] != 0);
+                        if (isDiagonal) {
+                            if (map.isWall(exTile + d[0], eyTile) || map.isWall(exTile, eyTile + d[1])) {
+                                continue;
+                            }
+                        }
+                        
+                        int val = dist[ny][nx];
+                        
+                        if (val >= 0 && val < currentDist && val < bestDist) {
+                            bestDist = val;
+                            bestX = nx;
+                            bestY = ny;
+                        }
+                    }
+                }
+            }
+
+            return new int[]{bestX,bestY};
+    }
 
 }
