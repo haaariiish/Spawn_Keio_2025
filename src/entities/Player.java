@@ -10,6 +10,7 @@ import map.Map;
 public class Player extends Moving_Entity{
     private static final Color COLOR_PLAYER = Color.BLACK;
     private String name = "Test_H";
+    private boolean healable = false;
 
     public Player(double x, double y, int width, int height, int hp, int attack, int defense,int range){
         super();
@@ -63,6 +64,17 @@ public class Player extends Moving_Entity{
         if ((moved_vertical||moved_horizontal) && (horizontal != 0 || vertical != 0)) {
             this.setFacingAngle(Math.atan2(vertical, horizontal));
         }
+    }
+
+    public void setHealable(boolean a){
+        this.healable = a;
+    }
+    public boolean getHealable(){
+        return this.healable;
+    }
+
+    public void healing(int a){
+        this.setHP(getHP()+a);
     }
 
     //  Rendering

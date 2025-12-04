@@ -34,8 +34,9 @@ public class RangedEnemy extends Enemy {
                 double py = player.getY() + player.getHeightInPixels() * 0.5;
 
                 boolean hasLOS = map.hasLineOfSight(ex, ey, px, py);
-
+                //System.out.println(hasLOS);
                 if (hasLOS) {
+                    
                     // if in direct sight, go straight to the player
                     double angle = Math.atan2(py - ey, px - ex);
                     setFacingAngle(angle);
@@ -127,11 +128,12 @@ public class RangedEnemy extends Enemy {
         int green = 210 - 3 * stunFrame;
         if (green < 0) green = 0;
         if (green > 255) green = 255;
-       
+        double brighness  ;
         int screenX = (int)this.getX() - x;
         int screenY = (int)this.getY() - y;
         int width = this.getWidthInPixels();
         int height = this.getHeightInPixels();
+        
 
         int centerX =screenX+width/2 ;
         int centerY = screenY+height/2;

@@ -29,7 +29,7 @@ public class MapGenPerlin {
         PerlinNoise noiseGen = new PerlinNoise(this.seed);
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                double structure = getFractalNoise(noiseGen, x, y, 0.05, 4);
+                double structure = getFractalNoise(noiseGen, x, y, 0.1, 4);
                 double content = getFractalNoise(noiseGen, x + 5000, y + 5000, 0.08, 2);
                 tiles[y][x] = getBlockID(structure, content);
             }
@@ -37,7 +37,9 @@ public class MapGenPerlin {
         rooms_coordinates = createCorridor();
         placeMapBound();
         placeSpawn();
-
+        for (int i=0; i<rooms_coordinates.size();i++){
+        System.out.println(rooms_coordinates.get(i).id);
+        }
     }
     
     public int[][] getTiles(){
@@ -101,12 +103,12 @@ public class MapGenPerlin {
 }
     public int getBlockID(double structure, double content) {
         
-    if (structure > 0.00001) {
+    if (structure < 0.1) {
         return Map.WALL; 
     }
     
-    if (content < 0.20) {
-        return Map.EMPTY;
+    if (content < 0.01) {
+        return Map.ENEMY_SPAWN;
     }
 
     if (content > 0.30) {
@@ -115,7 +117,7 @@ public class MapGenPerlin {
     if (content > 0.90) {
         return Map.WATER; 
     }
-    return Map.ENEMY_SPAWN; 
+    return Map.EMPTY; 
 }
 
     public void placeSpawn(){
@@ -153,7 +155,7 @@ public class MapGenPerlin {
     }
 
     public List<Room> createCorridor(){
-        this.rooms_coordinates = identifyRooms(tiles, width, height, 2);
+        this.rooms_coordinates = identifyRooms(tiles, width, height, 10);
         for (int i=0;i<rooms_coordinates.size();i++ ){
             Room room1 = rooms_coordinates.get(i);
             for (int j=0;j<rooms_coordinates.size();j++){
@@ -161,7 +163,7 @@ public class MapGenPerlin {
                 if(j!=i){
                     Room room2 = rooms_coordinates.get(j);
                     if ((room2.centerX-room1.centerX)*(room2.centerX-room1.centerX) + (room2.centerY-room1.centerY)*(room2.centerY-room1.centerY)<1000) {
-                        createConnectionSimple(room1.centerX,room1.centerY,room2.centerX,room2.centerY, tiles, 0.01f);
+                        createConnectionSimple(room1.centerX,room1.centerY,room2.centerX,room2.centerY, tiles, 0);
                     }
                 }
             }
@@ -240,7 +242,7 @@ public class MapGenPerlin {
                 for (int y = 0; y < height; y++) {
                     
                     // if EMPTY and not processed
-                    if (map[x][y] == Map.EMPTY && roomIds[x][y] == 0) {
+                    if (map[x][y] != Map.WALL && roomIds[x][y] == 0) {
                         
                         // FLOOD FILL
                         Room currentRoom = new Room(nextId);
@@ -287,7 +289,7 @@ public class MapGenPerlin {
 
         private static void checkNeighbor(int[][] map, int[][] roomIds, int w, int h, Queue<Integer> q, int x, int y, int id) {
             if (x >= 0 && x < w && y >= 0 && y < h) {
-                if (map[x][y] == 0 /* EMPTY */ && roomIds[x][y] == 0) {
+                if (map[x][y] != Map.WALL /* EMPTY */ && roomIds[x][y] == 0) {
                     roomIds[x][y] = id; // Marquer comme visité tout de suite
                     q.add(x + y * w);
                 }
@@ -303,10 +305,10 @@ public class MapGenPerlin {
                             int index = q.poll();
                             int cx = index % w;
                             int cy = index / w;
-                            if (map[cx][cy] == 1 /* WALL */) {
+                            if (map[cx][cy] == Map.WALL /* WALL */) {
                                 continue;
                             }                            
-                            map[cx][cy] = 1; // WALL
+                            map[cx][cy] = Map.WALL; // WALL
                     
                             //we check only the neighbor with the same Id
                             pushIfSameRoom(q, map, roomIds, cx + 1, cy, w, h, idToFill);
@@ -321,7 +323,7 @@ public class MapGenPerlin {
                         // Check map boundaries
                         if (x >= 0 && x < w && y >= 0 && y < h) {
                            // if the same room and still empty
-                            if (roomIds[x][y] == targetId && map[x][y] == 0 /* EMPTY */) {
+                            if (roomIds[x][y] == targetId && map[x][y] !=Map.WALL /* EMPTY */) {
                                 q.add(x + y * w);
                             }
                         }
