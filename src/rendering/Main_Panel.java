@@ -146,21 +146,27 @@ public class Main_Panel extends JPanel{
 
         int xplayer = (int) Math.round(player.getX());
         int yplayer = (int) Math.round(player.getY());
+        
 
         int screenWidth = getWidth();
         int screenHeight = getHeight();
 
         int cameraX = xplayer - screenWidth / 2 + player.getWidthInPixels() / 2;
         int cameraY = yplayer - screenHeight / 2 + player.getHeightInPixels() / 2;
+        int cameraX_tile =(int)( cameraX/map.getTileSize());
+        int cameraY_tile =(int)( cameraY/map.getTileSize());
+        int xplayer_tile =(int)(xplayer/map.getTileSize());
+        int yplayer_tile =(int)(yplayer/map.getTileSize());
 
-        int startTileX = Math.max(0, cameraX / map.getTileSize());
-        int startTileY = Math.max(0, cameraY / map.getTileSize());
+        int startTileX = Math.max(0, cameraX_tile);
+        int startTileY = Math.max(0, cameraY_tile);
         int endTileX = Math.min(map.getWidthInTiles(), (cameraX + screenWidth) / map.getTileSize()+ 1);
         int endTileY = Math.min(map.getHeightInTiles(), (cameraY + screenHeight) / map.getTileSize() + 1);
-
+        double brighness  ;
         for (int y = startTileY; y < endTileY; y++) {
             for (int x = startTileX; x<endTileX; x++) {
                 int tileType = map.getTileAt(x, y);
+                brighness = Math.max((1 - 2*Math.sqrt((x-xplayer_tile) *(x-xplayer_tile)  + (yplayer_tile-y)*(yplayer_tile-y))*2*map.getTileSize() / (screenWidth+screenHeight)),0);
                 switch (tileType) {
                     case Map.WALL:
                         g.setColor(COLOR_WALL);
@@ -187,13 +193,14 @@ public class Main_Panel extends JPanel{
                         g.setColor(java.awt.Color.LIGHT_GRAY);
                         break;
                 }
+                g.setColor(new Color((int)(brighness*g.getColor().getRed()), (int) (g.getColor().getGreen()*brighness), (int) (brighness*g.getColor().getBlue())));
                 // To draw the map, according to the player position 
                 int screenX = x * map.getTileSize() - cameraX;
                 int screenY = y * map.getTileSize() - cameraY; 
                 g.fillRect(screenX, screenY, 
                            map.getTileSize(), map.getTileSize());
-                g.setColor(Color.RED);
-                g.drawRect(screenX, screenY, map.getTileSize(), map.getTileSize());
+                /*g.setColor(Color.RED );
+                g.drawRect(screenX, screenY, map.getTileSize(), map.getTileSize());*/
                 
             }
         }

@@ -94,7 +94,7 @@ public class GameWorld {
         
         //  spawn point
         Point spawn = map.getSpawnPoint();
-        player = new Player(spawn.x, spawn.y,19,19,1000,10,1,100);
+        player = new Player(spawn.x, spawn.y,19,19,100,10,1,100);
     }
 
     public void update(InputHandler input,int which_frame_in_cyle){
