@@ -79,9 +79,18 @@ public class Player extends Moving_Entity{
 
     //  Rendering
     public void render(Graphics g, int x, int y){
+        int width = getWidthInPixels();
+        int height = getHeightInPixels();
+        int centerX =x+width/2 ;
+        int centerY = y+height/2;
+        int[] xPoints = {centerX +(int) (width*Math.cos(getFacingAngle())), centerX+ +(int) (width*Math.cos(getFacingAngle()-Math.PI/2)/1.5) , centerX +(int) (width*Math.cos(getFacingAngle()+Math.PI/2)/1.5)};
+        int[] yPoints = {centerY+(int) (height*Math.sin(getFacingAngle())), centerY+(int) (height*Math.sin(getFacingAngle()-Math.PI/2)/1.5)   ,centerY +(int) (height*Math.sin(getFacingAngle()+Math.PI/2)/1.5)}; 
+        g.setColor(Color.BLUE); 
+        g.fillPolygon(xPoints, yPoints, 3); 
         g.setColor(COLOR_PLAYER);
-        g.fillOval(x, y, this.getWidthInPixels(), this.getHeightInPixels());
-        g.drawRect(x, y, this.getWidthInPixels(), this.getHeightInPixels());
+        g.fillOval(x, y, width, height);
+        g.drawRect(x, y, width, height);
+        
     }
 
 
