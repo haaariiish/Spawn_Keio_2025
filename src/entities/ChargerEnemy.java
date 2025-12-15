@@ -6,7 +6,7 @@ import core.GameWorld;
 public class ChargerEnemy extends Enemy {
 
     public ChargerEnemy(double x, double y) {
-        super(x, y, 15, 15, 25, 2, 1, 30,(int) Math.round(8+Math.random()));
+        super(x, y, 19, 19, 25, 2, 1, 30,(int) Math.round(8+Math.random()));
         setStunCoolDown(20);
     }
 
@@ -22,6 +22,7 @@ public class ChargerEnemy extends Enemy {
             boolean hasLOS = map.hasLineOfSight(ex, ey, px, py);
         
             if (hasLOS) {
+                System.out.println(1);
                 // if there is a direct look of the player
                 double angle = Math.atan2(py - ey, px - ex);
                 setFacingAngle(angle);

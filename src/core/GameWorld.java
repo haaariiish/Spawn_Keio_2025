@@ -21,13 +21,13 @@ import java.awt.Point;
 public class GameWorld {
     private Player player;
     private int score=0;
-    private int initialEnemy =200;
+    private int initialEnemy =10;
     private int maxEnemy ;
     private Map map;
     private List<Enemy> enemies;
     private Game game;
 
-    private double spawnEnemyproba=0.005;
+    private double spawnEnemyproba=0.0005;
     //private Boss currentBoss;
     private List<Projectiles> projectilesList;
     //private List<Projectile> enemyProjectiles;
@@ -90,6 +90,11 @@ public class GameWorld {
         enemies = new ArrayList<>();
         projectilesList = new ArrayList<>();
         distToPlayer = null;
+        pathDirty = true;
+        lastPathFrame = -1000;
+        lastPlayerTileX = -1;
+        lastPlayerTileY = -1;
+        
         pathDirty = true;
         
         //  spawn point
