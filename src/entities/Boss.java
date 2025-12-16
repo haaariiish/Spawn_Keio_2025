@@ -13,7 +13,7 @@ public class Boss extends Enemy{
         return;
     }
     @Override
-    public void render(Graphics g,int x, int y){
+    public void render(Graphics g,int x, int y,  int screenHeight, int screenWidth, int SHADOW_DISTANCE){
         /*g.setColor(Color.PURPLE)
         g.fillOval((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );
         g.drawRect((int) this.getX() -x,(int) this.getY() -y ,this.getWidthInPixels() ,this.getHeightInPixels() );*/

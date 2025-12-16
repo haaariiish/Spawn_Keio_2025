@@ -6,6 +6,7 @@ import map.Map;
 import core.GameWorld;
 
 public class RangedEnemy extends Enemy {
+    public double brighness = 0;
     private final double preferredRange;
     private final double fireRange;
     private final double retreatPadding;
@@ -122,13 +123,13 @@ public class RangedEnemy extends Enemy {
     }
 
     @Override
-    public void render(Graphics g,int x, int y){
+    public void render(Graphics g,int x, int y,  int screenHeight, int screenWidth, int SHADOW_DISTANCE){
         // Calculate color components without creating new Color object
         int stunFrame = getStunFrame();
         int green = 210 - 3 * stunFrame;
         if (green < 0) green = 0;
         if (green > 255) green = 255;
-        double brighness  ;
+   
         int screenX = (int)this.getX() - x;
         int screenY = (int)this.getY() - y;
         int width = this.getWidthInPixels();
@@ -139,9 +140,16 @@ public class RangedEnemy extends Enemy {
         int centerY = screenY+height/2;
         int[] xPoints = {centerX +(int) (width*Math.cos(getFacingAngle())), centerX+ +(int) (width*Math.cos(getFacingAngle()-Math.PI/2)/1.5) , centerX +(int) (width*Math.cos(getFacingAngle()+Math.PI/2)/1.5)};
         int[] yPoints = {centerY+(int) (height*Math.sin(getFacingAngle())), centerY+(int) (height*Math.sin(getFacingAngle()-Math.PI/2)/1.5)   ,centerY +(int) (height*Math.sin(getFacingAngle()+Math.PI/2)/1.5)}; 
+        brighness = Math.max(1 - Math.sqrt((centerX-screenWidth/2) *(centerX-screenWidth/2)  + (centerY-screenHeight/2)*(centerY-screenHeight/2)) / SHADOW_DISTANCE,0);
+        //System.out.println(brighness);
+       
         g.setColor(Color.BLUE);
+        
+        g.setColor(new Color((int)(brighness*g.getColor().getRed()), (int) (g.getColor().getGreen()*brighness), (int) (brighness*g.getColor().getBlue())));
         g.fillPolygon(xPoints, yPoints, 3);
-        g.setColor(new Color(255, green, 255));
+
+        g.setColor(new Color((int)(brighness*255), (int)(brighness*green), (int)(brighness*255)));
+        
         g.fillOval(screenX, screenY, width, height);
        // g.drawRect(screenX, screenY, width, height);
     }

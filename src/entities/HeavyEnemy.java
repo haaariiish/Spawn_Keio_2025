@@ -6,6 +6,7 @@ import core.GameWorld;
 
 
 public class HeavyEnemy extends Enemy {
+    public double brighness = 0;
 
     public HeavyEnemy(double x, double y) {
         super(x, y,19, 19, 80, 6, 4, 40,(int) Math.round(4+Math.random()));
@@ -64,7 +65,8 @@ public class HeavyEnemy extends Enemy {
         setVelocityY(vy);
     }
 
-    public void render(Graphics g,int x, int y){
+    public void render(Graphics g,int x, int y, int screenHeight, int screenWidth, int SHADOW_DISTANCE){
+        
         // Calculate color without creating new Color every frame
         int knockBackFrame = getKnockBackFrame();
         int green = 255 - 5 * knockBackFrame;
@@ -79,9 +81,14 @@ public class HeavyEnemy extends Enemy {
         int centerY = screenY+height/2;
         int[] xPoints = {centerX +(int) (width*Math.cos(getFacingAngle())), centerX+ +(int) (width*Math.cos(getFacingAngle()-Math.PI/2)/1.5) , centerX +(int) (width*Math.cos(getFacingAngle()+Math.PI/2)/1.5)};
         int[] yPoints = {centerY+(int) (height*Math.sin(getFacingAngle())), centerY+(int) (height*Math.sin(getFacingAngle()-Math.PI/2)/1.5)   ,centerY +(int) (height*Math.sin(getFacingAngle()+Math.PI/2)/1.5)}; 
+        //System.out.println(screenWidth+screenHeight);
+        //System.out.println(screenWidth);
+        //System.out.println((1 - 2*Math.sqrt((screenX) *(screenX)  + (screenY)*(screenY))/ (screenWidth+screenHeight)));
+        brighness = Math.max(1 - Math.sqrt((centerX-screenWidth/2) *(centerX-screenWidth/2)  + (centerY-screenHeight/2)*(centerY-screenHeight/2)) / SHADOW_DISTANCE,0);
         g.setColor(Color.BLUE); 
+        g.setColor(new Color((int)(brighness*g.getColor().getRed()), (int) (g.getColor().getGreen()*brighness), (int) (brighness*g.getColor().getBlue())));
         g.fillPolygon(xPoints, yPoints, 3); 
-        g.setColor(new Color(100, green, 0));
+        g.setColor(new Color((int)(brighness*100), (int)(brighness*green), 0));
         g.fillOval(screenX, screenY, width, height);
         //g.drawRect(screenX, screenY, width, height); // hitbox
     }

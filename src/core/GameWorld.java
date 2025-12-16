@@ -35,10 +35,11 @@ public class GameWorld {
     //private List<Particle> particles;
 
     //private Map<String, Enemy> enemyMap;
-
+    
     private int worldWidth;
     private int worldHeight;
     private int tileSize;
+    
     private static final int PLAYER_SHOOT_COOLDOWN_FRAMES = 5;
     private int playerShootCooldown = 0;
 
@@ -466,7 +467,7 @@ public class GameWorld {
 
     private Enemy createRandomEnemy(Point spawnPoint){
         double roll = Math.random();
-        if (roll < 0.4) {
+        if (roll < 0.5) {
             ChargerEnemy charger = new ChargerEnemy(spawnPoint.x, spawnPoint.y);
             return charger;
         } else if (roll < 0.8) {

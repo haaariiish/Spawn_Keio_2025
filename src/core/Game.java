@@ -39,7 +39,7 @@ public class Game implements Runnable {
         attachInputHandlers();
 
         this.gameworld = new GameWorld(2000, 2000,40, this);
-
+        frame.getGamePanel().setSubTileSize(this.gameworld.getTileSize());
         
     }
 

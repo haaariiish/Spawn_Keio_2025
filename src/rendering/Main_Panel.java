@@ -41,6 +41,9 @@ public class Main_Panel extends JPanel{
     private static final Color COLOR_SPAWN = new Color(144, 238, 144);
     private static final Color COLOR_SPAWN_ENEMY = new Color(178, 34, 34);
 
+    public int subTileSize;
+    public int subDivision = 4;
+    public static final int SHADOW_DISTANCE = 300;
     // Entity color
 
 
@@ -75,6 +78,10 @@ public class Main_Panel extends JPanel{
         
         loadResources(this.getWidth(), this.getHeight());
         setDoubleBuffered(true); // Enable double buffering for smoother rendering ( Not sure if needed )
+    }
+
+    public void setSubTileSize(int tileSize){
+        this.subTileSize = tileSize/this.subDivision;
     }
 
     public void reset(){
@@ -162,11 +169,12 @@ public class Main_Panel extends JPanel{
         int startTileY = Math.max(0, cameraY_tile);
         int endTileX = Math.min(map.getWidthInTiles(), (cameraX + screenWidth) / map.getTileSize()+ 1);
         int endTileY = Math.min(map.getHeightInTiles(), (cameraY + screenHeight) / map.getTileSize() + 1);
-        double brighness  ;
+        double brighness;
         for (int y = startTileY; y < endTileY; y++) {
             for (int x = startTileX; x<endTileX; x++) {
                 int tileType = map.getTileAt(x, y);
-                brighness = Math.max((1 - 2*Math.sqrt((x-xplayer_tile) *(x-xplayer_tile)  + (yplayer_tile-y)*(yplayer_tile-y))*2*map.getTileSize() / (screenWidth+screenHeight)),0);
+                //brighness = Math.max((1 - 2*Math.sqrt((x-xplayer_tile) *(x-xplayer_tile)  + (yplayer_tile-y)*(yplayer_tile-y))*2*map.getTileSize() / (screenWidth+screenHeight)),0);
+                brighness = Math.max((1 - Math.sqrt((x-xplayer_tile) *(x-xplayer_tile)  + (yplayer_tile-y)*(yplayer_tile-y))*map.getTileSize() / SHADOW_DISTANCE),0);
                 switch (tileType) {
                     case Map.WALL:
                         g.setColor(COLOR_WALL);
@@ -214,7 +222,7 @@ public class Main_Panel extends JPanel{
         enemyRenderList.addAll(enemies);
         int enemySize = enemyRenderList.size();
         for (int i = enemySize - 1; i >= 0; i--) {
-            enemyRenderList.get(i).render(g, cameraX, cameraY);
+            enemyRenderList.get(i).render(g, cameraX, cameraY,screenHeight,screenWidth,SHADOW_DISTANCE);
         }
         
         // Draw the player 

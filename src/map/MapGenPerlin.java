@@ -38,7 +38,7 @@ public class MapGenPerlin {
         placeMapBound();
         placeSpawn();
         for (int i=0; i<rooms_coordinates.size();i++){
-        System.out.println(rooms_coordinates.get(i).id);
+        // System.out.println(rooms_coordinates.get(i).id);
         }
     }
     
