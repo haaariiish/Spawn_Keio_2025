@@ -42,8 +42,11 @@ public class Main_Panel extends JPanel{
     private static final Color COLOR_SPAWN_ENEMY = new Color(178, 34, 34);
 
     public int subTileSize;
-    public int subDivision = 4;
-    public static final int SHADOW_DISTANCE = 300;
+    public int subDivision = 10;
+    
+    // Pre-calculated color arrays to avoid creating Color objects every frame (fixes CodeCache)
+    private Color[][] brightnessColors = new Color[7][101]; // 7 tile types, 101 brightness levels (0-100)
+    
     // Entity color
 
 
@@ -76,12 +79,56 @@ public class Main_Panel extends JPanel{
         setFocusable(true);
         setRequestFocusEnabled(true);
         
+        initializeBrightnessColors(); // Pre-calculate all color variants
         loadResources(this.getWidth(), this.getHeight());
         setDoubleBuffered(true); // Enable double buffering for smoother rendering ( Not sure if needed )
     }
 
     public void setSubTileSize(int tileSize){
         this.subTileSize = tileSize/this.subDivision;
+    }
+    
+    // Pre-calculate all brightness variations of colors to avoid creating Color objects in render loop
+    private void initializeBrightnessColors() {
+        Color[] baseColors = {
+            COLOR_EMPTY,        // 0
+            COLOR_WALL,         // 1
+            COLOR_DOOR,         // 2
+            COLOR_SPIKE,        // 3
+            COLOR_WATER,        // 4
+            COLOR_SPAWN,        // 5
+            COLOR_SPAWN_ENEMY   // 6
+        };
+        
+        for (int typeIdx = 0; typeIdx < baseColors.length; typeIdx++) {
+            Color base = baseColors[typeIdx];
+            for (int brightness = 0; brightness <= 100; brightness++) {
+                double factor = brightness / 100.0;
+                brightnessColors[typeIdx][brightness] = new Color(
+                    (int)(base.getRed() * factor),
+                    (int)(base.getGreen() * factor),
+                    (int)(base.getBlue() * factor)
+                );
+            }
+        }
+    }
+    
+    // Get pre-calculated color based on tile type and brightness (0.0 to 1.0)
+    private Color getBrightnessColor(int tileType, double brightness) {
+        int typeIdx;
+        switch (tileType) {
+            case Map.EMPTY: typeIdx = 0; break;
+            case Map.WALL: typeIdx = 1; break;
+            case Map.DOOR: typeIdx = 2; break;
+            case Map.SPIKE: typeIdx = 3; break;
+            case Map.WATER: typeIdx = 4; break;
+            case Map.SPAWN: typeIdx = 5; break;
+            case Map.ENEMY_SPAWN: typeIdx = 6; break;
+            default: typeIdx = 0; break;
+        }
+        
+        int brightnessIndex = Math.max(0, Math.min(100, (int)(brightness * 100)));
+        return brightnessColors[typeIdx][brightnessIndex];
     }
 
     public void reset(){
@@ -162,62 +209,66 @@ public class Main_Panel extends JPanel{
         int cameraY = yplayer - screenHeight / 2 + player.getHeightInPixels() / 2;
         int cameraX_tile =(int)( cameraX/map.getTileSize());
         int cameraY_tile =(int)( cameraY/map.getTileSize());
-        int xplayer_tile =(int)(xplayer/map.getTileSize());
-        int yplayer_tile =(int)(yplayer/map.getTileSize());
+        //int xplayer_tile =(int)(xplayer/map.getTileSize());
+        //int yplayer_tile =(int)(yplayer/map.getTileSize());
         int xplayer_subtile = (int)(xplayer/subTileSize);
         int yplayer_subtile = (int)(yplayer/subTileSize);
+
+
 
         int startTileX = Math.max(0, cameraX_tile);
         int startTileY = Math.max(0, cameraY_tile);
         int endTileX = Math.min(map.getWidthInTiles(), (cameraX + screenWidth) / map.getTileSize()+ 1);
         int endTileY = Math.min(map.getHeightInTiles(), (cameraY + screenHeight) / map.getTileSize() + 1);
-        double brighness;
-        for (int y = startTileY*subDivision; y < endTileY*subDivision; y++) {
-            for (int x = startTileX*subDivision; x<endTileX*subDivision; x++) {
-                int tileType = map.getTileAt(x/subDivision, y/subDivision);
-                //brighness = Math.max((1 - 2*Math.sqrt((x-xplayer_tile) *(x-xplayer_tile)  + (yplayer_tile-y)*(yplayer_tile-y))*2*map.getTileSize() / (screenWidth+screenHeight)),0);
-                //brighness = Math.max((1 - Math.sqrt((x-xplayer_tile) *(x-xplayer_tile)  + (yplayer_tile-y)*(yplayer_tile-y))*map.getTileSize() / SHADOW_DISTANCE),0);
-                brighness = Math.max((1 - Math.sqrt((x-xplayer_subtile) *(x-xplayer_subtile)  + (yplayer_subtile-y)*(yplayer_subtile-y))*subTileSize / SHADOW_DISTANCE),0);
-                switch (tileType) {
-                    case Map.WALL:
-                        g.setColor(COLOR_WALL);
-                        break;
-                    case Map.DOOR:
-                        g.setColor(COLOR_DOOR);
-                        break;
-                    case Map.EMPTY:
-                        g.setColor(COLOR_EMPTY);
-                        break;
-                    case Map.SPAWN:
-                        g.setColor(COLOR_SPAWN);
-                        break;
-                    case Map.SPIKE:
-                        g.setColor(COLOR_SPIKE);
-                        break;
-                    case Map.WATER:
-                        g.setColor(COLOR_WATER);
-                        break;
-                    case Map.ENEMY_SPAWN:
-                        g.setColor(COLOR_SPAWN_ENEMY);
-                        break;
-                    default:
-                        g.setColor(java.awt.Color.LIGHT_GRAY);
-                        break;
+        
+        double shadowDistance = player.getShadowDistance();
+        boolean[][] VisibilityMap = map.getVisibilityMapTileCached(player);
+        
+        // Iterate through visible tiles using subdivision
+        for (int y = startTileY * subDivision; y < endTileY * subDivision; y++) {
+            for (int x = startTileX * subDivision; x < endTileX * subDivision; x++) {
+                int tileX = x / subDivision;
+                int tileY = y / subDivision;
+                
+                // Check visibility at TILE level (not subtile)
+                if (x >= 0 && x < map.getWidthInTiles()*subDivision && 
+                    y >= 0 && y < map.getHeightInTiles()*subDivision && 
+                    VisibilityMap[y][x]) {
+                    
+                    int tileType = map.getTileAt(tileX, tileY);
+                    
+                    // Calculate distance from player in pixels using subtiles for smooth gradient
+                    int dx = x - xplayer_subtile;
+                    int dy = y - yplayer_subtile;
+                    double dist_to_player = Math.sqrt(dx * dx + dy * dy) * subTileSize;
+                    
+                    // Only render if within shadow distance
+                    if (dist_to_player < shadowDistance) {
+                        // Calculate brightness (1.0 = full bright, 0.0 = black)
+                        double brightness = Math.max(1.0 - (dist_to_player / shadowDistance), 0.0);
+                        
+                        // Use pre-calculated color instead of creating new Color object
+                        g.setColor(getBrightnessColor(tileType, brightness));
+                        
+                        // Calculate screen position
+                        int screenX = x * subTileSize - cameraX;
+                        int screenY = y * subTileSize - cameraY;
+                        
+                        g.fillRect(screenX, screenY, subTileSize, subTileSize);
+                    } else {
+                        // Beyond shadow distance, render as black
+                        g.setColor(Color.BLACK);
+                        int screenX = x * subTileSize - cameraX;
+                        int screenY = y * subTileSize - cameraY;
+                        g.fillRect(screenX, screenY, subTileSize, subTileSize);
+                    }
+                } else {
+                    // Not visible or out of bounds, render as black
+                    g.setColor(Color.BLACK);
+                    int screenX = x * subTileSize - cameraX;
+                    int screenY = y * subTileSize - cameraY;
+                    g.fillRect(screenX, screenY, subTileSize, subTileSize);
                 }
-                g.setColor(new Color((int)(brighness*g.getColor().getRed()), (int) (g.getColor().getGreen()*brighness), (int) (brighness*g.getColor().getBlue())));
-                // To draw the map, according to the player position 
-                //int screenX = x * map.getTileSize() - cameraX;
-                //int screenY = y * map.getTileSize() - cameraY;
-                int screenX = x * subTileSize - cameraX;
-                int screenY = y * subTileSize - cameraY;
-                
-                //g.fillRect(screenX, screenY, 
-                           //map.getTileSize(), map.getTileSize());
-                g.fillRect(screenX, screenY, 
-                        subTileSize, subTileSize);
-                /*g.setColor(Color.RED );
-                g.drawRect(screenX, screenY, map.getTileSize(), map.getTileSize());*/
-                
             }
         }
         // TO center the camera to the exact position of the player
@@ -230,7 +281,7 @@ public class Main_Panel extends JPanel{
         enemyRenderList.addAll(enemies);
         int enemySize = enemyRenderList.size();
         for (int i = enemySize - 1; i >= 0; i--) {
-            enemyRenderList.get(i).render(g, cameraX, cameraY,screenHeight,screenWidth,SHADOW_DISTANCE);
+            enemyRenderList.get(i).render(g, cameraX, cameraY,screenHeight,screenWidth,player.getShadowDistance());
         }
         
         // Draw the player 
@@ -249,6 +300,7 @@ public class Main_Panel extends JPanel{
         drawDebugInfo(g, player, cameraX, cameraY);
         
     }
+
 
     private void drawDebugInfo(Graphics2D g, Player player, int cameraX, int cameraY) {
         // Cache frequently accessed objects
@@ -361,6 +413,10 @@ public class Main_Panel extends JPanel{
     //Getter
     public BufferedImage getBackgroundImage() {
         return this.backgroundImage;
+    }
+
+    public int getSubDivision(){
+        return this.subDivision;
     }
 
     // Custom color

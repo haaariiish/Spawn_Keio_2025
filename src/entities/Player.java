@@ -11,6 +11,7 @@ public class Player extends Moving_Entity{
     private static final Color COLOR_PLAYER = Color.BLACK;
     private String name = "Test_H";
     private boolean healable = false;
+    
 
     public Player(double x, double y, int width, int height, int hp, int attack, int defense,int range){
         super();
@@ -23,6 +24,7 @@ public class Player extends Moving_Entity{
         this.setWidthinPixel(width);
         this.setHeightinPixel(height);
         this.setBounds();
+        this.setShadowDistance(300);
     }
 
     public void update_input(Map map, InputHandler input, List<Moving_Entity> movingEntity) {
@@ -93,6 +95,7 @@ public class Player extends Moving_Entity{
         
     }
 
+    
 
     
 

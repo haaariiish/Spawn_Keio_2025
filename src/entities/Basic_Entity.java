@@ -39,6 +39,9 @@ public class Basic_Entity {
 
     private int weight = 1;
     
+    //Rendering 
+    //Brigntness distance
+    private int ShadowDistance = 0;
 
     // Temporary state for 
 
@@ -171,6 +174,10 @@ public class Basic_Entity {
 
     public void setMaxHp(int max){
         this.max_hp = max;
+    }
+
+    public void setShadowDistance(int sd){
+        this.ShadowDistance = sd;
     }
 
 
@@ -313,6 +320,10 @@ public class Basic_Entity {
 
     public int getMaxHP(){
         return this.max_hp;
+    }
+
+    public int getShadowDistance(){
+        return this.ShadowDistance;
     }
 
 

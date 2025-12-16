@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import entities.Enemy;
+import entities.Basic_Entity;
 
 
 
@@ -25,8 +26,15 @@ public class Map{
     
     public List<Room> rooms;
    
+    // parameters for visibilityMap function
+    private boolean[][] cachedVisibilityMap;
+    private double lastVisibilityX = -1000;
+    private double lastVisibilityY = -1000;
+    private static final double VISIBILITY_UPDATE_THRESHOLD = 20.0;
 
 
+    private int subTileSize_Render;
+    private int subDivision;
     private int[][] tiles;
     private int tileSize;
     private int widthInTiles;
@@ -192,10 +200,14 @@ public class Map{
     }
 
     public boolean hasLineOfSight(double x0, double y0, double x1, double y1) {
-        int tileX0 = (int)(x0 / tileSize);
+        /*int tileX0 = (int)(x0 / tileSize);
         int tileY0 = (int)(y0 / tileSize);
         int tileX1 = (int)(x1 / tileSize);
-        int tileY1 = (int)(y1 / tileSize);
+        int tileY1 = (int)(y1 / tileSize);*/
+        int tileX0 = (int)(x0 / subTileSize_Render);
+        int tileY0 = (int)(y0 / subTileSize_Render);
+        int tileX1 = (int)(x1 / subTileSize_Render);
+        int tileY1 = (int)(y1 / subTileSize_Render);
     
         // if seen
         if (tileX0 == tileX1 && tileY0 == tileY1) {
@@ -240,6 +252,124 @@ public class Map{
         
         return true;  // not wall between them
     }
+
+    public boolean[][] getVisibilityMapTile(Basic_Entity entity) {
+        boolean[][] visibilityMap = new boolean[heightInTiles*subDivision][widthInTiles*subDivision];
+        boolean[][] visitedMap = new boolean[heightInTiles*subDivision][widthInTiles*subDivision];
+
+        
+        int entityXtile = (int)(entity.getX() / subTileSize_Render);
+        int entityYtile = (int)(entity.getY() / subTileSize_Render);
+
+        
+        double shadowDistPx = entity.getShadowDistance();
+
+        int minX = Math.max(0, (int)((entity.getX() - shadowDistPx) / subTileSize_Render));
+        int minY = Math.max(0, (int)((entity.getY() - shadowDistPx) / subTileSize_Render));
+        int maxX = Math.min(widthInTiles*subDivision - 1, (int)((entity.getX() + shadowDistPx) / subTileSize_Render));
+        int maxY = Math.min(heightInTiles*subDivision - 1, (int)((entity.getY() + shadowDistPx) / subTileSize_Render));
+
+        
+        for (int y = minY; y <= maxY; y++) {
+            for (int x = minX; x <= maxX; x++) {
+
+                
+                if (visitedMap[y][x]) {
+                continue;
+                }
+
+        
+                int dx = Math.abs(x - entityXtile);
+                int dy = Math.abs(y - entityYtile);
+
+                int sx = entityXtile < x ? 1 : -1;
+                int sy = entityYtile < y ? 1 : -1;
+
+                int err = dx - dy;
+
+                int xx = entityXtile;
+                int yy = entityYtile;
+                boolean blocked = false;
+                while (!(xx == x && yy == y)) {
+
+        
+                    if (xx < 0 || xx >= widthInTiles*subDivision || yy < 0 || yy >= heightInTiles*subDivision) {
+                        blocked = true; 
+                        break;
+                     // Hors limites, arrêter
+                    }
+
+                    if (visitedMap[yy][xx]) {
+                        if (!visibilityMap[yy][xx]) {
+                            // Déjà visité et c'est un mur qui bloque
+                            blocked = true;
+                            break;
+                        }
+                        // Déjà visité et visible, continuer
+                    } else {
+                        // Pas encore visité
+                        if (isWall(xx/subDivision, yy/subDivision)) {
+                            visibilityMap[yy][xx] = false;
+                            visitedMap[yy][xx] = true;
+                            blocked = true;
+                            break;
+                        } else {
+                            visibilityMap[yy][xx] = true;
+                            visitedMap[yy][xx] = true;
+                        }
+                    }
+                    
+
+                    // Avancer dans la ligne
+                    int e2 = 2 * err;
+                    if (e2 > -dy) {
+                        err -= dy;
+                        xx += sx;
+                        }
+                    if (e2 < dx) {
+                        err += dx;
+                        yy += sy;
+                        }
+                }
+
+                
+                if (xx >= 0 && xx < widthInTiles*subDivision && yy >= 0 && yy < heightInTiles*subDivision) {
+                    if (!visitedMap[yy][xx]) {
+                        if (isWall(xx/subDivision, yy/subDivision)) {
+                            visibilityMap[yy][xx] = false;
+                        } else {
+                            visibilityMap[yy][xx] = true;
+                        }
+                        visitedMap[yy][xx] = true;
+                    }
+                }
+            }
+        }
+
+        return visibilityMap;
+        }
+
+    public boolean[][] getVisibilityMapTileCached(Basic_Entity entity) {
+        double entityX = entity.getX();
+        double entityY = entity.getY();
+
+       
+        double dx = entityX - lastVisibilityX;
+        double dy = entityY - lastVisibilityY;
+        double distMoved = Math.sqrt(dx * dx + dy * dy);
+
+        // Si l'entité n'a pas assez bougé, réutiliser le cache
+        if (distMoved < VISIBILITY_UPDATE_THRESHOLD && cachedVisibilityMap != null) {
+        return cachedVisibilityMap;
+        }
+
+        // Recalculer
+        cachedVisibilityMap = getVisibilityMapTile(entity);
+        lastVisibilityX = entityX;
+        lastVisibilityY = entityY;
+
+        return cachedVisibilityMap;
+        }
     // Utils ------------------------------------------------------------------------------
     public boolean isValidTile(int tileX, int tileY) {
         return tileX >= 0 && tileX < widthInTiles && tileY >= 0 && tileY < heightInTiles;
@@ -285,6 +415,7 @@ public class Map{
     public int getHeightInTiles() { return heightInTiles; }
     public int getWidthInPixels() { return widthInTiles * tileSize; }
     public int getHeightInPixels() { return heightInTiles * tileSize; }
+    public int getSubDiv(){return subDivision;}
 
 
     public void printToConsole() {
@@ -296,5 +427,14 @@ public class Map{
             System.out.println();
         }
         System.out.println("═════════════════");
+    }
+
+    public void setSubTileSizeRender(){  
+        this.subTileSize_Render = tileSize/subDivision;
+    }
+
+    public void setSubDivsion(int sbd){  
+        this.subDivision = sbd;
+        this.setSubTileSizeRender();
     }
 }

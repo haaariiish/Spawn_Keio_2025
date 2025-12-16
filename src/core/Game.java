@@ -23,6 +23,7 @@ public class Game implements Runnable {
     private long game_opening=0;
     private int in_game_time=0;
     private GameWorld gameworld=null;
+    private boolean first_launch=true;
 
 
     //Input Handler
@@ -62,8 +63,10 @@ public class Game implements Runnable {
         else if(this.game_state==GameState.PLAYING){
             // Same as when starting to play
             game_opening = System.currentTimeMillis();
-            in_game_time = 0;
+            in_game_time=0;
             this.gameworld.restart();
+            this.gameworld.getMap().setSubDivsion(frame.getGamePanel().getSubDivision());
+            
         }
         
         System.gc();
