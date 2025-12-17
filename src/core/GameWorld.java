@@ -83,8 +83,8 @@ public class GameWorld {
         this.maxEnemy = initialEnemy;
         this.playerShootCooldown = 0;
         this.playerDamageCooldown = 0;
-        map = new Map(this.worldWidth / this.tileSize, this.worldHeight / this.tileSize, this.tileSize);
-        map.setSubDivsion(game.getSubDivision());
+        map = new Map(this.worldWidth / this.tileSize, this.worldHeight / this.tileSize, this.tileSize,game.getSubDivision());
+        //map.setSubDivsion(game.getSubDivision());
         map.createMapPerlinNoise(this.getGame().getOpenTime());
         
         // Initialisation of lists

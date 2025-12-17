@@ -7,6 +7,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
+
 import entities.Enemy;
 import entities.Basic_Entity;
 
@@ -36,16 +38,24 @@ public class Map{
     private int subTileSize_Render;
     private int subDivision;
     private int[][] tiles;
+    private int[][] tilesPrimary;
+    private int[][] tilesSecondary;
+    private int[][] tilesTerciary;
     private int tileSize;
     private int widthInTiles;
     private int heightInTiles;
 
 
-    public Map(int widthInTiles, int heightInTiles, int tileSize) {
+    public Map(int widthInTiles, int heightInTiles, int tileSize, int gameSubdiv) {
         this.widthInTiles = widthInTiles;
         this.heightInTiles = heightInTiles;
         this.tileSize = tileSize;
         this.tiles = new int[heightInTiles][widthInTiles];
+        this.setSubDivsion(gameSubdiv);
+        //this.tilesPrimary = new int[heightInTiles*subDivision][widthInTiles*subDivision];
+        //this.tilesSecondary = new int[heightInTiles*subDivision][widthInTiles*subDivision];
+        //this.tilesTerciary =  new int[heightInTiles*subDivision][widthInTiles*subDivision];
+        
     }
 
     
@@ -119,6 +129,27 @@ public class Map{
             return WALL;
         }
         return tiles[tileY][tileX];
+    }
+    public int getTileAt1(int subtileX, int subtileY) {
+        if (subtileX < 0 || subtileX >= widthInTiles * subDivision ||
+            subtileY < 0 || subtileY >= heightInTiles * subDivision) {
+            return WALL;
+        }
+        return tilesPrimary[subtileY][subtileX];
+    }
+    public int getTileAt2(int subtileX, int subtileY) {
+        if (subtileX < 0 || subtileX >= widthInTiles * subDivision ||
+            subtileY < 0 || subtileY >= heightInTiles * subDivision) {
+            return WALL;
+        }
+        return tilesSecondary[subtileY][subtileX];
+    }
+    public int getTileAt3(int subtileX, int subtileY) {
+        if (subtileX < 0 || subtileX >= widthInTiles * subDivision ||
+            subtileY < 0 || subtileY >= heightInTiles * subDivision) {
+            return WALL;
+        }
+        return tilesSecondary[subtileY][subtileX];
     }
     
     public int getTileAtPixel(int pixelX, int pixelY) {
@@ -195,6 +226,51 @@ public class Map{
     public void createMapPerlinNoise(long seed){
         MapGenPerlin generation = new MapGenPerlin(this.heightInTiles, this.widthInTiles, seed);
         tiles = generation.getTiles();
+        /*for (int x = 0; x < widthInTiles*subDivision; x++) {
+            for (int y = 0; y < heightInTiles*subDivision; y++) {
+                tilesPrimary[y][x]= tiles[y/subDivision][x/subDivision];
+            }
+        }
+        int[] listing_tiles_proximal ;
+        int max;
+        int idx_max;
+        int max2;
+        int idx_max2;
+        for (int x = 0; x < widthInTiles*subDivision; x++) {
+            for (int y = 0; y < heightInTiles*subDivision; y++) {
+
+                listing_tiles_proximal = new int[7];
+                for (int xx = -2; xx < 3; xx++) {
+                    for (int yy = -2; yy < 3; yy++) {
+                        if (xx!=0||yy!=0){
+                            listing_tiles_proximal[getTileAt1(x+xx, y+yy)]+= 1;
+                            }
+                    }
+                }
+
+                max= 0;
+                max2 = 0;
+                idx_max = 0;
+                idx_max2 =0;
+                for (int tileType2 = 0; tileType2 < 7; tileType2++) {
+                    if (listing_tiles_proximal[tileType2]>max){
+                        max2 = max;
+                        idx_max2=idx_max;
+
+                        max = listing_tiles_proximal[tileType2];
+                        idx_max = tileType2;
+
+                    }
+                    else if(listing_tiles_proximal[tileType2]>max2){
+                        max2 = listing_tiles_proximal[tileType2];
+                        idx_max2 = tileType2;
+                        
+                    }
+                }
+                tilesSecondary[y][x]= idx_max;
+                tilesTerciary[y][x]= idx_max2;
+            }
+        }*/
         this.rooms = generation.getRooms();
         clearSpawnPointsCache(); // Clear cache when map changes
     }
@@ -209,10 +285,10 @@ public class Map{
         int tileX1 = (int)(x1 / subTileSize_Render);
         int tileY1 = (int)(y1 / subTileSize_Render);*/
         
-        System.out.println("tileX0: " + tileX0);
+        /*System.out.println("tileX0: " + tileX0);
         System.out.println("tileY0: " + tileY0);
         System.out.println("tileX1: " + tileX1);
-        System.out.println("tileY1: " + tileY1);
+        System.out.println("tileY1: " + tileY1);*/
         
     
         // if seen
@@ -262,7 +338,7 @@ public class Map{
     public boolean[][] getVisibilityMapTile(Basic_Entity entity) {
         boolean[][] visibilityMap = new boolean[heightInTiles*subDivision][widthInTiles*subDivision];
         boolean[][] visitedMap = new boolean[heightInTiles*subDivision][widthInTiles*subDivision];
-
+        boolean[][] blockedMap = new boolean[heightInTiles*subDivision][widthInTiles*subDivision];
         
         int entityXtile = (int)(entity.getX() / subTileSize_Render);
         int entityYtile = (int)(entity.getY() / subTileSize_Render);
@@ -295,29 +371,29 @@ public class Map{
 
                 int xx = entityXtile;
                 int yy = entityYtile;
-                boolean blocked = false;
+                
                 while (!(xx == x && yy == y)) {
 
         
                     if (xx < 0 || xx >= widthInTiles*subDivision || yy < 0 || yy >= heightInTiles*subDivision) {
-                        blocked = true; 
+                        blockedMap[yy][xx] = true; 
                         break;
                      // Hors limites, arrêter
                     }
 
                     if (visitedMap[yy][xx]) {
-                        if (!visibilityMap[yy][xx]) {
+                        if (blockedMap[yy][xx]) {
                             // Déjà visité et c'est un mur qui bloque
-                            blocked = true;
+                            //blockedMap[yy][xx] = true;
                             break;
                         }
                         // Déjà visité et visible, continuer
                     } else {
                         // Pas encore visité
                         if (isWall(xx/subDivision, yy/subDivision)) {
-                            visibilityMap[yy][xx] = false;
+                            visibilityMap[yy][xx] = true;
                             visitedMap[yy][xx] = true;
-                            blocked = true;
+                            blockedMap[yy][xx] = true;
                             break;
                         } else {
                             visibilityMap[yy][xx] = true;
@@ -342,7 +418,8 @@ public class Map{
                 if (xx >= 0 && xx < widthInTiles*subDivision && yy >= 0 && yy < heightInTiles*subDivision) {
                     if (!visitedMap[yy][xx]) {
                         if (isWall(xx/subDivision, yy/subDivision)) {
-                            visibilityMap[yy][xx] = false;
+                            visibilityMap[yy][xx] = true;
+                            blockedMap[yy][xx] = true;
                         } else {
                             visibilityMap[yy][xx] = true;
                         }

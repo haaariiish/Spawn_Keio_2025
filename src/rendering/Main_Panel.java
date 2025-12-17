@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.util.Random;
+
 
 
 
@@ -33,23 +35,41 @@ public class Main_Panel extends JPanel{
     private int lastHeight = -1; //to avoid unnecessary rescaling of the image, the cache code will check if the size has changed before recalculate size
     private BufferedImage scaledBackground; // cached scaled image
 
-    private static final Color COLOR_EMPTY = new Color(240, 240, 240);
+    private static final Color COLOR_EMPTY = new Color(220, 215, 205);  
+    private static final Color COLOR_WALL = new Color(45, 50, 55);    
+    private static final Color COLOR_DOOR = new Color(139, 69, 19);     
+    private static final Color COLOR_SPIKE = new Color(255, 140, 0);    
+    private static final Color COLOR_WATER = new Color(30, 100, 180);   
+    private static final Color COLOR_SPAWN = new Color(100, 200, 100);  
+    private static final Color COLOR_SPAWN_ENEMY = new Color(200, 30, 30); 
+
+    private Color[][][]  interpolatedColorCache = null;
+    private static final int CACHE_BRIGHTNESS_LEVELS = 50;
+    private boolean cacheInitialized = false;
+
+
+    /*private static final Color COLOR_EMPTY = new Color(240, 240, 240);
     private static final Color COLOR_WALL = new Color(80, 80, 80);
     private static final Color COLOR_DOOR = new Color(139, 69, 19);
     private static final Color COLOR_SPIKE = Color.ORANGE;
     private static final Color COLOR_WATER = new Color(100, 149, 237);
     private static final Color COLOR_SPAWN = new Color(144, 238, 144);
-    private static final Color COLOR_SPAWN_ENEMY = new Color(178, 34, 34);
+    private static final Color COLOR_SPAWN_ENEMY = new Color(178, 34, 34);*/
+
 
     private int subTileSize;
     private int subDivision;
     
     // Pre-calculated color arrays to avoid creating Color objects every frame (fixes CodeCache)
-    private Color[][] brightnessColors = new Color[7][101]; // 7 tile types, 101 brightness levels (0-100)
+    private static final int BRIGHTNESS_LEVELS = 500;
+    private static final int COLOR_VARIATIONS = 4;
     
-    // Entity color
+    private Color[][][][][] colorCache;
+    //Obsolete
+    private Color[][] brightnessColors = new Color[7][BRIGHTNESS_LEVELS]; // 7 tile types, 101 brightness levels (0-100)
 
 
+    
 
 
 
@@ -88,9 +108,62 @@ public class Main_Panel extends JPanel{
     public void setSubTileSize(int tileSize){
         this.subTileSize = tileSize/this.subDivision;
     }
+
+    private void initializeInterpolatedCache(Map map) {
+        if (cacheInitialized) return;
+        
+        int w = map.getWidthInTiles() * subDivision;
+        int h = map.getHeightInTiles() * subDivision;
+        interpolatedColorCache = new Color[h][w][CACHE_BRIGHTNESS_LEVELS + 1];
+        
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                for (int b = 0; b <= CACHE_BRIGHTNESS_LEVELS; b++) {
+                    double brightness = b / (double)CACHE_BRIGHTNESS_LEVELS;
+                    interpolatedColorCache[y][x][b] = getSmoothedTileColor(map, x, y, brightness);
+                }
+            }
+        }
+        cacheInitialized = true;
+    }
+    
+
+    
+
+    private Color getBaseTileColor(int tileType) {
+        switch (tileType) {
+            case Map.EMPTY: return COLOR_EMPTY;
+            case Map.WALL: return COLOR_WALL;
+            case Map.DOOR: return COLOR_DOOR;
+            case Map.SPIKE: return COLOR_SPIKE;
+            case Map.WATER: return COLOR_WATER;
+            case Map.SPAWN: return COLOR_SPAWN;
+            case Map.ENEMY_SPAWN: return COLOR_SPAWN_ENEMY;
+            default: return COLOR_EMPTY;
+        }
+    }
+
+    private Color getCachedInterpolatedColor(Map map, int x, int y, double brightness) {
+        if (!cacheInitialized) initializeInterpolatedCache(map);
+        
+        if (x < 0 || x >= interpolatedColorCache[0].length ||
+            y < 0 || y >= interpolatedColorCache.length) {
+            return Color.BLACK;
+        }
+        
+        int bIndex = (int)(brightness * CACHE_BRIGHTNESS_LEVELS);
+        return interpolatedColorCache[y][x][bIndex]; // O(1) !
+    }
     
     // Pre-calculate all brightness variations of colors to avoid creating Color objects in render loop
     private void initializeBrightnessColors() {
+     
+        final int NUM_TILE_TYPES = 7;
+        
+      
+        colorCache = new Color[NUM_TILE_TYPES][NUM_TILE_TYPES][NUM_TILE_TYPES][BRIGHTNESS_LEVELS + 1][COLOR_VARIATIONS];
+        
+        
         Color[] baseColors = {
             COLOR_EMPTY,        // 0
             COLOR_WALL,         // 1
@@ -101,18 +174,78 @@ public class Main_Panel extends JPanel{
             COLOR_SPAWN_ENEMY   // 6
         };
         
-        for (int typeIdx = 0; typeIdx < baseColors.length; typeIdx++) {
+        
+        for (int typeIdx = 0; typeIdx < NUM_TILE_TYPES; typeIdx++) {
             Color base = baseColors[typeIdx];
-            for (int brightness = 0; brightness <= 100; brightness++) {
-                double factor = brightness / 100.0;
-                brightnessColors[typeIdx][brightness] = new Color(
-                    (int)(base.getRed() * factor),
-                    (int)(base.getGreen() * factor),
-                    (int)(base.getBlue() * factor)
-                );
+            int baseR = base.getRed();
+            int baseG = base.getGreen();
+            int baseB = base.getBlue();
+            for (int typeIdx2 = 0; typeIdx2 < NUM_TILE_TYPES; typeIdx2++) {
+                    Color base2 = baseColors[typeIdx2];
+                    int baseR2 = base2.getRed();
+                    int baseG2 = base2.getGreen();
+                    int baseB2 = base2.getBlue();
+                    for (int typeIdx3 = 0; typeIdx3 < NUM_TILE_TYPES; typeIdx3++){
+                        Color base3 = baseColors[typeIdx2];
+                        int baseR3 = base3.getRed();
+                        int baseG3 = base3.getGreen();
+                        int baseB3 = base3.getBlue();
+                    
+                    for (int brightness = 0; brightness <= BRIGHTNESS_LEVELS; brightness++) {
+                        //Calculate according to brightness level
+                        double factor = brightness / (double)BRIGHTNESS_LEVELS;
+                        
+                        //old
+                        /*int r = (int)((baseR*0.75+baseR2*0.1875 +baseR3*0.0625 )* factor);
+                        int g = (int)((baseG*0.75+baseG2*0.1875 +baseG3*0.0625 )* factor);
+                        int b = (int)((baseB*0.75+baseB2*0.1875 +baseB3*0.0625 )* factor);*/
+                        int r = (int)((baseR*0.85 + baseR2*0.12 + baseR3*0.03) * factor);
+                        int g = (int)((baseG*0.85 + baseG2*0.12 + baseG3*0.03) * factor);
+                        int b = (int)((baseB*0.85 + baseB2*0.12 + baseB3*0.03) * factor);
+                        
+                        // VARIATION 0 : standard
+                        colorCache[typeIdx][typeIdx2][typeIdx3][brightness][0] = new Color(r, g, b);
+                        
+                        // VARIATION 1: brighter +8%
+                        
+                        /*int r1 = Math.min(255, (int)(r * 1.08));
+                        int g1 = Math.min(255, (int)(g * 1.08));
+                        int b1 = Math.min(255, (int)(b * 1.08));*/
+                        int r1 = Math.min(255, (int)(r * 1.15));
+                        int g1 = Math.min(255, (int)(g * 1.15));
+                        int b1 = Math.min(255, (int)(b * 1.15));
+                        colorCache[typeIdx][typeIdx2][typeIdx3][brightness][1] = new Color(r1, g1, b1);
+                        
+                        // VARIATION 2: darker -8%
+                        
+                        /*int r2 = (int)(r * 0.92);
+                        int g2 = (int)(g * 0.92);
+                        int b2 = (int)(b * 0.92);*/
+                        int r2 = (int)(r * 0.85);
+                        int g2 = (int)(g * 0.85);
+                        int b2 = (int)(b * 0.85);
+                        colorCache[typeIdx][typeIdx2][typeIdx3][brightness][2] = new Color(r2, g2, b2);
+                        
+                        // VARIATION 3: deepness effect
+                        
+                        float[] hsb = Color.RGBtoHSB(r, g, b, null);
+                        Color desaturated = Color.getHSBColor(
+                            hsb[0],   
+                            hsb[1] * 0.7f,      
+                            Math.min(1.0f, hsb[2] * 1.05f)          
+                            //hsb[1] * 0.85f,           // slightly gray
+                            //hsb[2]                     
+                        );
+                        colorCache[typeIdx][typeIdx2][typeIdx3][brightness][3] = desaturated;
+                    }
+                }
             }
+            }
+            System.out.println("Color cache initialized: " + 
+            (NUM_TILE_TYPES * NUM_TILE_TYPES * (BRIGHTNESS_LEVELS + 1) * COLOR_VARIATIONS) + 
+            " colors pre-calculated");
         }
-    }
+
     
     // Get pre-calculated color based on tile type and brightness (0.0 to 1.0)
     private Color getBrightnessColor(int tileType, double brightness) {
@@ -130,6 +263,78 @@ public class Main_Panel extends JPanel{
         
         int brightnessIndex = Math.max(0, Math.min(100, (int)(brightness * 100)));
         return brightnessColors[typeIdx][brightnessIndex];
+    }
+
+    private Color getBrightnessColorWithContrast(int tileType, int tileType2,int tiletype3 ,double brightness, int x, int y) {
+        
+        int brightnessIdx = Math.max(0, Math.min(BRIGHTNESS_LEVELS, 
+                                      (int)(brightness * BRIGHTNESS_LEVELS)));
+        
+        // Call the function that choose the variation
+        int variationIdx = getVariationIndex(x, y);
+        
+        
+        // lookup
+        return colorCache[tileType][tileType2][tiletype3][brightnessIdx][variationIdx];
+    }
+
+    private Color getSmoothedTileColor(Map map, int subtileX, int subtileY, double brightness) {
+        // Position du subtile en coordonnées de tiles (avec décimales)
+        double exactTileX = subtileX / (double)subDivision;
+        double exactTileY = subtileY / (double)subDivision;
+        
+        // Tiles entiers autour
+        int tileX0 = (int)Math.floor(exactTileX);
+        int tileY0 = (int)Math.floor(exactTileY);
+        int tileX1 = tileX0 + 1;
+        int tileY1 = tileY0 + 1;
+        
+        // Position relative dans le tile (0.0 à 1.0)
+        double fx = exactTileX - tileX0;  // Fraction X
+        double fy = exactTileY - tileY0;  // Fraction Y
+        
+        // Récupérer les 4 tiles aux coins
+        int tile00 = map.getTileAt(tileX0, tileY0);  // Top-left
+        int tile10 = map.getTileAt(tileX1, tileY0);  // Top-right
+        int tile01 = map.getTileAt(tileX0, tileY1);  // Bottom-left
+        int tile11 = map.getTileAt(tileX1, tileY1);  // Bottom-right
+        
+        // Poids d'interpolation (bilinéaire)
+        double w00 = (1.0 - fx) * (1.0 - fy);  // Top-left
+        double w10 = fx * (1.0 - fy);          // Top-right
+        double w01 = (1.0 - fx) * fy;          // Bottom-left
+        double w11 = fx * fy;                  // Bottom-right
+        
+        // Obtenir les couleurs de base pour chaque tile
+        Color c00 = getBaseTileColor(tile00);
+        Color c10 = getBaseTileColor(tile10);
+        Color c01 = getBaseTileColor(tile01);
+        Color c11 = getBaseTileColor(tile11);
+        
+        // Interpoler les composantes RGB
+        int r = (int)(c00.getRed()   * w00 + c10.getRed()   * w10 + 
+                      c01.getRed()   * w01 + c11.getRed()   * w11);
+        int g = (int)(c00.getGreen() * w00 + c10.getGreen() * w10 + 
+                      c01.getGreen() * w01 + c11.getGreen() * w11);
+        int b = (int)(c00.getBlue()  * w00 + c10.getBlue()  * w10 + 
+                      c01.getBlue()  * w01 + c11.getBlue()  * w11);
+        
+        // Appliquer la luminosité
+        r = Math.min(255, Math.max(0, (int)(r * brightness)));
+        g = Math.min(255, Math.max(0, (int)(g * brightness)));
+        b = Math.min(255, Math.max(0, (int)(b * brightness)));
+        
+        return new Color(r, g, b);
+    }
+
+    private int getVariationIndex(int x, int y) {
+        //regular pattern
+    return ((x ) + (y )) % COLOR_VARIATIONS;
+        //int hash = (x * 7393) ^ (y * 1663);
+        //return Math.abs(hash) % COLOR_VARIATIONS;
+        //Random random = new Random(); 
+        //return Math.min(Math.max((int)(random.nextGaussian() * 1 + 0)*3,0),3) ;
+        //return (3*mainFrame.getGame().getInGameTime())% COLOR_VARIATIONS;
     }
 
     public void reset(){
@@ -228,16 +433,17 @@ public class Main_Panel extends JPanel{
         // Iterate through visible tiles using subdivision
         for (int y = startTileY * subDivision; y < endTileY * subDivision; y++) {
             for (int x = startTileX * subDivision; x < endTileX * subDivision; x++) {
-                int tileX = x / subDivision;
-                int tileY = y / subDivision;
+                //int tileX = x / subDivision;
+                //int tileY = y / subDivision;
                 
                 // Check visibility at TILE level (not subtile)
                 if (x >= 0 && x < map.getWidthInTiles()*subDivision && 
                     y >= 0 && y < map.getHeightInTiles()*subDivision && 
                     VisibilityMap[y][x]) {
                     
-                    int tileType = map.getTileAt(tileX, tileY);
-                    
+                    //int tileType = map.getTileAt1(x, y);
+                    //int tileType2 = map.getTileAt2(x, y); // here categories are subtiles
+                    //int tileType3 = map.getTileAt3(x, y);
                     // Calculate distance from player in pixels using subtiles for smooth gradient
                     int dx = x - xplayer_subtile;
                     int dy = y - yplayer_subtile;
@@ -246,10 +452,15 @@ public class Main_Panel extends JPanel{
                     // Only render if within shadow distance
                     if (dist_to_player < shadowDistance) {
                         // Calculate brightness (1.0 = full bright, 0.0 = black)
-                        double brightness = Math.max(1.0 - (dist_to_player / shadowDistance), 0.0);
+                       // double brightness = Math.max(1.0 - (dist_to_player / shadowDistance), 0.0);
+                        double brightness = Math.max(1.0 - Math.pow((dist_to_player / shadowDistance),0.7), 0.0);
                         
+                        g.setColor(getCachedInterpolatedColor(map, x, y, brightness));
+                        //INTERPOLATED
+                        //g.setColor(getSmoothedTileColor(map, x, y, brightness));
+
                         // Use pre-calculated color instead of creating new Color object
-                        g.setColor(getBrightnessColor(tileType, brightness));
+                        //g.setColor(getBrightnessColorWithContrast(tileType, tileType2, tileType3, brightness, x, y));
                         
                         // Calculate screen position
                         int screenX = x * subTileSize - cameraX;
