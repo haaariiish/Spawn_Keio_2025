@@ -62,27 +62,31 @@ public class ChargerEnemy extends Enemy {
     }
 
     @Override
-    public void render(Graphics g,int x, int y,  int screenHeight, int screenWidth, int SHADOW_DISTANCE){
+    public void render(Graphics g,int x, int y,  int screenHeight, int screenWidth, int SHADOW_DISTANCE, boolean[][] visibilityMap, int subdiv, int subtile){
         // Calculate color without creating new Color every frame
-        int knockBackFrame = getKnockBackFrame();
-        int red = 255 - 5 * knockBackFrame;
-        if (red < 0) red = 0;
-        if (red > 255) red = 255;
-        
-        int screenX = (int)this.getX() - x;
-        int screenY = (int)this.getY() - y;
-        int width = this.getWidthInPixels();
-        int height = this.getHeightInPixels();
-        int centerX =screenX+width/2 ;
-        int centerY = screenY+height/2;
-        int[] xPoints = {centerX +(int) (width*Math.cos(getFacingAngle())), centerX+ +(int) (width*Math.cos(getFacingAngle()-Math.PI/2)/1.5) , centerX +(int) (width*Math.cos(getFacingAngle()+Math.PI/2)/1.5)};
-        int[] yPoints = {centerY+(int) (height*Math.sin(getFacingAngle())), centerY+(int) (height*Math.sin(getFacingAngle()-Math.PI/2)/1.5)   ,centerY +(int) (height*Math.sin(getFacingAngle()+Math.PI/2)/1.5)}; 
-        brighness = Math.max(1 - Math.sqrt((centerX-screenWidth/2) *(centerX-screenWidth/2)  + (centerY-screenHeight/2)*(centerY-screenHeight/2)) / SHADOW_DISTANCE,0);
-        g.setColor(Color.BLUE); 
-        g.setColor(new Color((int)(brighness*g.getColor().getRed()), (int) (g.getColor().getGreen()*brighness), (int) (brighness*g.getColor().getBlue())));
-        g.fillPolygon(xPoints, yPoints, 3); 
-        g.setColor(new Color((int)(brighness*red), (int)(brighness*100), (int)(brighness*20)));
-        g.fillOval(screenX, screenY, width, height);
+        int x_subtile =(int) (getX()/subtile);
+        int y_subtile =(int) (getY()/subtile);
+        if(visibilityMap[y_subtile][x_subtile]){
+            int knockBackFrame = getKnockBackFrame();
+            int red = 255 - 5 * knockBackFrame;
+            if (red < 0) red = 0;
+            if (red > 255) red = 255;
+            
+            int screenX = (int)this.getX() - x;
+            int screenY = (int)this.getY() - y;
+            int width = this.getWidthInPixels();
+            int height = this.getHeightInPixels();
+            int centerX =screenX+width/2 ;
+            int centerY = screenY+height/2;
+            int[] xPoints = {centerX +(int) (width*Math.cos(getFacingAngle())), centerX+ +(int) (width*Math.cos(getFacingAngle()-Math.PI/2)/1.5) , centerX +(int) (width*Math.cos(getFacingAngle()+Math.PI/2)/1.5)};
+            int[] yPoints = {centerY+(int) (height*Math.sin(getFacingAngle())), centerY+(int) (height*Math.sin(getFacingAngle()-Math.PI/2)/1.5)   ,centerY +(int) (height*Math.sin(getFacingAngle()+Math.PI/2)/1.5)}; 
+            brighness = Math.max(1 - Math.sqrt((centerX-screenWidth/2) *(centerX-screenWidth/2)  + (centerY-screenHeight/2)*(centerY-screenHeight/2)) / SHADOW_DISTANCE,0);
+            g.setColor(Color.BLUE); 
+            g.setColor(new Color((int)(brighness*g.getColor().getRed()), (int) (g.getColor().getGreen()*brighness), (int) (brighness*g.getColor().getBlue())));
+            g.fillPolygon(xPoints, yPoints, 3); 
+            g.setColor(new Color((int)(brighness*red), (int)(brighness*100), (int)(brighness*20)));
+            g.fillOval(screenX, screenY, width, height);
+    }
         //g.drawRect(screenX, screenY, width, height); // hitbox visualisation
         
     

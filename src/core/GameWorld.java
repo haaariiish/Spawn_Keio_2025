@@ -21,13 +21,13 @@ import java.awt.Point;
 public class GameWorld {
     private Player player;
     private int score=0;
-    private int initialEnemy =10;
+    private int initialEnemy =1;
     private int maxEnemy ;
     private Map map;
     private List<Enemy> enemies;
     private Game game;
 
-    private double spawnEnemyproba=0.0005;
+    private double spawnEnemyproba=0.05;
     //private Boss currentBoss;
     private List<Projectiles> projectilesList;
     //private List<Projectile> enemyProjectiles;
@@ -84,6 +84,7 @@ public class GameWorld {
         this.playerShootCooldown = 0;
         this.playerDamageCooldown = 0;
         map = new Map(this.worldWidth / this.tileSize, this.worldHeight / this.tileSize, this.tileSize);
+        map.setSubDivsion(game.getSubDivision());
         map.createMapPerlinNoise(this.getGame().getOpenTime());
         
         // Initialisation of lists

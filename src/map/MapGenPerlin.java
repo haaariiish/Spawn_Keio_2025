@@ -242,7 +242,7 @@ public class MapGenPerlin {
                 for (int y = 0; y < height; y++) {
                     
                     // if EMPTY and not processed
-                    if (map[x][y] != Map.WALL && roomIds[x][y] == 0) {
+                    if (map[y][x] != Map.WALL && roomIds[x][y] == 0) {
                         
                         // FLOOD FILL
                         Room currentRoom = new Room(nextId);
@@ -289,7 +289,7 @@ public class MapGenPerlin {
 
         private static void checkNeighbor(int[][] map, int[][] roomIds, int w, int h, Queue<Integer> q, int x, int y, int id) {
             if (x >= 0 && x < w && y >= 0 && y < h) {
-                if (map[x][y] != Map.WALL /* EMPTY */ && roomIds[x][y] == 0) {
+                if (map[y][x] != Map.WALL /* EMPTY */ && roomIds[x][y] == 0) {
                     roomIds[x][y] = id; // Marquer comme visité tout de suite
                     q.add(x + y * w);
                 }
@@ -305,10 +305,10 @@ public class MapGenPerlin {
                             int index = q.poll();
                             int cx = index % w;
                             int cy = index / w;
-                            if (map[cx][cy] == Map.WALL /* WALL */) {
+                            if (map[cy][cx] == Map.WALL /* WALL */) {
                                 continue;
                             }                            
-                            map[cx][cy] = Map.WALL; // WALL
+                            map[cy][cx] = Map.WALL; // WALL
                     
                             //we check only the neighbor with the same Id
                             pushIfSameRoom(q, map, roomIds, cx + 1, cy, w, h, idToFill);
@@ -323,7 +323,7 @@ public class MapGenPerlin {
                         // Check map boundaries
                         if (x >= 0 && x < w && y >= 0 && y < h) {
                            // if the same room and still empty
-                            if (roomIds[x][y] == targetId && map[x][y] !=Map.WALL /* EMPTY */) {
+                            if (roomIds[x][y] == targetId && map[y][x] !=Map.WALL /* EMPTY */) {
                                 q.add(x + y * w);
                             }
                         }

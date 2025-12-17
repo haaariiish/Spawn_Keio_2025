@@ -73,7 +73,7 @@ public abstract class Enemy extends Moving_Entity{
         return null;
     }
 
-    public abstract void render(Graphics g,int x, int y , int screenHeight, int screenWidth, int SHADOW_DISTANCE); // Abstract method to make each enemy unique
+    public abstract void render(Graphics g,int x, int y , int screenHeight, int screenWidth, int SHADOW_DISTANCE, boolean[][] visibilityMap, int subdiv, int subtile); // Abstract method to make each enemy unique
 
     public void setEnemyState(EnemyStates state){
         this.state = state;

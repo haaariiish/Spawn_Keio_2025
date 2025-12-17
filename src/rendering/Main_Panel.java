@@ -41,8 +41,8 @@ public class Main_Panel extends JPanel{
     private static final Color COLOR_SPAWN = new Color(144, 238, 144);
     private static final Color COLOR_SPAWN_ENEMY = new Color(178, 34, 34);
 
-    public int subTileSize;
-    public int subDivision = 10;
+    private int subTileSize;
+    private int subDivision;
     
     // Pre-calculated color arrays to avoid creating Color objects every frame (fixes CodeCache)
     private Color[][] brightnessColors = new Color[7][101]; // 7 tile types, 101 brightness levels (0-100)
@@ -74,8 +74,9 @@ public class Main_Panel extends JPanel{
     private final StringBuilder stringBuilder = new StringBuilder(64);
 
 
-    public Main_Panel(Frame1 mainFrame) { 
+    public Main_Panel(Frame1 mainFrame, int subDivision) { 
         this.mainFrame = mainFrame;
+        this.subDivision = subDivision;
         setFocusable(true);
         setRequestFocusEnabled(true);
         
@@ -281,7 +282,7 @@ public class Main_Panel extends JPanel{
         enemyRenderList.addAll(enemies);
         int enemySize = enemyRenderList.size();
         for (int i = enemySize - 1; i >= 0; i--) {
-            enemyRenderList.get(i).render(g, cameraX, cameraY,screenHeight,screenWidth,player.getShadowDistance());
+            enemyRenderList.get(i).render(g, cameraX, cameraY,screenHeight,screenWidth,player.getShadowDistance(), VisibilityMap, subDivision,subTileSize);
         }
         
         // Draw the player 

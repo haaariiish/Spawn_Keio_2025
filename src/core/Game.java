@@ -24,6 +24,7 @@ public class Game implements Runnable {
     private int in_game_time=0;
     private GameWorld gameworld=null;
     private boolean first_launch=true;
+    private int subDivisionRender = 8;
 
 
     //Input Handler
@@ -39,7 +40,7 @@ public class Game implements Runnable {
         this.inputHandler = new InputHandler();
         attachInputHandlers();
 
-        this.gameworld = new GameWorld(2000, 2000,40, this);
+        this.gameworld = new GameWorld(8000, 2000,40, this);
         frame.getGamePanel().setSubTileSize(this.gameworld.getTileSize());
         
     }
@@ -65,7 +66,7 @@ public class Game implements Runnable {
             game_opening = System.currentTimeMillis();
             in_game_time=0;
             this.gameworld.restart();
-            this.gameworld.getMap().setSubDivsion(frame.getGamePanel().getSubDivision());
+            
             
         }
         
@@ -218,6 +219,10 @@ public class Game implements Runnable {
 
     public int getInGameTime(){
         return this.in_game_time;
+    }
+
+    public int getSubDivision(){
+        return this.subDivisionRender;
     }
 
     public Player getPlayer(){

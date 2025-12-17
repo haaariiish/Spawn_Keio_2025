@@ -65,8 +65,10 @@ public class HeavyEnemy extends Enemy {
         setVelocityY(vy);
     }
 
-    public void render(Graphics g,int x, int y, int screenHeight, int screenWidth, int SHADOW_DISTANCE){
-        
+    public void render(Graphics g,int x, int y, int screenHeight, int screenWidth, int SHADOW_DISTANCE, boolean[][] visibilityMap, int subdiv, int subtile){
+        int x_subtile =(int) (getX()/subtile);
+        int y_subtile =(int) (getY()/subtile);
+        if(visibilityMap[y_subtile][x_subtile]){
         // Calculate color without creating new Color every frame
         int knockBackFrame = getKnockBackFrame();
         int green = 255 - 5 * knockBackFrame;
@@ -90,6 +92,7 @@ public class HeavyEnemy extends Enemy {
         g.fillPolygon(xPoints, yPoints, 3); 
         g.setColor(new Color((int)(brighness*100), (int)(brighness*green), 0));
         g.fillOval(screenX, screenY, width, height);
+        }
         //g.drawRect(screenX, screenY, width, height); // hitbox
     }
 }

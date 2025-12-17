@@ -208,6 +208,12 @@ public class Map{
         int tileY0 = (int)(y0 / subTileSize_Render);
         int tileX1 = (int)(x1 / subTileSize_Render);
         int tileY1 = (int)(y1 / subTileSize_Render);
+        
+        System.out.println("tileX0: " + tileX0);
+        System.out.println("tileY0: " + tileY0);
+        System.out.println("tileX1: " + tileX1);
+        System.out.println("tileY1: " + tileY1);
+        
     
         // if seen
         if (tileX0 == tileX1 && tileY0 == tileY1) {
