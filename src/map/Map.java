@@ -200,14 +200,14 @@ public class Map{
     }
 
     public boolean hasLineOfSight(double x0, double y0, double x1, double y1) {
-        /*int tileX0 = (int)(x0 / tileSize);
+        int tileX0 = (int)(x0 / tileSize);
         int tileY0 = (int)(y0 / tileSize);
         int tileX1 = (int)(x1 / tileSize);
-        int tileY1 = (int)(y1 / tileSize);*/
-        int tileX0 = (int)(x0 / subTileSize_Render);
+        int tileY1 = (int)(y1 / tileSize);
+        /*int tileX0 = (int)(x0 / subTileSize_Render);
         int tileY0 = (int)(y0 / subTileSize_Render);
         int tileX1 = (int)(x1 / subTileSize_Render);
-        int tileY1 = (int)(y1 / subTileSize_Render);
+        int tileY1 = (int)(y1 / subTileSize_Render);*/
         
         System.out.println("tileX0: " + tileX0);
         System.out.println("tileY0: " + tileY0);

@@ -468,10 +468,10 @@ public class GameWorld {
 
     private Enemy createRandomEnemy(Point spawnPoint){
         double roll = Math.random();
-        if (roll < 0.5) {
+        if (roll < 1) {
             ChargerEnemy charger = new ChargerEnemy(spawnPoint.x, spawnPoint.y);
             return charger;
-        } else if (roll < 0.8) {
+        } else if (roll < 1.1) {
             RangedEnemy ranged = new RangedEnemy(spawnPoint.x, spawnPoint.y);
             return ranged;
         } else {
