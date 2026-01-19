@@ -25,7 +25,7 @@ public class Game implements Runnable {
     private GameWorld gameworld=null;
     private boolean first_launch=true;
     private int subDivisionRender = 4;
-    private int totalSteps = 4;
+    private int totalSteps = 5;
 
 
     //Input Handler
@@ -61,12 +61,14 @@ public class Game implements Runnable {
 
         if (this.game_state==GameState.HOME){
             this.gameworld.reset();
+            
         }
         else if(this.game_state==GameState.PLAYING){
             // Same as when starting to play
             game_opening = System.currentTimeMillis();
             in_game_time=0;
             this.gameworld.restart(totalSteps);
+            
             
             
         }
@@ -194,6 +196,8 @@ public class Game implements Runnable {
         // Generate Map 
         game_opening = System.currentTimeMillis();
         this.gameworld.restart(totalSteps);
+
+        updateLoadingProgress(totalSteps-1, totalSteps);
         
         
         //entities generation

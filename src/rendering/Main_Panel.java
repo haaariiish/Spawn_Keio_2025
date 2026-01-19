@@ -36,7 +36,7 @@ public class Main_Panel extends JPanel{
     private BufferedImage scaledBackground; // cached scaled image
 
     private static final Color COLOR_EMPTY = new Color(220, 215, 205);  
-    private static final Color COLOR_WALL = new Color(0, 0, 255);    
+    private static final Color COLOR_WALL = new Color(100, 100, 100);    
     private static final Color COLOR_DOOR = new Color(139, 69, 19);     
     private static final Color COLOR_SPIKE = new Color(255, 140, 0);    
     private static final Color COLOR_WATER = new Color(30, 100, 180);   
@@ -156,7 +156,7 @@ public class Main_Panel extends JPanel{
     }
     
     // Pre-calculate all brightness variations of colors to avoid creating Color objects in render loop
-    private void initializeBrightnessColors() {
+    public void initializeBrightnessColors() {
      
         final int NUM_TILE_TYPES = 7;
         
@@ -671,5 +671,9 @@ public class Main_Panel extends JPanel{
     public Color defineRainbow(){
         return new Color(((50+ this.mainFrame.getGame().getInGameTime())/20)%255,(this.mainFrame.getGame().getInGameTime()/20)%255 ,(300+this.mainFrame.getGame().getInGameTime()/50)%255);
     };
+
+    public void setCacheMapinitialised(boolean a){
+        cacheInitialized = a;
+    }
 
 }

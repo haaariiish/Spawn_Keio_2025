@@ -82,7 +82,7 @@ public class GameWorld {
         this.wave = 1;
         this.remainingEnemies = 20;
         this.maxEnemy = remainingEnemies/4 + wave;
-        
+
         
     }
 
@@ -124,7 +124,7 @@ public class GameWorld {
     }
 
     public Point changeMap(int width, int height){
-        
+        this.getGame().getFrame().getGamePanel().setCacheMapinitialised(false);
         map = new Map(width/ this.tileSize, height / this.tileSize, this.tileSize,game.getSubDivision());
         map.createMapPerlinNoise(this.getGame().getOpenTime());
         
@@ -138,6 +138,7 @@ public class GameWorld {
         lastPlayerTileY = -1;
         initialEnemy = 1;
 
+        this.getGame().getFrame().getGamePanel().initializeBrightnessColors();
         // Respawning and setting the player
         return map.getSpawnPoint();
     }
