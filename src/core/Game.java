@@ -273,6 +273,7 @@ public class Game implements Runnable {
         
         // Met à jour l'écran de chargement (dans le thread Swing)
         SwingUtilities.invokeLater(() -> {
+            
             frame.getWaveLoadingPanel().setProgress(percentage);
             frame.getWaveLoadingPanel().setCurrentTask("WAVE "+(wave_number));
             frame.getWaveLoadingPanel().repaint();

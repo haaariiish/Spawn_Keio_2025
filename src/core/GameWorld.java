@@ -31,7 +31,7 @@ public class GameWorld {
     private int score=0;
     //private int initialEnemy =1; not used
     private int maxEnemy ;
-    private int remainingEnemies = 20;
+    private int remainingEnemies = 1;
     private int wave=1;
 
     //private Boss currentBoss;
@@ -81,7 +81,7 @@ public class GameWorld {
         this.enemies = null;
         this.score = 0;
         this.wave = 1;
-        this.remainingEnemies = 20;
+        this.remainingEnemies = 1;
         this.maxEnemy = remainingEnemies/4 + wave;
 
         
@@ -92,7 +92,7 @@ public class GameWorld {
         // Initialisation of the map ( default map for now)
         this.score = 0;
         this.wave=1;
-        this.remainingEnemies = 20;
+        this.remainingEnemies = 1;
         this.maxEnemy = remainingEnemies/4+wave;
         
         

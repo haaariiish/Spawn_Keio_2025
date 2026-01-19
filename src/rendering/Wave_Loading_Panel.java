@@ -2,20 +2,32 @@ package rendering;
 
 import core.Frame1;
 
+
 import javax.swing.JPanel;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
+
 public class Wave_Loading_Panel extends JPanel{
-    private final Font font30 = new Font("Monospaced", Font.PLAIN, 30);
+    private Font[] CacheFont = new Font[100];
     private Frame1 mainFrame;
     private int progress = 0;
-    private String currentTask;
+    
+    private String currentTask = "";
+    
 
     public Wave_Loading_Panel(Frame1 mainFrame){
         this.mainFrame = mainFrame;
+        
+        initialiseCacheFont();
+    }
+
+    public void initialiseCacheFont(){
+        for(int i=0;i<100;i++){
+            CacheFont[i] = new Font("Arial", Font.BOLD, i+1);
+        }
     }
 
     public void setProgress(int progress) {
@@ -26,19 +38,29 @@ public class Wave_Loading_Panel extends JPanel{
         this.currentTask = task;
     }
 
+    
+
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         
         int y = getHeight() / 2;
+
+        
+        
+        
+        
+        
         
         // Texte
         g2d.setColor(Color.BLACK);
-        g2d.setFont(new Font("Arial", Font.BOLD, progress));
+        g2d.setFont(CacheFont[progress]);
         String text =  currentTask;
         int textWidth = g2d.getFontMetrics().stringWidth(text);
-        g2d.drawString(text, (getWidth() - textWidth) / 2, y - 20);
+        g2d.drawString(text , (getWidth()/2 - textWidth) , y - 20);
+
     }
 
 }
