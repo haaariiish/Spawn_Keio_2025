@@ -28,7 +28,7 @@ public class GameWorld {
 
     private double spawnEnemyproba=0.05;
     private int score=0;
-    private int initialEnemy =1;
+    //private int initialEnemy =1; not used
     private int maxEnemy ;
     private int remainingEnemies = 20;
     private int wave=1;
@@ -91,7 +91,7 @@ public class GameWorld {
         // Initialisation of the map ( default map for now)
         this.score = 0;
         this.wave=1;
-        this.remainingEnemies = 20;
+        this.remainingEnemies = 1;
         this.maxEnemy = remainingEnemies/4+wave;
         
         
@@ -136,7 +136,7 @@ public class GameWorld {
         lastPathFrame = -1000;
         lastPlayerTileX = -1;
         lastPlayerTileY = -1;
-        initialEnemy = 1;
+        //initialEnemy = 1;
 
         this.getGame().getFrame().getGamePanel().initializeBrightnessColors();
         // Respawning and setting the player

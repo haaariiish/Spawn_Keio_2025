@@ -673,7 +673,11 @@ public class Main_Panel extends JPanel{
     };
 
     public void setCacheMapinitialised(boolean a){
-        cacheInitialized = a;
+        if (!a){
+            interpolatedColorCache = null;
+            cacheInitialized = a;
+        }
+
     }
 
 }
