@@ -91,7 +91,7 @@ public class GameWorld {
         // Initialisation of the map ( default map for now)
         this.score = 0;
         this.wave=1;
-        this.remainingEnemies = 1;
+        this.remainingEnemies = 20;
         this.maxEnemy = remainingEnemies/4+wave;
         
         
@@ -138,7 +138,7 @@ public class GameWorld {
         lastPlayerTileY = -1;
         //initialEnemy = 1;
 
-        this.getGame().getFrame().getGamePanel().initializeBrightnessColors();
+        
         // Respawning and setting the player
         return map.getSpawnPoint();
     }

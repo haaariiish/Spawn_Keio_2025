@@ -275,65 +275,50 @@ public class Map{
         clearSpawnPointsCache(); // Clear cache when map changes
     }
 
+    
+
     public boolean hasLineOfSight(double x0, double y0, double x1, double y1) {
-        int tileX0 = (int)(x0 / tileSize);
-        int tileY0 = (int)(y0 / tileSize);
-        int tileX1 = (int)(x1 / tileSize);
-        int tileY1 = (int)(y1 / tileSize);
-        /*int tileX0 = (int)(x0 / subTileSize_Render);
-        int tileY0 = (int)(y0 / subTileSize_Render);
-        int tileX1 = (int)(x1 / subTileSize_Render);
-        int tileY1 = (int)(y1 / subTileSize_Render);*/
+        double dx = x1 - x0;
+        double dy = y1 - y0;
+        double distance = Math.sqrt(dx * dx + dy * dy);
         
-        /*System.out.println("tileX0: " + tileX0);
-        System.out.println("tileY0: " + tileY0);
-        System.out.println("tileX1: " + tileX1);
-        System.out.println("tileY1: " + tileY1);*/
         
-    
-        // if seen
-        if (tileX0 == tileX1 && tileY0 == tileY1) {
-            return true;
-        }
-    
-        int dx = Math.abs(tileX1 - tileX0);
-        int dy = Math.abs(tileY1 - tileY0);
-    
-        int sx = tileX0 < tileX1 ? 1 : -1;
-        int sy = tileY0 < tileY1 ? 1 : -1;
-    
-        int err = dx - dy;
-    
-        int x = tileX0;
-        int y = tileY0;
-    
-        while (true) {
-            // verification if at the start or the beginning
-            if (!(x == tileX0 && y == tileY0) && !(x == tileX1 && y == tileY1)) {
-                // verify if the tile is a wall
-                if (isWall(x, y)) {
-                    return false;  //if wall block the view
+        if (distance < 1) return true;
+        
+        double dirX = dx / distance;
+        double dirY = dy / distance;
+        
+        
+        double perpX = -dirY;
+        double perpY = dirX;
+        
+        double stepSize = tileSize / 8.0;
+        int numSteps = (int)(distance / stepSize);
+        
+        
+        double margin = tileSize / 2.0;  
+        
+        for (int i = 1; i < numSteps; i++) {
+            double baseX = x0 + dirX * stepSize * i;
+            double baseY = y0 + dirY * stepSize * i;
+            
+            
+            for (int offset = -1; offset <= 1; offset++) {
+                double checkX = baseX + perpX * margin * offset;
+                double checkY = baseY + perpY * margin * offset;
+                
+                int tileX = (int)(checkX / tileSize);
+                int tileY = (int)(checkY / tileSize);
+                
+                if (isWall(tileX, tileY)) {
+                    return false;
                 }
             }
-    
-            // reach the end 
-            if (x == tileX1 && y == tileY1) {
-                break;
-            }
-    
-            int e2 = 2 * err;
-            if (e2 > -dy) {
-                err -= dy;
-                x += sx;
-            }
-            if (e2 < dx) {
-                err += dx;
-                y += sy;
-            }
         }
         
-        return true;  // not wall between them
+        return true;
     }
+    
 
     public boolean[][] getVisibilityMapTile(Basic_Entity entity) {
         boolean[][] visibilityMap = new boolean[heightInTiles*subDivision][widthInTiles*subDivision];
