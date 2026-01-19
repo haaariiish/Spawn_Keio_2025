@@ -8,8 +8,8 @@ import core.GameWorld;
 public class HeavyEnemy extends Enemy {
     public double brighness = 0;
 
-    public HeavyEnemy(double x, double y) {
-        super(x, y,19, 19, 80, 6, 4, 40,(int) Math.round(4+Math.random()));
+    public HeavyEnemy(double x, double y, int width, int height) {
+        super(x, y,width, height, 80, 6, 4,40,(int) Math.round(4+Math.random()));
         setStunCoolDown(10);
     }
 

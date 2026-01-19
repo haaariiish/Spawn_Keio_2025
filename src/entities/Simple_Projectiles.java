@@ -11,7 +11,7 @@ public class Simple_Projectiles extends Projectiles{
         this.setHeight(h);
         this.alignWithSource();
         this.setFriction(friction);
-        this.setKnockBack(40);
+        this.setKnockBack(w);
         this.setRecoil(0);
     
     }

@@ -12,11 +12,16 @@ public class RangedEnemy extends Enemy {
     private final double retreatPadding;
     private final double estimatedRange;
     private double friction_used=0.95;
+    private int projectile_width;
+    private int projectile_height;
+     //I use tileSize/4
 
-    public RangedEnemy(double x, double y) {
-        super(x, y, 14, 14, 20, 2, 1, 1000,(int) Math.round(5+Math.random()));
+    public RangedEnemy(double x, double y, int width, int height, int tileSize) {
+        super(x, y, width, height, 20, 2, 1, tileSize*25,(int) Math.round(5+Math.random()));
 
-        this.setBulletFast(20);
+        //this.setBulletFast(tileSize);
+        this.projectile_height=tileSize/4;
+        this.projectile_width=tileSize/4;
         this.setShootCooldownFrames(60);
         this.estimatedRange = estimated_distance_future(this.getBulletFast(), 60);
         this.fireRange = this.estimatedRange; // Different from range because of the friciton
@@ -112,7 +117,7 @@ public class RangedEnemy extends Enemy {
             resetShootCooldown();
             switch (this.getProjectilesTypes()) {
                 case Simple_Projectiles:
-                    return new Simple_Projectiles(this, 10, 10, this.friction_used );
+                    return new Simple_Projectiles(this, projectile_height, projectile_width, this.friction_used );
             
                 default:
                     return new Simple_Projectiles(this, 6, 6, 0.8 );

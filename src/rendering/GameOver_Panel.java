@@ -1,7 +1,7 @@
 package rendering;
 
 import actions.ChangeGameState_toHome;
-import actions.ChangeGameState_toPlay;
+import actions.ChangeGameState_toLoading;
 import core.Frame1;
 
 import javax.swing.Box;
@@ -35,7 +35,7 @@ public class GameOver_Panel extends JPanel {
 
         JButton retryButton = new JButton("Retry");
         retryButton.setAlignmentX(CENTER_ALIGNMENT);
-        retryButton.addActionListener(new ChangeGameState_toPlay(mainFrame.getGame()));
+        retryButton.addActionListener(new ChangeGameState_toLoading(mainFrame.getGame()));
 
         JButton homeButton = new JButton("Home Page");
         homeButton.setAlignmentX(CENTER_ALIGNMENT);

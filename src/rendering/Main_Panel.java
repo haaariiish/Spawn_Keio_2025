@@ -536,17 +536,30 @@ public class Main_Panel extends JPanel{
         // Score box - use simple rectangles instead of roundRect to reduce CodeCache usage
         g.setComposite(alphaComposite08);
         g.setColor(colorGray);
-        g.fillRect(screenWidth - 310, 45, 300, 45);
+        g.fillRect(screenWidth - 310, 45, 300, 115);
         g.setColor(colorWhite);
         g.setFont(font30);
         stringBuilder.setLength(0);
         stringBuilder.append("Score: ").append(gameWorld.getScore());
         g.drawString(stringBuilder.toString(), screenWidth - 310, 80);
+
+        stringBuilder.setLength(0);
+        /*Number of remaining ennemies in the area to kill before turning to the next one 
+        stringBuilder.append("Enemies Left:").append(gameWorld.getRemainingEnemies());
+        g.drawString(stringBuilder.toString(),screenWidth - 310, 115);
+        */
+        stringBuilder.append("Enemies Left:").append(gameWorld.getRemainingEnemies()+gameWorld.getEnemy().size());
+        g.drawString(stringBuilder.toString(),screenWidth - 310, 115);
+        
+
+        stringBuilder.setLength(0);
+        stringBuilder.append("WAVE ").append(gameWorld.getWave());
+        g.drawString(stringBuilder.toString(),screenWidth - 310, 150);
         
         // Debug info rectangle - use simple rectangle instead of roundRect
         g.setColor(colorGray);
         g.setComposite(alphaComposite06);
-        g.fillRect(0, 0, 300, 230);
+        g.fillRect(0, 0, 400, 250);
         
         g.setComposite(alphaComposite08);
         g.setColor(colorBlack);
@@ -594,9 +607,13 @@ public class Main_Panel extends JPanel{
         stringBuilder.append("In Game Time: ").append(game.getInGameTime());
         g.drawString(stringBuilder.toString(), 10, 180);
         
+        /*stringBuilder.setLength(0);
+        stringBuilder.append("Number of Enemies in the Area ").append(gameWorld.getEnemy().size());
+        g.drawString(stringBuilder.toString(), 10, 195);*/
+
         stringBuilder.setLength(0);
-        stringBuilder.append("Number of Enemy in the Area ").append(gameWorld.getEnemy().size());
-        g.drawString(stringBuilder.toString(), 10, 195);
+        stringBuilder.append("Number of max enemies simultanously in the Area ").append(gameWorld.getMaxEnemy());
+        g.drawString(stringBuilder.toString(), 10, 225);
     }
 
 

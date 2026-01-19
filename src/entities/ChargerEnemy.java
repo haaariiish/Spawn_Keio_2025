@@ -6,8 +6,8 @@ import core.GameWorld;
 public class ChargerEnemy extends Enemy {
     public double brighness = 0;
 
-    public ChargerEnemy(double x, double y) {
-        super(x, y, 19, 19, 25, 2, 1, 30,(int) Math.round(8+Math.random()));
+    public ChargerEnemy(double x, double y, int width, int height) {
+        super(x, y, width, height, 25, 2, 1, 30,(int) Math.round(8+Math.random()));
         setStunCoolDown(20);
     }
 

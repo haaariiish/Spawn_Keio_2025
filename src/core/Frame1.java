@@ -10,6 +10,7 @@ import java.awt.Toolkit;
 import rendering.GameOver_Panel;
 import rendering.Gamemenubar;
 import rendering.Home_Menu_Panel;
+import rendering.Loading_Panel;
 import rendering.Main_Panel;
 import rendering.Pause_Menu_Panel;
 
@@ -23,6 +24,7 @@ public class Frame1 extends JFrame{
     private Home_Menu_Panel homeMenuPanel;
     private Pause_Menu_Panel pauseMenuPanel;
     private GameOver_Panel gameOverPanel;
+    private Loading_Panel loadingPanel;
     private CardLayout cardLayout = new CardLayout();
     private JPanel mainContainer = new JPanel(cardLayout);
     private Game game;
@@ -48,12 +50,17 @@ public class Frame1 extends JFrame{
         this.pauseMenuPanel.setFocusable(false);
         this.gameOverPanel = new GameOver_Panel(this);
         this.gameOverPanel.setFocusable(false);
+        this.loadingPanel = new Loading_Panel(this);
+        this.loadingPanel.setFocusable(false);
 
         this.mainContainer.add(this.homeMenuPanel, "HomeMenu");
         this.mainContainer.add(this.game_panel, "GamePanel");
         this.mainContainer.add(this.pauseMenuPanel, "PauseMenu");
         this.mainContainer.add(this.gameOverPanel, "GameOverMenu");
+        this.mainContainer.add(this.loadingPanel, "LoadingScreen");
+
         this.cardLayout.show(this.mainContainer, "HomeMenu");
+
         add(this.mainContainer);
         /* Game Menu bar */
         Gamemenubar menuBar = new Gamemenubar(this);
@@ -75,6 +82,10 @@ public class Frame1 extends JFrame{
 
     public GameOver_Panel getGameOverPanel() {
         return this.gameOverPanel;
+    }
+
+    public Loading_Panel getLoadingPanel() {
+        return this.loadingPanel;
     }
 
     public void showPanel(String panelName) {

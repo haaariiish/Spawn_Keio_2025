@@ -1,7 +1,7 @@
 package rendering;
 
 import core.Frame1;
-import actions.ChangeGameState_toPlay;
+import actions.ChangeGameState_toLoading;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -26,7 +26,7 @@ public class Home_Menu_Panel extends JPanel {
         this.new_game = new Custom_Button("New Game");
         this.new_game.setBounds(mainFrame.getWidth()/2-150,mainFrame.getHeight()/10 + 130,300,50);
         
-        this.new_game.addActionListener( new ChangeGameState_toPlay(this.mainFrame.getGame()));
+        this.new_game.addActionListener( new ChangeGameState_toLoading(this.mainFrame.getGame()));
         this.add(new_game);
         
         this.setOpaque(true);

@@ -40,7 +40,7 @@ public class Game implements Runnable {
         this.inputHandler = new InputHandler();
         attachInputHandlers();
 
-        this.gameworld = new GameWorld(8000, 2000,40, this);
+        this.gameworld = new GameWorld(4000, 4000,80, this);
         frame.getGamePanel().setSubTileSize(this.gameworld.getTileSize());
         
     }
@@ -113,18 +113,18 @@ public class Game implements Runnable {
             if (game_state != previous_state) {
                 handleStateChange();
 
-                if (game_state == GameState.PLAYING && previous_state != GameState.PAUSE) {
+                /*if (game_state == GameState.PLAYING && previous_state != GameState.PAUSE) {
                     game_opening = System.currentTimeMillis();
                     // Initialize or reset game elements here if needed
                     this.gameworld.restart();
-                }
+                }*/
 
                 previous_state = game_state;
             }
             
             if (game_state == GameState.PLAYING) {
                 in_game_time = (int) (startTime-game_opening);
-                frame.getGamePanel().repaint();
+                SwingUtilities.invokeLater(() -> frame.getGamePanel().repaint());
                 this.update();
             }
 
@@ -134,7 +134,10 @@ public class Game implements Runnable {
                 frame.getPauseMenuPanel().repaint();
             } else if (game_state == GameState.GAMEOVER){
                 frame.getGameOverPanel().repaint();
-            }
+            }else if (game_state == GameState.LOADING){
+                frame.getLoadingPanel().repaint();
+            }   
+            
            
             
             long elapsed = System.currentTimeMillis() - startTime;
@@ -150,6 +153,80 @@ public class Game implements Runnable {
             // this.inputHandler.printPressedKeys(); // Print the pressed key
         }
     }
+
+    private void startLoadingInBackground() {
+        // Create a new thread
+        Thread loadingThread = new Thread(() -> {
+            try {
+                //script for the loading of the resources
+                loadResources();
+                
+                // When Ended change the Game State 
+                SwingUtilities.invokeLater(() -> {
+                    changeGameState(GameState.PLAYING);
+                });
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+                // If an error occurs, force home menu return
+                SwingUtilities.invokeLater(() -> {
+                    changeGameState(GameState.HOME);
+                });
+            }
+        });
+        
+        loadingThread.start();
+    }
+
+    private void loadResources() {
+        // Exemple de chargement avec progression
+        int totalSteps = 2;
+        
+        // load texture
+        /*loadTextures();
+        updateLoadingProgress(1, totalSteps);*/
+        
+        // load sound
+        /* loadSounds();
+        updateLoadingProgress(2, totalSteps);*/ 
+        
+        // Generate Map 
+        game_opening = System.currentTimeMillis();
+        this.gameworld.restart();
+        updateLoadingProgress(1, totalSteps);
+        
+        //entities generation
+        /*this.gameworld.initializeEntities();
+        updateLoadingProgress(2, totalSteps); */
+        
+        // finalise - Show 100%
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        updateLoadingProgress(2, totalSteps);
+    }
+    
+    private void updateLoadingProgress(int current, int total) {
+        int percentage = (current * 100) / total;
+        
+        // Met à jour l'écran de chargement (dans le thread Swing)
+        SwingUtilities.invokeLater(() -> {
+            frame.getLoadingPanel().setProgress(percentage);
+            frame.getLoadingPanel().repaint();
+        });
+        
+        // Petite pause pour voir la progression
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+
     private void handleStateChange() {
         switch (game_state) {
             case HOME:
@@ -167,7 +244,8 @@ public class Game implements Runnable {
                 frame.showPanel("GameOverMenu");
                 break;
             case LOADING:
-                //frame.showPanel("LoadingScreen");
+                frame.showPanel("LoadingScreen");
+                startLoadingInBackground();      
                 break;
         }
         frame.refresh(); //called one time when state changes because repaint is costly
@@ -232,6 +310,7 @@ public class Game implements Runnable {
     public InputHandler getInputHandler() {
         return inputHandler;
     }
+
 
     private void attachInputHandlers() {
         if (this.frame == null || this.inputHandler == null) {

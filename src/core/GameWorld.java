@@ -20,14 +20,19 @@ import java.awt.Point;
 //A new class to divide the management of the game structure and the global management done by game
 public class GameWorld {
     private Player player;
-    private int score=0;
-    private int initialEnemy =1;
-    private int maxEnemy ;
+    
+    
     private Map map;
     private List<Enemy> enemies;
     private Game game;
 
     private double spawnEnemyproba=0.05;
+    private int score=0;
+    private int initialEnemy =1;
+    private int maxEnemy ;
+    private int remainingEnemies = 20;
+    private int wave=1;
+
     //private Boss currentBoss;
     private List<Projectiles> projectilesList;
     //private List<Projectile> enemyProjectiles;
@@ -36,6 +41,7 @@ public class GameWorld {
 
     //private Map<String, Enemy> enemyMap;
     
+
     private int worldWidth;
     private int worldHeight;
     private int tileSize;
@@ -73,22 +79,46 @@ public class GameWorld {
         this.player = null;
         this.enemies = null;
         this.score = 0;
-        this.maxEnemy = initialEnemy;
+        this.wave = 1;
+        this.remainingEnemies = 20;
+        this.maxEnemy = remainingEnemies/4 + wave;
+        
         
     }
 
     public void restart(){
         // Initialisation of the map ( default map for now)
         this.score = 0;
-        this.maxEnemy = initialEnemy;
+        this.wave=1;
+        this.remainingEnemies = 20;
+        this.maxEnemy = remainingEnemies/4+wave;
+        
         this.playerShootCooldown = 0;
         this.playerDamageCooldown = 0;
-        map = new Map(this.worldWidth / this.tileSize, this.worldHeight / this.tileSize, this.tileSize,game.getSubDivision());
-        //map.setSubDivsion(game.getSubDivision());
+        
+        //  spawn point
+        Point spawn = changeMap(this.worldWidth,this.worldHeight);
+        player = new Player(spawn.x, spawn.y,this.tileSize/2-1,this.tileSize/2-1,100,10,1,this.tileSize*5/2);
+    }
+
+    public void nextWave(){
+        this.wave +=1;
+        this.remainingEnemies = (int)(20*Math.pow(1.07, wave));
+        this.maxEnemy = remainingEnemies/4 + wave;
+
+        
+        Point spawn = changeMap(worldWidth, worldHeight);
+        player.setX(spawn.x);
+        player.setY(spawn.y);
+        player.healing(player.getMaxHP()/4);
+    }
+
+    public Point changeMap(int width, int height){
+        
+        map = new Map(width/ this.tileSize, height / this.tileSize, this.tileSize,game.getSubDivision());
         map.createMapPerlinNoise(this.getGame().getOpenTime());
         
-        // Initialisation of lists
-
+        tempMovingEntitiesList.clear();
         enemies = new ArrayList<>();
         projectilesList = new ArrayList<>();
         distToPlayer = null;
@@ -96,15 +126,16 @@ public class GameWorld {
         lastPathFrame = -1000;
         lastPlayerTileX = -1;
         lastPlayerTileY = -1;
-        
-        pathDirty = true;
-        
-        //  spawn point
-        Point spawn = map.getSpawnPoint();
-        player = new Player(spawn.x, spawn.y,19,19,100,10,1,100);
+        initialEnemy = 1;
+
+        // Respawning and setting the player
+        return map.getSpawnPoint();
     }
 
     public void update(InputHandler input,int which_frame_in_cyle){
+        if(remainingEnemies==0&&enemies.size()==0){
+            nextWave();
+        }
         // Reuse temporary list instead of creating new one
         tempMovingEntitiesList.clear();
         tempMovingEntitiesList.addAll(this.enemies);
@@ -169,6 +200,9 @@ public class GameWorld {
     public Map getMap(){
         return this.map;
     }
+    public int getWave(){
+        return wave;
+    }
 
     public Game getGame(){
         return this.game;
@@ -190,6 +224,11 @@ public class GameWorld {
         return this.score;
     }
 
+    public int getRemainingEnemies(){
+        return remainingEnemies;
+    }
+    
+
     public List<Projectiles> getListProjectiles(){
         return this.projectilesList;
     }
@@ -208,7 +247,7 @@ public class GameWorld {
         Projectiles proj ;
         switch(player.getProjectilesTypes()){
             case Simple_Projectiles:
-                proj = new Simple_Projectiles(player, 10, 7, 0.95);
+                proj = new Simple_Projectiles(player, (player.getWidthInPixels()+1)/2, (player.getWidthInPixels()+1)/2, 0.95);
                 break;
             default:
                 proj = new Simple_Projectiles(player, 3, 3,2);
@@ -245,12 +284,15 @@ public class GameWorld {
     }
  
     public void updateEnemiesSpawn(Map map){
-        if (enemies.size() >= maxEnemy) {
+        if (enemies.size() > maxEnemy||remainingEnemies==0) {
             return;
         }
         List<Point> spawnPoints = map.getEnemySpawnPoints();
         int size = spawnPoints.size();
         for (int i = size - 1; i >= 0; i--) {
+            if(remainingEnemies<=0){
+                return;
+            }
             if (enemies.size() > this.maxEnemy) {
                 return;
             }
@@ -258,8 +300,10 @@ public class GameWorld {
                 Enemy n_enemy = createRandomEnemy(spawnPoints.get(i));
                 if (n_enemy != null) {
                     enemies.add(n_enemy);
+                    remainingEnemies-=1;
                 }
             }
+            
         }
     }
 
@@ -272,7 +316,7 @@ public class GameWorld {
                 
             }
         }
-        maxEnemy = initialEnemy+score;
+        
     }
 
     public void handleCollisions(){
@@ -468,14 +512,14 @@ public class GameWorld {
 
     private Enemy createRandomEnemy(Point spawnPoint){
         double roll = Math.random();
-        if (roll < 1) {
-            ChargerEnemy charger = new ChargerEnemy(spawnPoint.x, spawnPoint.y);
+        if (roll < 0.35) {
+            ChargerEnemy charger = new ChargerEnemy(spawnPoint.x, spawnPoint.y, this.tileSize/2-1,this.tileSize/2-1);
             return charger;
-        } else if (roll < 1.1) {
-            RangedEnemy ranged = new RangedEnemy(spawnPoint.x, spawnPoint.y);
+        } else if (roll < 0.7) {
+            RangedEnemy ranged = new RangedEnemy(spawnPoint.x, spawnPoint.y, this.tileSize/2-1,this.tileSize/2-1, this.tileSize);
             return ranged;
         } else {
-            HeavyEnemy heavy = new HeavyEnemy(spawnPoint.x, spawnPoint.y);
+            HeavyEnemy heavy = new HeavyEnemy(spawnPoint.x, spawnPoint.y, this.tileSize/2-1,this.tileSize/2-1);
             return heavy;
         }
     }
@@ -488,6 +532,10 @@ public class GameWorld {
     public void setMaxEnemy(int me){
         this.maxEnemy = me;
     }
+
+    public void setRemainingEnemies(int Re){
+        this.remainingEnemies = Re;
+        }
 
 }
 

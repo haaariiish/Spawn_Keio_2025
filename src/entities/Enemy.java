@@ -13,8 +13,8 @@ public abstract class Enemy extends Moving_Entity{
 
     public Enemy(double x, double y, int width, int height, int hp, int attack, int defense,int range,int speed){
         super();
-        this.setHP(hp);
         this.setMaxHp(hp);
+        this.setHP(hp);
         this.setAttack(attack);
         this.setDefense(defense);
         this.setRange(range);

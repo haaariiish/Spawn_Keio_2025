@@ -5,7 +5,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import java.awt.event.KeyEvent;
 
-import actions.ChangeGameState_toPlay;
+import actions.ChangeGameState_toLoading;
 import actions.ChangeGameState_toHome;
 import actions.Close;
 import core.Frame1;
@@ -31,7 +31,7 @@ public class Gamemenubar extends JMenuBar {
         this.homeScreenItem =new JMenuItem("Back to home screen",KeyEvent.VK_3);
         this.quitItem = new JMenuItem("Quit",KeyEvent.VK_4);
 
-        this.newGameItem.addActionListener( new ChangeGameState_toPlay(this.mainframe.getGame()));
+        this.newGameItem.addActionListener( new ChangeGameState_toLoading(this.mainframe.getGame()));
         this.homeScreenItem.addActionListener( new ChangeGameState_toHome(this.mainframe.getGame()));
         this.quitItem.addActionListener(new Close());
 

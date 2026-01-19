@@ -77,7 +77,7 @@ public class Basic_Entity {
         this.range = range;
     }
     public void setHP(int hp){
-        this.hp = hp;
+        this.hp = Math.min(hp,this.max_hp);
     }
     public void setAttack(int attack){
         this.attack = attack;

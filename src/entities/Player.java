@@ -15,8 +15,8 @@ public class Player extends Moving_Entity{
 
     public Player(double x, double y, int width, int height, int hp, int attack, int defense,int range){
         super();
-        this.setHP(hp);
         this.setMaxHp(hp);
+        this.setHP(hp);
         this.setAttack(attack);
         this.setDefense(defense);
         this.setX(x);
@@ -24,7 +24,7 @@ public class Player extends Moving_Entity{
         this.setWidthinPixel(width);
         this.setHeightinPixel(height);
         this.setBounds();
-        this.setShadowDistance(300);
+        this.setShadowDistance(600);
     }
 
     public void update_input(Map map, InputHandler input, List<Moving_Entity> movingEntity) {
@@ -61,11 +61,11 @@ public class Player extends Moving_Entity{
         
 
 
-        int horizontal = input.getHorizontalDirection();
-        int vertical = input.getVerticalDirection();
-        if ((moved_vertical||moved_horizontal) && (horizontal != 0 || vertical != 0)) {
+        //int horizontal = input.getHorizontalDirection();
+        //int vertical = input.getVerticalDirection();
+        /*if ((moved_vertical||moved_horizontal) && (horizontal != 0 || vertical != 0)) {
             this.setFacingAngle(Math.atan2(vertical, horizontal));
-        }
+        }*/
     }
 
     public void setHealable(boolean a){
