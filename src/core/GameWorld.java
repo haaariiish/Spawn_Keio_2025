@@ -14,6 +14,7 @@ import entities.Projectiles;
 import entities.RangedEnemy;
 import entities.Simple_Projectiles;
 import map.Map;
+import core.GameState;
 
 import java.awt.Point;
 
@@ -143,9 +144,9 @@ public class GameWorld {
         return map.getSpawnPoint();
     }
 
-    public void update(InputHandler input,int which_frame_in_cyle){
-        if(remainingEnemies==0&&enemies.size()==0){
-            nextWave();
+    public void update(InputHandler input, int which_frame_in_cycle) {
+        if (remainingEnemies == 0 && enemies.size() == 0) {
+            this.getGame().changeGameState(GameState.WAVE_LOADING);
         }
         // Reuse temporary list instead of creating new one
         tempMovingEntitiesList.clear();
@@ -169,16 +170,16 @@ public class GameWorld {
             }
 
             // Recompute distances at most every 60 frames, and only when needed
-            if (which_frame_in_cyle - lastPathFrame >= 60 && pathDirty) {
+            if (which_frame_in_cycle - lastPathFrame >= 60 && pathDirty) {
                 recomputeDistances(pxTile, pyTile);
-                lastPathFrame = which_frame_in_cyle;
+                lastPathFrame = which_frame_in_cycle;
                 pathDirty = false;
                 //System.out.println(distToPlayer);
             }
         }
         //System.out.println("Player bounds: " + this.player.getBounds());
         updateEnemiesPosition(this.map,this.player);
-        if (which_frame_in_cyle%30==0){ // If we are in a precise moment, the game will try to make spawn some enemies
+        if (which_frame_in_cycle%30==0){ // If we are in a precise moment, the game will try to make spawn some enemies
         updateEnemiesSpawn(this.map);
         }
         if (playerShootCooldown > 0) {

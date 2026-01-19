@@ -139,6 +139,8 @@ public class Game implements Runnable {
                 frame.getGameOverPanel().repaint();
             }else if (game_state == GameState.LOADING){
                 frame.getLoadingPanel().repaint();
+            }else if (game_state == GameState.WAVE_LOADING){
+                frame.getLoadingPanel().repaint();
             }   
             
            
@@ -163,6 +165,30 @@ public class Game implements Runnable {
             try {
                 //script for the loading of the resources
                 loadResources();
+                
+                // When Ended change the Game State 
+                SwingUtilities.invokeLater(() -> {
+                    changeGameState(GameState.PLAYING);
+                });
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+                // If an error occurs, force home menu return
+                SwingUtilities.invokeLater(() -> {
+                    changeGameState(GameState.HOME);
+                });
+            }
+        });
+        
+        loadingThread.start();
+    }
+
+    private void startWaveLoadingInBackground() {
+        // Create a new thread
+        Thread loadingThread = new Thread(() -> {
+            try {
+                //script for the loading of the resources
+                loadNextWave();
                 
                 // When Ended change the Game State 
                 SwingUtilities.invokeLater(() -> {
@@ -213,19 +239,48 @@ public class Game implements Runnable {
 
         updateLoadingProgress(totalSteps, totalSteps);
     }
+
+    private void loadNextWave(){
+        this.gameworld.nextWave();
+        for(int i = 0; i < 500; i++){
+            updateWaveLoadingProgress(this.gameworld.getWave(),i, 500);
+        }
+    }
     
     public void updateLoadingProgress(int current, int total) {
+        int percentage =  100 / total;
+        
+        for(int i=0;i<percentage;i++){
+             // Met à jour l'écran de chargement (dans le thread Swing
+            final int i_prime = i;
+            SwingUtilities.invokeLater(() -> {
+                frame.getLoadingPanel().setProgress((current-1)*percentage+i_prime +1);
+                frame.getLoadingPanel().repaint();
+            });
+            
+            // Petite pause pour voir la progression
+            try {
+                Thread.sleep(2*total);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+       
+    }
+
+    public void updateWaveLoadingProgress(int wave_number,int current, int total) {
         int percentage = (current * 100) / total;
         
         // Met à jour l'écran de chargement (dans le thread Swing)
         SwingUtilities.invokeLater(() -> {
-            frame.getLoadingPanel().setProgress(percentage);
-            frame.getLoadingPanel().repaint();
+            frame.getWaveLoadingPanel().setProgress(percentage);
+            frame.getWaveLoadingPanel().setCurrentTask("WAVE "+(wave_number));
+            frame.getWaveLoadingPanel().repaint();
         });
         
         // Petite pause pour voir la progression
         try {
-            Thread.sleep(200);
+            Thread.sleep(2);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -251,6 +306,10 @@ public class Game implements Runnable {
             case LOADING:
                 frame.showPanel("LoadingScreen");
                 startLoadingInBackground();      
+                break;
+            case WAVE_LOADING:
+                frame.showPanel("WaveLoadingScreen");
+                startWaveLoadingInBackground();      
                 break;
         }
         frame.refresh(); //called one time when state changes because repaint is costly

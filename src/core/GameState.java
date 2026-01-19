@@ -6,5 +6,5 @@ public enum GameState {
     PAUSE,
     GAMEOVER,
     LOADING, 
-    BETWEEN_WAVES
+    WAVE_LOADING
 }

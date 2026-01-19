@@ -13,6 +13,7 @@ import rendering.Home_Menu_Panel;
 import rendering.Loading_Panel;
 import rendering.Main_Panel;
 import rendering.Pause_Menu_Panel;
+import rendering.Wave_Loading_Panel;
 
 
 
@@ -25,6 +26,7 @@ public class Frame1 extends JFrame{
     private Pause_Menu_Panel pauseMenuPanel;
     private GameOver_Panel gameOverPanel;
     private Loading_Panel loadingPanel;
+    private Wave_Loading_Panel waveLoadingPanel;
     private CardLayout cardLayout = new CardLayout();
     private JPanel mainContainer = new JPanel(cardLayout);
     private Game game;
@@ -52,12 +54,15 @@ public class Frame1 extends JFrame{
         this.gameOverPanel.setFocusable(false);
         this.loadingPanel = new Loading_Panel(this);
         this.loadingPanel.setFocusable(false);
+        this.waveLoadingPanel = new Wave_Loading_Panel(this);
+        this.waveLoadingPanel.setFocusable(false);
 
         this.mainContainer.add(this.homeMenuPanel, "HomeMenu");
         this.mainContainer.add(this.game_panel, "GamePanel");
         this.mainContainer.add(this.pauseMenuPanel, "PauseMenu");
         this.mainContainer.add(this.gameOverPanel, "GameOverMenu");
         this.mainContainer.add(this.loadingPanel, "LoadingScreen");
+        this.mainContainer.add(this.waveLoadingPanel, "WaveLoadingScreen");
 
         this.cardLayout.show(this.mainContainer, "HomeMenu");
 
@@ -86,6 +91,10 @@ public class Frame1 extends JFrame{
 
     public Loading_Panel getLoadingPanel() {
         return this.loadingPanel;
+    }
+
+    public Wave_Loading_Panel getWaveLoadingPanel() {
+        return this.waveLoadingPanel;
     }
 
     public void showPanel(String panelName) {
