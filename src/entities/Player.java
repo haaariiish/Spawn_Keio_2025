@@ -89,9 +89,12 @@ public class Player extends Moving_Entity{
         int[] yPoints = {centerY+(int) (height*Math.sin(getFacingAngle())), centerY+(int) (height*Math.sin(getFacingAngle()-Math.PI/2)/1.5)   ,centerY +(int) (height*Math.sin(getFacingAngle()+Math.PI/2)/1.5)}; 
         g.setColor(Color.BLUE); 
         g.fillPolygon(xPoints, yPoints, 3); 
+        
         g.setColor(COLOR_PLAYER);
         g.fillOval(x, y, width, height);
         g.drawRect(x, y, width, height);
+        g.setColor(Color.WHITE);
+        g.drawOval(x, y, width, height);
         
     }
 

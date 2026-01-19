@@ -59,9 +59,9 @@ public class Loading_Panel extends JPanel{
         g2d.drawRect(x, y, barWidth, barHeight);
         
         // Remplissage
-        g2d.setColor(Color.GREEN);
+        g2d.setColor(Color.BLACK);
         int fillWidth = (barWidth * progress) / 100;
-        g2d.fillRect(x + 2, y + 2, fillWidth - 4, barHeight - 4);
+        g2d.fillRect(x , y , fillWidth , barHeight );
         
         // Texte
         g2d.setColor(Color.BLACK);

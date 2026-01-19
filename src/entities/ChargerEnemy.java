@@ -86,6 +86,10 @@ public class ChargerEnemy extends Enemy {
             g.fillPolygon(xPoints, yPoints, 3); 
             g.setColor(new Color((int)(brighness*red), (int)(brighness*100), (int)(brighness*20)));
             g.fillOval(screenX, screenY, width, height);
+            g.setColor(Color.WHITE);
+            g.setColor(new Color((int)(brighness*g.getColor().getRed()), (int) (g.getColor().getGreen()*brighness), (int) (brighness*g.getColor().getBlue())));
+            g.drawOval(screenX, screenY, width, height);
+            
     }
         //g.drawRect(screenX, screenY, width, height); // hitbox visualisation
         

@@ -36,7 +36,7 @@ public class Main_Panel extends JPanel{
     private BufferedImage scaledBackground; // cached scaled image
 
     private static final Color COLOR_EMPTY = new Color(220, 215, 205);  
-    private static final Color COLOR_WALL = new Color(45, 50, 55);    
+    private static final Color COLOR_WALL = new Color(0, 0, 255);    
     private static final Color COLOR_DOOR = new Color(139, 69, 19);     
     private static final Color COLOR_SPIKE = new Color(255, 140, 0);    
     private static final Color COLOR_WATER = new Color(30, 100, 180);   
@@ -246,6 +246,7 @@ public class Main_Panel extends JPanel{
             " colors pre-calculated");
         }
 
+
     
     // Get pre-calculated color based on tile type and brightness (0.0 to 1.0)
     private Color getBrightnessColor(int tileType, double brightness) {
@@ -288,6 +289,20 @@ public class Main_Panel extends JPanel{
         int tileY0 = (int)Math.floor(exactTileY);
         int tileX1 = tileX0 + 1;
         int tileY1 = tileY0 + 1;
+
+        int mainTile = map.getTileAt(tileX0, tileY0);
+        // 
+        if (mainTile == Map.WALL) {
+            Color baseColor = getBaseTileColor(Map.WALL);
+            int r = (int)(baseColor.getRed() * brightness);
+            int g = (int)(baseColor.getGreen() * brightness);
+            int b = (int)(baseColor.getBlue() * brightness);
+            return new Color(
+                Math.min(255, Math.max(0, r)),
+                Math.min(255, Math.max(0, g)),
+                Math.min(255, Math.max(0, b))
+            );
+        }
         
         // Position relative dans le tile (0.0 à 1.0)
         double fx = exactTileX - tileX0;  // Fraction X
@@ -298,6 +313,10 @@ public class Main_Panel extends JPanel{
         int tile10 = map.getTileAt(tileX1, tileY0);  // Top-right
         int tile01 = map.getTileAt(tileX0, tileY1);  // Bottom-left
         int tile11 = map.getTileAt(tileX1, tileY1);  // Bottom-right
+
+        if (tile10 == Map.WALL) tile10 = tile00;
+        if (tile01 == Map.WALL) tile01 = tile00;
+        if (tile11 == Map.WALL) tile11 = tile00;
         
         // Poids d'interpolation (bilinéaire)
         double w00 = (1.0 - fx) * (1.0 - fy);  // Top-left

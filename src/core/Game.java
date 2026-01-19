@@ -24,7 +24,8 @@ public class Game implements Runnable {
     private int in_game_time=0;
     private GameWorld gameworld=null;
     private boolean first_launch=true;
-    private int subDivisionRender = 8;
+    private int subDivisionRender = 4;
+    private int totalSteps = 4;
 
 
     //Input Handler
@@ -65,7 +66,7 @@ public class Game implements Runnable {
             // Same as when starting to play
             game_opening = System.currentTimeMillis();
             in_game_time=0;
-            this.gameworld.restart();
+            this.gameworld.restart(totalSteps);
             
             
         }
@@ -180,7 +181,7 @@ public class Game implements Runnable {
 
     private void loadResources() {
         // Exemple de chargement avec progression
-        int totalSteps = 2;
+        
         
         // load texture
         /*loadTextures();
@@ -192,8 +193,8 @@ public class Game implements Runnable {
         
         // Generate Map 
         game_opening = System.currentTimeMillis();
-        this.gameworld.restart();
-        updateLoadingProgress(1, totalSteps);
+        this.gameworld.restart(totalSteps);
+        
         
         //entities generation
         /*this.gameworld.initializeEntities();
@@ -206,10 +207,10 @@ public class Game implements Runnable {
             Thread.currentThread().interrupt();
         }
 
-        updateLoadingProgress(2, totalSteps);
+        updateLoadingProgress(totalSteps, totalSteps);
     }
     
-    private void updateLoadingProgress(int current, int total) {
+    public void updateLoadingProgress(int current, int total) {
         int percentage = (current * 100) / total;
         
         // Met à jour l'écran de chargement (dans le thread Swing)

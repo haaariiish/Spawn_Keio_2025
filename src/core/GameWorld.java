@@ -86,19 +86,29 @@ public class GameWorld {
         
     }
 
-    public void restart(){
+    public void restart(int totalSteps){
+        int progression = 1;
         // Initialisation of the map ( default map for now)
         this.score = 0;
         this.wave=1;
         this.remainingEnemies = 20;
         this.maxEnemy = remainingEnemies/4+wave;
         
+        
         this.playerShootCooldown = 0;
         this.playerDamageCooldown = 0;
-        
+        game.updateLoadingProgress(progression,totalSteps);
+        progression+=1;
         //  spawn point
         Point spawn = changeMap(this.worldWidth,this.worldHeight);
+
+        game.updateLoadingProgress(progression,totalSteps);
+        progression+=1;
+
+
+
         player = new Player(spawn.x, spawn.y,this.tileSize/2-1,this.tileSize/2-1,100,10,1,this.tileSize*5/2);
+        game.updateLoadingProgress(progression,totalSteps);
     }
 
     public void nextWave(){

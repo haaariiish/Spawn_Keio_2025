@@ -158,6 +158,10 @@ public class RangedEnemy extends Enemy {
             g.setColor(new Color((int)(brighness*255), (int)(brighness*green), (int)(brighness*255)));
             
             g.fillOval(screenX, screenY, width, height);
+            
+            g.setColor(Color.WHITE);
+            g.setColor(new Color((int)(brighness*g.getColor().getRed()), (int) (g.getColor().getGreen()*brighness), (int) (brighness*g.getColor().getBlue())));
+            g.drawOval(screenX, screenY, width, height);
         }
        // g.drawRect(screenX, screenY, width, height);
     }
