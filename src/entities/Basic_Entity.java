@@ -56,6 +56,7 @@ public class Basic_Entity {
     private ProjectilesTypes projectilesTypes = ProjectilesTypes.Simple_Projectiles; // to define what the entity shoot
     private boolean is_undying=false; // to implement future damage method
     private double impactDirection;
+    private int spikeFrame = -1;
     // Constructor -----------------------------------------------------------------
 
     public Basic_Entity() {
@@ -179,6 +180,11 @@ public class Basic_Entity {
     public void setShadowDistance(int sd){
         this.ShadowDistance = sd;
     }
+
+    public void setSpikeFrame(int spikeframe){
+        this.spikeFrame = spikeframe;
+    }
+
 
 
     // Getters -----------------------------------------------------------------
@@ -324,6 +330,9 @@ public class Basic_Entity {
 
     public int getShadowDistance(){
         return this.ShadowDistance;
+    }
+    public int getSpikeFrame(){
+        return spikeFrame;
     }
 
 

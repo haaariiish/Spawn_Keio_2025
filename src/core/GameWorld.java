@@ -5,6 +5,7 @@ import java.util.List;
 import java.awt.Rectangle;
 
 import input.InputHandler;
+import entities.Basic_Entity;
 import entities.ChargerEnemy;
 import entities.Enemy;
 import entities.HeavyEnemy;
@@ -14,7 +15,6 @@ import entities.Projectiles;
 import entities.RangedEnemy;
 import entities.Simple_Projectiles;
 import map.Map;
-import core.GameState;
 
 import java.awt.Point;
 
@@ -31,8 +31,10 @@ public class GameWorld {
     private int score=0;
     //private int initialEnemy =1; not used
     private int maxEnemy ;
-    private int remainingEnemies = 1;
+    private int remainingEnemies = 20;
     private int wave=1;
+    private final int SPIKEDAMAGE=3;
+    private final int COOLDOWNSPIKES = 120;
 
     //private Boss currentBoss;
     private List<Projectiles> projectilesList;
@@ -81,7 +83,7 @@ public class GameWorld {
         this.enemies = null;
         this.score = 0;
         this.wave = 1;
-        this.remainingEnemies = 1;
+        this.remainingEnemies = 20;
         this.maxEnemy = remainingEnemies/4 + wave;
 
         
@@ -92,7 +94,7 @@ public class GameWorld {
         // Initialisation of the map ( default map for now)
         this.score = 0;
         this.wave=1;
-        this.remainingEnemies = 1;
+        this.remainingEnemies = 20;
         this.maxEnemy = remainingEnemies/4+wave;
         
         
@@ -108,7 +110,7 @@ public class GameWorld {
 
 
 
-        player = new Player(spawn.x, spawn.y,this.tileSize/2-1,this.tileSize/2-1,100,10,1,this.tileSize*5/2);
+        player = new Player(spawn.x, spawn.y,this.tileSize/2-1,this.tileSize/2-1,50,10,1,this.tileSize*5/2);
         game.updateLoadingProgress(progression,totalSteps);
     }
 
@@ -188,6 +190,7 @@ public class GameWorld {
         
         handlePlayerShooting(input);
         updateProjectiles();
+        calculateAllSpikeDamage(which_frame_in_cycle);
         
         handleCollisions();
         if (playerDamageCooldown > 0) {
@@ -382,6 +385,7 @@ public class GameWorld {
             }
             playerDamageCooldown = PLAYER_DAMAGE_COOLDOWN_FRAMES;
         }
+
     }
 
     private void checkPlayerStatus(){
@@ -533,6 +537,25 @@ public class GameWorld {
         } else {
             HeavyEnemy heavy = new HeavyEnemy(spawnPoint.x, spawnPoint.y, this.tileSize/2-1,this.tileSize/2-1);
             return heavy;
+        }
+    }
+
+    private void inflictSpikeDamage(Basic_Entity entity, int spikeFrame){
+        if((spikeFrame<0)||(spikeFrame-entity.getSpikeFrame()<COOLDOWNSPIKES)){
+            return;
+        }
+        else{
+            if(map.getTileAtPixel((int) entity.getX(), (int) entity.getY())==Map.SPIKE){
+                entity.take_damage(SPIKEDAMAGE);
+                entity.setSpikeFrame(spikeFrame);
+            }
+        }
+        
+    }
+
+    private void calculateAllSpikeDamage(int which_frame){
+        for(int k=0;k< tempMovingEntitiesList.size();k++){
+            inflictSpikeDamage(tempMovingEntitiesList.get(k), which_frame);
         }
     }
 

@@ -38,7 +38,7 @@ public class Main_Panel extends JPanel{
     private static final Color COLOR_EMPTY = new Color(220, 215, 205);  
     private static final Color COLOR_WALL = new Color(100, 100, 100);    
     private static final Color COLOR_DOOR = new Color(139, 69, 19);     
-    private static final Color COLOR_SPIKE = new Color(255, 140, 0);    
+    private static final Color COLOR_SPIKE = new Color(202, 70, 0);    
     private static final Color COLOR_WATER = new Color(30, 100, 180);   
     private static final Color COLOR_SPAWN = new Color(100, 200, 100);  
     private static final Color COLOR_SPAWN_ENEMY = new Color(200, 30, 30); 
@@ -292,8 +292,8 @@ public class Main_Panel extends JPanel{
 
         int mainTile = map.getTileAt(tileX0, tileY0);
         // 
-        if (mainTile == Map.WALL) {
-            Color baseColor = getBaseTileColor(Map.WALL);
+        if ((mainTile == Map.WALL)||(mainTile == Map.SPIKE)) {
+            Color baseColor = getBaseTileColor(mainTile);
             int r = (int)(baseColor.getRed() * brightness);
             int g = (int)(baseColor.getGreen() * brightness);
             int b = (int)(baseColor.getBlue() * brightness);
@@ -314,9 +314,9 @@ public class Main_Panel extends JPanel{
         int tile01 = map.getTileAt(tileX0, tileY1);  // Bottom-left
         int tile11 = map.getTileAt(tileX1, tileY1);  // Bottom-right
 
-        if (tile10 == Map.WALL) tile10 = tile00;
-        if (tile01 == Map.WALL) tile01 = tile00;
-        if (tile11 == Map.WALL) tile11 = tile00;
+        if ((tile10 == Map.WALL)||(tile10 == Map.SPIKE)) tile10 = tile00;
+        if ((tile01 == Map.WALL)||(tile01 == Map.SPIKE)) tile01 = tile00;
+        if ((tile11 == Map.WALL)||(tile11 == Map.SPIKE)) tile11 = tile00;
         
         // Poids d'interpolation (bilinéaire)
         double w00 = (1.0 - fx) * (1.0 - fy);  // Top-left

@@ -24,7 +24,7 @@ public class Game implements Runnable {
     private int in_game_time=0;
     private GameWorld gameworld=null;
     private boolean first_launch=true;
-    private int subDivisionRender = 4;
+    private int subDivisionRender = 8;
     private int totalSteps = 5;
 
 
