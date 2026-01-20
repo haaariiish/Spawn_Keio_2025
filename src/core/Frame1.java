@@ -14,6 +14,7 @@ import rendering.Loading_Panel;
 import rendering.Main_Panel;
 import rendering.Pause_Menu_Panel;
 import rendering.Wave_Loading_Panel;
+import rendering.Level_Up_Menu;
 
 
 
@@ -26,6 +27,7 @@ public class Frame1 extends JFrame{
     private Pause_Menu_Panel pauseMenuPanel;
     private GameOver_Panel gameOverPanel;
     private Loading_Panel loadingPanel;
+    private Level_Up_Menu LevelMenuPanel;
     private Wave_Loading_Panel waveLoadingPanel;
     private CardLayout cardLayout = new CardLayout();
     private JPanel mainContainer = new JPanel(cardLayout);
@@ -50,6 +52,8 @@ public class Frame1 extends JFrame{
         this.homeMenuPanel.setFocusable(false);
         this.pauseMenuPanel = new Pause_Menu_Panel(this);
         this.pauseMenuPanel.setFocusable(false);
+        this.LevelMenuPanel = new Level_Up_Menu(this);
+        this.LevelMenuPanel.setFocusable(false);
         this.gameOverPanel = new GameOver_Panel(this);
         this.gameOverPanel.setFocusable(false);
         this.loadingPanel = new Loading_Panel(this);
@@ -62,6 +66,7 @@ public class Frame1 extends JFrame{
         this.mainContainer.add(this.pauseMenuPanel, "PauseMenu");
         this.mainContainer.add(this.gameOverPanel, "GameOverMenu");
         this.mainContainer.add(this.loadingPanel, "LoadingScreen");
+        this.mainContainer.add(this.LevelMenuPanel, "LevelUpMenu");
         this.mainContainer.add(this.waveLoadingPanel, "WaveLoadingScreen");
 
         this.cardLayout.show(this.mainContainer, "HomeMenu");
@@ -95,6 +100,10 @@ public class Frame1 extends JFrame{
 
     public Wave_Loading_Panel getWaveLoadingPanel() {
         return this.waveLoadingPanel;
+    }
+
+    public Level_Up_Menu getLevelUpPanel() {
+        return this.LevelMenuPanel;
     }
 
     public void showPanel(String panelName) {

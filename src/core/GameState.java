@@ -6,5 +6,6 @@ public enum GameState {
     PAUSE,
     GAMEOVER,
     LOADING, 
-    WAVE_LOADING
+    WAVE_LOADING,
+    LEVEL_UP_MENU
 }

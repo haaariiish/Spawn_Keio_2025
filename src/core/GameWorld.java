@@ -579,5 +579,9 @@ public class GameWorld {
         this.remainingEnemies = Re;
         }
 
+    public void setScore( int a){
+        score =a;
+    }
+
 }
 

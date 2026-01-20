@@ -112,6 +112,9 @@ public class Game implements Runnable {
             if ((game_state == GameState.PLAYING || game_state == GameState.PAUSE) && inputHandler.isPausePressed()) {
                 togglePause();
             }
+            if((game_state == GameState.PLAYING || game_state == GameState.LEVEL_UP_MENU) && inputHandler.isMenuPressed()) {
+                toggleMenu();
+            }
 
             if (game_state != previous_state) {
                 handleStateChange();
@@ -141,7 +144,9 @@ public class Game implements Runnable {
                 frame.getLoadingPanel().repaint();
             }else if (game_state == GameState.WAVE_LOADING){
                 frame.getLoadingPanel().repaint();
-            }   
+            }else if (game_state == GameState.LEVEL_UP_MENU){
+                ;
+            }  
             
            
             
@@ -314,6 +319,11 @@ public class Game implements Runnable {
                 frame.showPanel("WaveLoadingScreen");
                 startWaveLoadingInBackground();      
                 break;
+            case LEVEL_UP_MENU:
+                frame.showPanel("LevelUpMenu");
+                frame.getLevelUpPanel().reset();
+                frame.getLevelUpPanel().setPlayer(gameworld.getPlayer());
+                break;
         }
         frame.refresh(); //called one time when state changes because repaint is costly
     }
@@ -328,7 +338,7 @@ public class Game implements Runnable {
     }
     
     public void resumeGame() {
-        if (this.game_state == GameState.PAUSE) {
+        if (this.game_state == GameState.PAUSE || this.game_state == GameState.LEVEL_UP_MENU) {
             changeGameState(GameState.PLAYING);
         }
     }
@@ -337,6 +347,14 @@ public class Game implements Runnable {
         if (this.game_state == GameState.PLAYING) {
             changeGameState(GameState.PAUSE);
         } else if (this.game_state == GameState.PAUSE) {
+            resumeGame();
+        }
+    }
+    private void toggleMenu() {
+        if (this.game_state == GameState.PLAYING) {
+            
+            changeGameState(GameState.LEVEL_UP_MENU);
+        } else if (this.game_state == GameState.LEVEL_UP_MENU) {
             resumeGame();
         }
     }

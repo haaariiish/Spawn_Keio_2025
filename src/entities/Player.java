@@ -12,6 +12,7 @@ public class Player extends Moving_Entity{
     private String name = "Test_H";
     private boolean healable = false;
     private boolean interact= false;
+    private int level=-1;
     
 
     public Player(double x, double y, int width, int height, int hp, int attack, int defense,int range){
@@ -26,6 +27,7 @@ public class Player extends Moving_Entity{
         this.setHeightinPixel(height);
         this.setBounds();
         this.setShadowDistance(600);
+        this.level = 0;
     }
 
     public void update_input(Map map, InputHandler input, List<Moving_Entity> movingEntity) {
@@ -155,7 +157,12 @@ public class Player extends Moving_Entity{
         setVelocityY((velocityY/norm) * getSpeed());
     }
 
-    
+    public int getLevel(){
+        return level;
+    }
+    public void LevelUp(int a){
+        level += a;
+    }
 
     
 
