@@ -42,6 +42,7 @@ public class Main_Panel extends JPanel{
     private static final Color COLOR_WATER = new Color(30, 100, 180);   
     private static final Color COLOR_SPAWN = new Color(100, 200, 100);  
     private static final Color COLOR_SPAWN_ENEMY = new Color(200, 30, 30); 
+    private static final Color COLOR_GATE = new Color(127, 0, 255);
 
     private Color[][][]  interpolatedColorCache = null;
     private static final int CACHE_BRIGHTNESS_LEVELS = 50;
@@ -66,7 +67,7 @@ public class Main_Panel extends JPanel{
     
     private Color[][][][][] colorCache;
     //Obsolete
-    private Color[][] brightnessColors = new Color[7][BRIGHTNESS_LEVELS]; // 7 tile types, 101 brightness levels (0-100)
+    private Color[][] brightnessColors = new Color[8][BRIGHTNESS_LEVELS]; // 7 tile types, 101 brightness levels (0-100)
 
 
     
@@ -139,6 +140,7 @@ public class Main_Panel extends JPanel{
             case Map.WATER: return COLOR_WATER;
             case Map.SPAWN: return COLOR_SPAWN;
             case Map.ENEMY_SPAWN: return COLOR_SPAWN_ENEMY;
+            case Map.GATELEVEL: return COLOR_GATE;
             default: return COLOR_EMPTY;
         }
     }
@@ -158,7 +160,7 @@ public class Main_Panel extends JPanel{
     // Pre-calculate all brightness variations of colors to avoid creating Color objects in render loop
     public void initializeBrightnessColors() {
      
-        final int NUM_TILE_TYPES = 7;
+        final int NUM_TILE_TYPES = 8;
         
       
         colorCache = new Color[NUM_TILE_TYPES][NUM_TILE_TYPES][NUM_TILE_TYPES][BRIGHTNESS_LEVELS + 1][COLOR_VARIATIONS];
@@ -171,7 +173,8 @@ public class Main_Panel extends JPanel{
             COLOR_SPIKE,        // 3
             COLOR_WATER,        // 4
             COLOR_SPAWN,        // 5
-            COLOR_SPAWN_ENEMY   // 6
+            COLOR_SPAWN_ENEMY,  // 6
+            COLOR_GATE //7
         };
         
         
@@ -292,7 +295,7 @@ public class Main_Panel extends JPanel{
 
         int mainTile = map.getTileAt(tileX0, tileY0);
         // 
-        if ((mainTile == Map.WALL)||(mainTile == Map.SPIKE)) {
+        if ((mainTile == Map.WALL)||(mainTile == Map.SPIKE)||(mainTile == Map.GATELEVEL)) {
             Color baseColor = getBaseTileColor(mainTile);
             int r = (int)(baseColor.getRed() * brightness);
             int g = (int)(baseColor.getGreen() * brightness);
@@ -314,9 +317,9 @@ public class Main_Panel extends JPanel{
         int tile01 = map.getTileAt(tileX0, tileY1);  // Bottom-left
         int tile11 = map.getTileAt(tileX1, tileY1);  // Bottom-right
 
-        if ((tile10 == Map.WALL)||(tile10 == Map.SPIKE)) tile10 = tile00;
-        if ((tile01 == Map.WALL)||(tile01 == Map.SPIKE)) tile01 = tile00;
-        if ((tile11 == Map.WALL)||(tile11 == Map.SPIKE)) tile11 = tile00;
+        if ((tile10 == Map.WALL)||(tile10 == Map.SPIKE)||(tile10 == Map.GATELEVEL)) tile10 = tile00;
+        if ((tile01 == Map.WALL)||(tile01 == Map.SPIKE)||(tile01 == Map.GATELEVEL)) tile01 = tile00;
+        if ((tile11 == Map.WALL)||(tile11 == Map.SPIKE)||(tile11 == Map.GATELEVEL)) tile11 = tile00;
         
         // Poids d'interpolation (bilinéaire)
         double w00 = (1.0 - fx) * (1.0 - fy);  // Top-left
@@ -629,6 +632,9 @@ public class Main_Panel extends JPanel{
         /*stringBuilder.setLength(0);
         stringBuilder.append("Number of Enemies in the Area ").append(gameWorld.getEnemy().size());
         g.drawString(stringBuilder.toString(), 10, 195);*/
+        stringBuilder.setLength(0);
+        stringBuilder.append("TILE TYPE: ").append(gameWorld.getMap().getTileAtPixel((int)player.getX(), (int)player.getY()));
+        g.drawString(stringBuilder.toString(), 10, 195);
 
         stringBuilder.setLength(0);
         stringBuilder.append("Number of max enemies simultanously in the Area ").append(gameWorld.getMaxEnemy());

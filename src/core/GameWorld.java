@@ -520,8 +520,10 @@ public class GameWorld {
                     continue;
                 }
                 int penalty = 0;
+
                 if(map.getTileAt(nx, ny)==Map.SPIKE){
                     penalty = 5;
+                    
                 }
                 distToPlayer[ny][nx] = baseDist + 1 + penalty;
                 queue.add(new int[]{nx, ny});

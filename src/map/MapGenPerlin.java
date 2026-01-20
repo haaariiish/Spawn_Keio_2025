@@ -13,6 +13,7 @@ public class MapGenPerlin {
     // Trying to do a Map generation using a Perlin's Noise as in Minecraft
     static final int WIDTH = 1000;
     static final int HEIGHT = 1000;
+    public final int numberGate = 1;
 
     private int height;
     private int width;
@@ -37,6 +38,7 @@ public class MapGenPerlin {
         rooms_coordinates = createCorridor();
         placeMapBound();
         placeSpawn();
+        placeGate();
         for (int i=0; i<rooms_coordinates.size();i++){
         // System.out.println(rooms_coordinates.get(i).id);
         }
@@ -139,6 +141,43 @@ public class MapGenPerlin {
                 if (tiles[y][x] == Map.EMPTY) {
                     tiles[y][x] = Map.SPAWN;
                     return;
+                }
+            }
+        }
+    }
+    public void placeGate(){
+        double proba = 0.3;
+        int placedGate =0;
+        // Remove infinite loop and System.out.println to reduce CodeCache usage
+        for (int attempt = 0; attempt < 1000; attempt++) { // Max 1000 attempts
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    if (Math.random() < proba && tiles[y][x] == Map.EMPTY) {
+                        tiles[y][x] = Map.GATELEVEL;
+                        
+                        placedGate+=1;
+                        //System.out.println("GATE "+placedGate);
+                        //System.out.println("X : "+x*80+", Y : "+y*80);
+                        if(placedGate>=numberGate){
+                            //System.out.println("PLACEMENT DONE 1");
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        // Fallback: place spawn at first empty tile found
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (tiles[y][x] == Map.EMPTY) {
+                    tiles[y][x] = Map.GATELEVEL;
+                    placedGate+=1;
+                    //System.out.println("GATE "+placedGate);
+                    //System.out.println("X : "+x*80+", Y : "+y*80);
+                    if(placedGate>=numberGate){
+                        //System.out.println("PLACEMENT DONE 2");
+                        return;
+                    }
                 }
             }
         }

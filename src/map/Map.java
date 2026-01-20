@@ -25,6 +25,7 @@ public class Map{
     public static final int ENEMY_SPAWN = 6;
 
     public static final int SPAWN = 5;
+    public static final int GATELEVEL =7;
     
     public List<Room> rooms;
    
