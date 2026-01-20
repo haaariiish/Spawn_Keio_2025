@@ -11,6 +11,7 @@ public class Player extends Moving_Entity{
     private static final Color COLOR_PLAYER = Color.BLACK;
     private String name = "Test_H";
     private boolean healable = false;
+    private boolean interact= false;
     
 
     public Player(double x, double y, int width, int height, int hp, int attack, int defense,int range){
@@ -58,6 +59,12 @@ public class Player extends Moving_Entity{
             this.moveDown();
             moved_vertical = true;
         }
+        if (input.isInteractPressed()){
+            this.interact=true;
+        }
+        else{
+            this.interact=false;
+        }
         
 
 
@@ -73,6 +80,9 @@ public class Player extends Moving_Entity{
     }
     public boolean getHealable(){
         return this.healable;
+    }
+    public boolean getInteract(){
+        return this.interact;
     }
 
     public void healing(int a){

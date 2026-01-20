@@ -123,7 +123,7 @@ public class MapGenPerlin {
 }
 
     public void placeSpawn(){
-        double proba = 0.3;
+        double proba = 0.001;
         // Remove infinite loop and System.out.println to reduce CodeCache usage
         for (int attempt = 0; attempt < 1000; attempt++) { // Max 1000 attempts
             for (int y = 0; y < height; y++) {
@@ -146,7 +146,7 @@ public class MapGenPerlin {
         }
     }
     public void placeGate(){
-        double proba = 0.3;
+        double proba = 0.001;
         int placedGate =0;
         // Remove infinite loop and System.out.println to reduce CodeCache usage
         for (int attempt = 0; attempt < 1000; attempt++) { // Max 1000 attempts

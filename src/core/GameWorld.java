@@ -147,7 +147,7 @@ public class GameWorld {
     }
 
     public void update(InputHandler input, int which_frame_in_cycle) {
-        if (remainingEnemies == 0 && enemies.size() == 0) {
+        if (remainingEnemies == 0 && enemies.size() == 0 && map.getTileAtPixel((int) player.getX(), (int) player.getY())==Map.GATELEVEL&& input.isInteractPressed()) {
             this.getGame().changeGameState(GameState.WAVE_LOADING);
         }
         // Reuse temporary list instead of creating new one
