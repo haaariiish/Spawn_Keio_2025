@@ -12,8 +12,8 @@ import java.awt.AlphaComposite;
 
 
 public class Wave_Loading_Panel extends JPanel{
-    private Font[] CacheFont = new Font[100];
-    private AlphaComposite[] alphaComposites= new AlphaComposite[100];
+    private Font[] CacheFont = new Font[50];
+    private AlphaComposite[] alphaComposites= new AlphaComposite[50];
     private Frame1 mainFrame;
     private int progress = 0;
     
@@ -27,8 +27,8 @@ public class Wave_Loading_Panel extends JPanel{
     }
 
     public void initialiseCacheFont(){
-        for(int i=0;i<100;i++){
-            float percentage = ((float) i )/(100);
+        for(int i=0;i<50;i++){
+            float percentage = ((float) i )/(50);
             CacheFont[i] = new Font("Arial", Font.BOLD, 2*(i+1));
             alphaComposites[i]= AlphaComposite.getInstance(AlphaComposite.SRC_OVER, percentage);
         }
@@ -58,8 +58,8 @@ public class Wave_Loading_Panel extends JPanel{
         
         // Texte
         g2d.setColor(Color.BLACK);
-        g2d.setFont(CacheFont[progress]);
-        g2d.setComposite(alphaComposites[progress]);
+        g2d.setFont(CacheFont[progress/2]);
+        g2d.setComposite(alphaComposites[progress/2]);
         String text =  currentTask;
         int textWidth = g2d.getFontMetrics().stringWidth(text);
         g2d.drawString(text , (getWidth()/2 - textWidth) , y - 20);

@@ -192,7 +192,9 @@ public class Game implements Runnable {
                 
                 // When Ended change the Game State 
                 SwingUtilities.invokeLater(() -> {
+                    
                     changeGameState(GameState.PLAYING);
+                    frame.getGamePanel().invalidateMinimapCache();
                 });
                 
             } catch (Exception e) {

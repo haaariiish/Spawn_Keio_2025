@@ -33,6 +33,7 @@ public class GameWorld {
     private int maxEnemy ;
     private int remainingEnemies = 20;
     private int wave=1;
+    private int currentWave = 0;
     private final int SPIKEDAMAGE=3;
     private final int COOLDOWNSPIKES = 120;
 
@@ -147,9 +148,10 @@ public class GameWorld {
     }
 
     public void update(InputHandler input, int which_frame_in_cycle) {
-        if (remainingEnemies == 0 && enemies.size() == 0 && map.getTileAtPixel((int) player.getX(), (int) player.getY())==Map.GATELEVEL&& input.isInteractPressed()) {
-            this.getGame().changeGameState(GameState.WAVE_LOADING);
-        }
+        if(input.isInteractPressed()){
+            if (remainingEnemies == 0 && enemies.size() == 0 && map.getTileAtPixel((int) player.getX(), (int) player.getY())==Map.GATELEVEL) {
+                this.getGame().changeGameState(GameState.WAVE_LOADING);
+            }}
         // Reuse temporary list instead of creating new one
         tempMovingEntitiesList.clear();
         tempMovingEntitiesList.addAll(this.enemies);

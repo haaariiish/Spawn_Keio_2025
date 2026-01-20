@@ -93,6 +93,8 @@ public class InputHandler implements KeyListener, MouseListener, MouseMotionList
         return isKeyPressed(KeyEvent.VK_S) || isKeyPressed(KeyEvent.VK_X);
     }
 
+    
+
     public int getHorizontalDirection() {
         int direction = 0;
         if (isMovingLeft()) direction -= 1;
