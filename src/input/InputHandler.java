@@ -122,6 +122,10 @@ public class InputHandler implements KeyListener, MouseListener, MouseMotionList
     public boolean isInteractPressed() {
         return isKeyJustPressed(KeyEvent.VK_E) ;
     }
+
+    public boolean isMenuPressed() {
+        return isKeyJustPressed(KeyEvent.VK_M) ;
+    }
     
     public boolean isPausePressed() {
         return isKeyJustPressed(KeyEvent.VK_ESCAPE);

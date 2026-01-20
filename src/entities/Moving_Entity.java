@@ -239,19 +239,19 @@ public class Moving_Entity extends Basic_Entity{
 
     // Velocity update
 
-    public void moveLeft() {
+    public void moveLeft(double speed) {
         velocityX =- speed;
     }
     
-    public void moveRight() {
+    public void moveRight(double speed) {
         velocityX = speed;
     }
     
-    public void moveUp() {
+    public void moveUp(double speed) {
         velocityY =- speed;
     }
     
-    public void moveDown() {
+    public void moveDown(double speed) {
         velocityY = speed;
     }
     

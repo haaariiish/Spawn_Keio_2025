@@ -72,6 +72,7 @@ public class Main_Panel extends JPanel{
     private final List<Projectiles> projectilesRenderList = new ArrayList<>();
     
     // Reusable objects for debug info to avoid allocations
+    private final AlphaComposite alphaComposite03 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
     private final AlphaComposite alphaComposite06 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f);
     private final AlphaComposite alphaComposite08 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f);
     private final Font font12 = new Font("Monospaced", Font.PLAIN, 12);
@@ -672,14 +673,18 @@ public class Main_Panel extends JPanel{
         Graphics2D g2d = minimap.createGraphics();
         
         // Draw directly
+        
+        
         for(int yy = 0; yy < mapHeight; yy++){
             for(int xx = 0; xx < mapWidth; xx++){
+
                 int tiletype = themap.getTileAt(xx, yy);
                 g2d.setColor(getBaseTileColor(tiletype));
                 g2d.fillRect(xx * MINIMAP_SCALE, yy * MINIMAP_SCALE, 
                             MINIMAP_SCALE, MINIMAP_SCALE);
             }
         }
+        
         
         g2d.dispose();
         return minimap;

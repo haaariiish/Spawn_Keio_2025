@@ -32,7 +32,10 @@ public class Player extends Moving_Entity{
         // 1. handle input
         handleInput(input);
         //update the collision first
+        //normalizeVelocity();
         update_collision_withEntities(movingEntity, map);
+
+        // 
         // 2. Apply the movement
         this.update(map);
     }
@@ -42,23 +45,57 @@ public class Player extends Moving_Entity{
     public void handleInput(InputHandler input){
         boolean moved_horizontal = false;
         boolean moved_vertical = false;
+        boolean moved_left = input.isMovingLeft();
+        boolean moved_down = input.isMovingDown();
+        boolean moved_up = input.isMovingUp();
+        boolean moved_right=  input.isMovingRight();
+        int i = 0;
+        if(moved_right||moved_left){
+            i+=1;
+        }
+        if(moved_up||moved_down){
+            i+=1;
+        }
         
-        if (input.isMovingLeft()) {
-            this.moveLeft();
-            moved_horizontal = true;
-        } 
-        if (input.isMovingRight()) {
-            this.moveRight();
-            moved_horizontal = true;
+        if(i==1){
+            double speed = getSpeed();
+            if (input.isMovingLeft()) {
+                this.moveLeft(speed);
+                moved_horizontal = true;
+            } 
+            if (input.isMovingRight()) {
+                this.moveRight(speed);
+                moved_horizontal = true;
+            }
+            if (input.isMovingUp()) {
+                this.moveUp(speed);
+                moved_vertical = true;
+            }
+            if (input.isMovingDown()) {
+                this.moveDown(speed);
+                moved_vertical = true;
+            }    
         }
-        if (input.isMovingUp()) {
-            this.moveUp();
-            moved_vertical = true;
+        if(i==2){
+            double speed = getSpeed()/Math.pow(2,0.5);
+            if (input.isMovingLeft()) {
+                this.moveLeft(speed);
+                moved_horizontal = true;
+            } 
+            if (input.isMovingRight()) {
+                this.moveRight(speed);
+                moved_horizontal = true;
+            }
+            if (input.isMovingUp()) {
+                this.moveUp(speed);
+                moved_vertical = true;
+            }
+            if (input.isMovingDown()) {
+                this.moveDown(speed);
+                moved_vertical = true;
+            }    
         }
-        if (input.isMovingDown()) {
-            this.moveDown();
-            moved_vertical = true;
-        }
+
         if (input.isInteractPressed()){
             this.interact=true;
         }
@@ -106,6 +143,16 @@ public class Player extends Moving_Entity{
         g.setColor(Color.WHITE);
         g.drawOval(x, y, width, height);
         
+    }
+
+    public void normalizeVelocity(){
+        double velocityX= getVelocityX();
+        double velocityY = getVelocityY();
+        
+        double norm = Math.pow(Math.pow(velocityX,2) +  Math.pow(velocityY,2),0.5);
+
+        setVelocityX((velocityX/norm)* getSpeed());
+        setVelocityY((velocityY/norm) * getSpeed());
     }
 
     
