@@ -13,4 +13,7 @@ src/map/Map_try.java
 bin/
 out/
 
+.DS_Store
+src/META-INF
+
 Spawn_Keio_2025.iml
