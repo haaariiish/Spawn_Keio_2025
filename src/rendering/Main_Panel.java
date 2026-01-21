@@ -1,10 +1,12 @@
 package rendering;
 
 import core.Frame1;
+import core.GameState;
 import map.Map;
 import entities.Player;
 import entities.Projectiles;
 import entities.Direction;
+import java.awt.FontMetrics;
 
 import javax.swing.JPanel;
 import java.awt.AlphaComposite;
@@ -85,6 +87,7 @@ public class Main_Panel extends JPanel{
     private final Color colorHP1 = new Color(140, 27, 35);
     private final Color colorHP2 = new Color(227, 27, 35);
     private final StringBuilder stringBuilder = new StringBuilder(64);
+    
 
 
     public Main_Panel(Frame1 mainFrame, int subDivision) { 
@@ -506,6 +509,7 @@ public class Main_Panel extends JPanel{
         core.GameWorld gameWorld = game.getGameWorld();
         map.Map themap = gameWorld.getMap();
         int screenWidth = getWidth();
+        core.GameState gamestate= game.getGameState();
         
         // HP BAR
         g.setComposite(alphaComposite06);
@@ -526,18 +530,33 @@ public class Main_Panel extends JPanel{
         g.fillRect(screenWidth - 310, 45, 300, 115);
         g.setColor(colorWhite);
         g.setFont(font30);
+        FontMetrics metrics30 = g.getFontMetrics(font30);
+        
         
         stringBuilder.setLength(0);
         stringBuilder.append("Score: ").append(gameWorld.getScore());
         g.drawString(stringBuilder.toString(), screenWidth - 310, 80);
     
+        int tot_ennemies = gameWorld.getRemainingEnemies()+gameWorld.getEnemy().size();
         stringBuilder.setLength(0);
-        stringBuilder.append("Enemies Left:").append(gameWorld.getRemainingEnemies()+gameWorld.getEnemy().size());
+        stringBuilder.append("Enemies Left:").append(tot_ennemies);
         g.drawString(stringBuilder.toString(),screenWidth - 310, 115);
+        if(tot_ennemies==0){
+            stringBuilder.setLength(0);
+            stringBuilder.append("Go to the Purple Gate for next level");
+            g.drawString(stringBuilder.toString(),screenWidth/2- metrics30.stringWidth("Go to the Purple Gate for next level")/2,80);
+        }
+
     
         stringBuilder.setLength(0);
         stringBuilder.append("WAVE ").append(gameWorld.getWave());
         g.drawString(stringBuilder.toString(),screenWidth - 310, 150);
+
+        if (gamestate==GameState.FREEZE){
+            stringBuilder.setLength(0);
+            stringBuilder.append("FREEZE");
+            g.drawString(stringBuilder.toString(), screenWidth/2, 40);
+        }
         
         // Debug info rectangle
         g.setColor(colorGray);
@@ -595,7 +614,9 @@ public class Main_Panel extends JPanel{
         stringBuilder.setLength(0);
         stringBuilder.append("Number of max enemies simultanously in the Area ").append(gameWorld.getMaxEnemy());
         g.drawString(stringBuilder.toString(), 10, 225);
-    
+        
+        
+
         // Minimap is already optimized with direct pixel access
         drawMinimap(g, themap, player, gameWorld);
     }

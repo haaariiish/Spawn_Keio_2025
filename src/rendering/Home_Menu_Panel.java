@@ -83,7 +83,10 @@ public class Home_Menu_Panel extends JPanel {
     g.drawString("D",mainFrame.getWidth()/2+8-gap_X,mainFrame.getHeight()/10 + 412);
     
     g.drawString("ESC",mainFrame.getWidth()/2+170-gap_X,mainFrame.getHeight()/10 + 385);
+
+    g.drawString("F",mainFrame.getWidth()/2+188-gap_X,mainFrame.getHeight()/10 + 554);
     
+    g.drawString("M",mainFrame.getWidth()/2-60-gap_X,mainFrame.getHeight()/10 + 554);
     
     g.setFont(font50);
     metrics = g.getFontMetrics(font50);
@@ -103,18 +106,29 @@ public class Home_Menu_Panel extends JPanel {
     g.drawString("By Harish Prabakaran", x,  mainFrame.getHeight()/10 + 80);
      // INPUT showing
     
+     //RECT UP
     g.drawRect(mainFrame.getWidth()/2-75-gap_X,mainFrame.getHeight()/10 + 300,50,50);
     g.drawLine(mainFrame.getWidth()/2-75-gap_X,mainFrame.getHeight()/10 + 350,mainFrame.getWidth()/2-25-gap_X, mainFrame.getHeight()/10 + 300);
+    
     g.drawRect(mainFrame.getWidth()/2-75-gap_X,mainFrame.getHeight()/10 + 370,50,50);
+    
+    //LEFT
     g.drawLine(mainFrame.getWidth()/2-145-gap_X, mainFrame.getHeight()/10 + 420,mainFrame.getWidth()/2-95-gap_X,mainFrame.getHeight()/10+370);
     g.drawRect(mainFrame.getWidth()/2-145-gap_X,mainFrame.getHeight()/10 + 370,50,50);
+    
     g.drawRect(mainFrame.getWidth()/2-5-gap_X,mainFrame.getHeight()/10 + 370,50,50);
+
+    //M
+    g.drawRect(mainFrame.getWidth()/2-75-gap_X,mainFrame.getHeight()/10 + 514,50,50);
+
 
     // Walking
     g.drawString("UP", mainFrame.getWidth()/2-57-gap_X, mainFrame.getHeight()/10 + 290);
     g.drawString("DOWN", mainFrame.getWidth()/2-75-gap_X, mainFrame.getHeight()/10 + 450);
     g.drawString("LEFT", mainFrame.getWidth()/2-145-gap_X, mainFrame.getHeight()/10 + 450);
     g.drawString("RIGHT", mainFrame.getWidth()/2-5-gap_X, mainFrame.getHeight()/10 + 450);
+
+    g.drawString("LEVEL-UP", mainFrame.getWidth()/2-100-gap_X, mainFrame.getHeight()/10 + 500);
     
     // Arrows
     g.drawString("   OR    ARROWS", mainFrame.getWidth()/2+520-gap_X,mainFrame.getHeight()/10 + 400);
@@ -123,6 +137,9 @@ public class Home_Menu_Panel extends JPanel {
     // Pause text
     g.drawRect(mainFrame.getWidth()/2+160-gap_X,mainFrame.getHeight()/10 + 350,80,50);
     g.drawString("PAUSE",mainFrame.getWidth()/2+170-gap_X,mainFrame.getHeight()/10 + 340);
+
+    g.drawRect(mainFrame.getWidth()/2+175-gap_X,mainFrame.getHeight()/10 + 514,50,50);
+    g.drawString("FREEZE",mainFrame.getWidth()/2+170-gap_X,mainFrame.getHeight()/10 + 500);
 
     //MOUSE Design
     g.drawRect(mainFrame.getWidth()/2+400-gap_X,mainFrame.getHeight()/10 + 300,100,200);
