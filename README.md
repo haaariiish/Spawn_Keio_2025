@@ -6,7 +6,7 @@ This game will be a 2D game shooter where you will be able to see your character
 ## Build and launch game 
 
 The only thing you need to do in to download java to launch .jar files and then launch the 'Spawn_Keio_2025.jar' file
-```
+
 ## INPUT
 
 You can either move with Z (up), Q (left), S(down), D(right) or with W (up), A(left), S(down), D(right).
