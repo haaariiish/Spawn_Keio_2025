@@ -17,8 +17,12 @@ You can pause the game with the Escape button.
 
 You can freeze the game when playing with F, it is practical to look at the Map for exemple. 
 
-You can go to the Level Up Menu to exchange your score points against upgrade. 
+You can go to the Level Up Menu to exchange your score points against upgrade with M. 
 
+
+## TILES
+
+In orange there is the spikes that makes damages
 
 
 
