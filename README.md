@@ -22,7 +22,7 @@ You can go to the Level Up Menu to exchange your score points against upgrade wi
 
 ## TILES
 
-In orange there is the spikes that makes damages
+In orange there are the spikes that makes damages
 
 
 
