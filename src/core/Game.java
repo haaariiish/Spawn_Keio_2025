@@ -109,6 +109,10 @@ public class Game implements Runnable {
             long startTime = System.currentTimeMillis(); // start time of the frame
             open_time =(int) (startTime - lastTime);
 
+            if ((game_state == GameState.PLAYING || game_state == GameState.FREEZE) && inputHandler.isFreezePressed()) {
+                toggleFreeze();
+            }
+
             if ((game_state == GameState.PLAYING || game_state == GameState.PAUSE) && inputHandler.isPausePressed()) {
                 togglePause();
             }
@@ -324,6 +328,8 @@ public class Game implements Runnable {
                 frame.getLevelUpPanel().reset();
                 frame.getLevelUpPanel().setPlayer(gameworld.getPlayer());
                 break;
+            case FREEZE:
+                break;
         }
         frame.refresh(); //called one time when state changes because repaint is costly
     }
@@ -338,8 +344,9 @@ public class Game implements Runnable {
     }
     
     public void resumeGame() {
-        if (this.game_state == GameState.PAUSE || this.game_state == GameState.LEVEL_UP_MENU) {
+        if (this.game_state == GameState.PAUSE || this.game_state == GameState.LEVEL_UP_MENU ||this.game_state==GameState.FREEZE) {
             changeGameState(GameState.PLAYING);
+            //ocusable(true);
         }
     }
 
@@ -352,9 +359,18 @@ public class Game implements Runnable {
     }
     private void toggleMenu() {
         if (this.game_state == GameState.PLAYING) {
-            
             changeGameState(GameState.LEVEL_UP_MENU);
+            //frame.getLevelUpPanel().setFocusable(true);
         } else if (this.game_state == GameState.LEVEL_UP_MENU) {
+            resumeGame();
+        }
+    }
+
+    private void toggleFreeze() {
+        if (this.game_state == GameState.PLAYING) {
+            changeGameState(GameState.FREEZE);
+            //frame.getLevelUpPanel().setFocusable(true);
+        } else if (this.game_state == GameState.FREEZE) {
             resumeGame();
         }
     }

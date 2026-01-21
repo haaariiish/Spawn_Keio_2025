@@ -4,6 +4,7 @@ package rendering;
 import actions.ChangeGameState_toHome;
 import actions.ChangeGameState_toLoading;
 import core.Frame1;
+import core.GameState;
 import entities.Player;
 
 import javax.swing.Box;
@@ -11,6 +12,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -61,6 +63,7 @@ public class Level_Up_Menu extends JPanel{
         titleLabel.setFont(new Font("Arial", Font.BOLD, 32));
         titleLabel.setForeground(Color.YELLOW);
         titleLabel.setAlignmentX(CENTER_ALIGNMENT);
+        titleLabel.setFocusable(false);
         add(Box.createVerticalStrut(30));
         add(titleLabel);
         add(Box.createVerticalStrut(20));
@@ -70,16 +73,19 @@ public class Level_Up_Menu extends JPanel{
         pointsLabel.setFont(new Font("Arial", Font.PLAIN, 18));
         pointsLabel.setForeground(Color.WHITE);
         pointsLabel.setAlignmentX(CENTER_ALIGNMENT);
+        pointsLabel.setFocusable(false);
         add(pointsLabel);
         Level_Label = new JLabel("Level : 0");
         Level_Label.setFont(new Font("Arial", Font.PLAIN, 18));
         Level_Label.setForeground(Color.WHITE);
         Level_Label.setAlignmentX(CENTER_ALIGNMENT);
+        Level_Label.setFocusable(false);
         add(Level_Label);
         CostLabel = new JLabel("Cost : 0");
         CostLabel.setFont(new Font("Arial", Font.PLAIN, 18));
         CostLabel.setForeground(Color.WHITE);
         CostLabel.setAlignmentX(CENTER_ALIGNMENT);
+        CostLabel.setFocusable(false);
         add(CostLabel);
         add(Box.createVerticalStrut(30));
         
@@ -96,31 +102,67 @@ public class Level_Up_Menu extends JPanel{
         add(createStatRow("Speed", speedLabel = new JLabel("0"), speedButton = new JButton("+")));
         add(Box.createVerticalStrut(30));
         
-        // confirmation button
-        JButton confirmButton = new JButton("Confirmer");
-        confirmButton.setFont(new Font("Arial", Font.BOLD, 20));
-        confirmButton.setAlignmentX(CENTER_ALIGNMENT);
-        confirmButton.setMaximumSize(new Dimension(200, 50));
-        add(confirmButton);
-        JButton resumeButton = new JButton("Return in game");
-        resumeButton.setFont(new Font("Arial", Font.BOLD, 20));
-        resumeButton.setAlignmentX(CENTER_ALIGNMENT);
-        resumeButton.setMaximumSize(new Dimension(200, 50));
-        resumeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mainFrame.getGame().resumeGame();
-            }
+        // Panel pour les boutons
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.setBackground(new Color(40, 40, 60));
+        buttonPanel.setMaximumSize(new Dimension(500, 60));
+        buttonPanel.setFocusable(false);
+        
+        // Bouton de retour
+        JButton resumeButton = new JButton("Return to Game (M)");
+        resumeButton.setFont(new Font("Arial", Font.BOLD, 18));
+        resumeButton.setPreferredSize(new Dimension(180, 50));
+        resumeButton.setMaximumSize(new Dimension(180, 50));
+        resumeButton.setBackground(new Color(200, 100, 100));
+        resumeButton.setForeground(Color.BLACK);
+        resumeButton.setFocusable(false);
+        resumeButton.addActionListener(e -> {
+            reset();
+            mainFrame.getGame().changeGameState(GameState.PLAYING);
         });
-        add(resumeButton);
+        
+        // confirmation button
+        JButton confirmButton = new JButton("Confirm");
+        confirmButton.setFont(new Font("Arial", Font.BOLD, 20));
+        confirmButton.setPreferredSize(new Dimension(200, 50));
+        confirmButton.setMaximumSize(new Dimension(200, 50));
+        confirmButton.setFocusable(false);
+        confirmButton.addActionListener(e -> onConfirmClicked());
+        
+        buttonPanel.add(Box.createHorizontalGlue());
+        buttonPanel.add(resumeButton);
+        buttonPanel.add(Box.createHorizontalStrut(20));
+        buttonPanel.add(confirmButton);
+        buttonPanel.add(Box.createHorizontalGlue());
+        
+        add(buttonPanel);
 
         
-        // Action listeners 
-        healthButton.addActionListener(e -> onStatButtonClickedInt("health",5));
-        attackButton.addActionListener(e -> onStatButtonClickedInt("attack",1));
-        defenseButton.addActionListener(e -> onStatButtonClickedInt("defense",1));
-        speedButton.addActionListener(e -> onStatButtonClickedDouble("speed",0.3));
-        confirmButton.addActionListener(e -> onConfirmClicked());
+        // Action listeners avec restauration du focus
+        healthButton.addActionListener(e -> {
+            onStatButtonClickedInt("health",5);
+            restoreFocus();
+        });
+        attackButton.addActionListener(e -> {
+            onStatButtonClickedInt("attack",1);
+            restoreFocus();
+        });
+        defenseButton.addActionListener(e -> {
+            onStatButtonClickedInt("defense",1);
+            restoreFocus();
+        });
+        speedButton.addActionListener(e -> {
+            onStatButtonClickedDouble("speed",0.3);
+            restoreFocus();
+        });
+    }
+    
+    // Restaurer le focus sur la frame principale
+    private void restoreFocus() {
+        SwingUtilities.invokeLater(() -> {
+            mainFrame.requestFocus();
+        });
     }
     
     private JPanel createStatRow(String statName, JLabel valueLabel, JButton plusButton) {
@@ -128,23 +170,27 @@ public class Level_Up_Menu extends JPanel{
         rowPanel.setLayout(new BoxLayout(rowPanel, BoxLayout.X_AXIS));
         rowPanel.setBackground(new Color(50, 50, 70));
         rowPanel.setMaximumSize(new Dimension(500, 50));
+        rowPanel.setFocusable(false);
         
         // Nom de la stat
         JLabel nameLabel = new JLabel(statName);
         nameLabel.setFont(new Font("Arial", Font.BOLD, 20));
         nameLabel.setForeground(Color.WHITE);
         nameLabel.setPreferredSize(new Dimension(150, 30));
+        nameLabel.setFocusable(false);
         
         // Valeur de la stat
         valueLabel.setFont(new Font("Arial", Font.PLAIN, 20));
         valueLabel.setForeground(Color.CYAN);
         valueLabel.setPreferredSize(new Dimension(100, 30));
+        valueLabel.setFocusable(false);
         
         // Bouton plus
         plusButton.setFont(new Font("Arial", Font.BOLD, 24));
         plusButton.setPreferredSize(new Dimension(50, 40));
         plusButton.setBackground(new Color(100, 200, 100));
-        plusButton.setForeground(Color.WHITE);
+        plusButton.setForeground(Color.BLACK);
+        plusButton.setFocusable(false);
         
         rowPanel.add(Box.createHorizontalStrut(50));
         rowPanel.add(nameLabel);
@@ -169,9 +215,9 @@ public class Level_Up_Menu extends JPanel{
         scoreloss = 0;
 
         if(!(player==null)){
-        score_cost = 5+3*player.getLevel();
-    }
-        
+            score_cost = 5+3*player.getLevel();
+        }
+        updateDisplay();
     }
     
     public void setPlayer(Player player) {
@@ -240,6 +286,7 @@ public class Level_Up_Menu extends JPanel{
             mainFrame.getGame().getGameWorld().setScore(virtual_score);
         }
         reset();
-        
+        updateDisplay();
+        //mainFrame.getGame().changeGameState(GameState.PLAYING);
     }
 }
