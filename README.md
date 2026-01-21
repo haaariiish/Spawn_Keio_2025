@@ -24,5 +24,6 @@ You can go to the Level Up Menu to exchange your score points against upgrade wi
 
 In orange there are the spikes that makes damages
 
+In purple, there is a gate, when no emeny remains, you have to go to the get and push E button on your keyboard.
 
 

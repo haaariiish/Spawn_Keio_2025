@@ -5,7 +5,7 @@ import core.GameState;
 import map.Map;
 import entities.Player;
 import entities.Projectiles;
-import entities.Direction;
+//import entities.Direction;
 import java.awt.FontMetrics;
 
 import javax.swing.JPanel;
@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 
-import java.util.Random;
+//import java.util.Random;
 
 
 
@@ -57,7 +57,7 @@ public class Main_Panel extends JPanel{
 
 
     private int subTileSize;
-    private int subDivision;
+    private final int subDivision;
     
     // OPTIMIZATION: Reduced from 100 to 50 brightness levels to save memory
     private static final int BRIGHTNESS_LEVELS = 50;
@@ -67,14 +67,14 @@ public class Main_Panel extends JPanel{
     private Color[][][][][] colorCache;
 
 
-    private Frame1 mainFrame;
+    private final Frame1 mainFrame;
     
     // Reusable lists to avoid allocations during rendering
     private final List<entities.Enemy> enemyRenderList = new ArrayList<>();
     private final List<Projectiles> projectilesRenderList = new ArrayList<>();
     
     // Reusable objects for debug info to avoid allocations
-    private final AlphaComposite alphaComposite03 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
+    //private final AlphaComposite alphaComposite03 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
     private final AlphaComposite alphaComposite06 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f);
     private final AlphaComposite alphaComposite08 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f);
     private final Font font12 = new Font("Monospaced", Font.PLAIN, 12);
@@ -367,7 +367,7 @@ public class Main_Panel extends JPanel{
     private void drawBackGround(Graphics2D g) {
 
         if (backgroundImage == null) {
-            g.drawString("Game is Running...", 300, 350);
+            //g.drawString("Game is Running...", 300, 350);
             return;
         }  
 
@@ -550,6 +550,10 @@ public class Main_Panel extends JPanel{
             stringBuilder.setLength(0);
             stringBuilder.append("Go to the Purple Gate for next level");
             g.drawString(stringBuilder.toString(),screenWidth/2- metrics30.stringWidth("Go to the Purple Gate for next level")/2,80);
+            stringBuilder.setLength(0);
+            stringBuilder.append("and Press E");
+            g.drawString(stringBuilder.toString(),screenWidth/2- metrics30.stringWidth("and Press E")/2,110);
+
         }
 
     

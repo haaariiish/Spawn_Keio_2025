@@ -9,7 +9,7 @@ import map.Map;
 
 public class Player extends Moving_Entity{
     private static final Color COLOR_PLAYER = Color.BLACK;
-    private String name = "Test_H";
+    // private String name = "Test_H";
     private boolean healable = false;
     private boolean interact= false;
     private int level=-1;
