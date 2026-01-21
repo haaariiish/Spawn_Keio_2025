@@ -8,3 +8,9 @@ src/map/Map_try.java
 
 .classpath
 .project
+.idea
+.cursor
+bin/
+out/
+
+Spawn_Keio_2025.iml
