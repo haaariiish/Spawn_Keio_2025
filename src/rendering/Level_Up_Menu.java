@@ -108,6 +108,13 @@ public class Level_Up_Menu extends JPanel{
         buttonPanel.setBackground(new Color(40, 40, 60));
         buttonPanel.setMaximumSize(new Dimension(500, 60));
         buttonPanel.setFocusable(false);
+        JPanel buttonPanel2 = new JPanel();
+        buttonPanel2.setLayout(new BoxLayout(buttonPanel2, BoxLayout.X_AXIS));
+        buttonPanel2.setBackground(new Color(40, 40, 60));
+        buttonPanel2.setMaximumSize(new Dimension(500, 60));
+        buttonPanel2.setFocusable(false);
+
+
         
         // Bouton de retour
         JButton resumeButton = new JButton("Return to Game (M)");
@@ -129,14 +136,33 @@ public class Level_Up_Menu extends JPanel{
         confirmButton.setMaximumSize(new Dimension(200, 50));
         confirmButton.setFocusable(false);
         confirmButton.addActionListener(e -> onConfirmClicked());
+
+        // reset button
+
+        JButton RESET_add_Button = new JButton("Cancel Changes");
+        RESET_add_Button.setFont(new Font("Arial", Font.BOLD, 20));
+        RESET_add_Button.setPreferredSize(new Dimension(200, 70));
+        RESET_add_Button.setMaximumSize(new Dimension(200, 70));
+        RESET_add_Button.setFocusable(false);
+        RESET_add_Button.addActionListener(e -> reset());
         
         buttonPanel.add(Box.createHorizontalGlue());
         buttonPanel.add(resumeButton);
         buttonPanel.add(Box.createHorizontalStrut(20));
         buttonPanel.add(confirmButton);
         buttonPanel.add(Box.createHorizontalGlue());
+        buttonPanel2.add(Box.createHorizontalGlue());
+        buttonPanel2.add(RESET_add_Button);
+        buttonPanel2.add(Box.createHorizontalGlue());
+        
         
         add(buttonPanel);
+        add(buttonPanel2);
+
+        
+        
+        
+        
 
         
         // Action listeners avec restauration du focus
@@ -211,6 +237,13 @@ public class Level_Up_Menu extends JPanel{
         virtual_add_hp=0;
         virtual_add_speed=0;
         virtual_level_add =0;
+        healthLabel.setForeground(Color.CYAN);
+        attackLabel.setForeground(Color.CYAN);
+        defenseLabel.setForeground(Color.CYAN);
+        speedLabel.setForeground(Color.CYAN);
+        Level_Label.setForeground(Color.WHITE);
+        pointsLabel.setForeground(Color.WHITE);
+        CostLabel.setForeground(Color.WHITE);
         
         scoreloss = 0;
 
@@ -245,17 +278,24 @@ public class Level_Up_Menu extends JPanel{
         System.out.println("Button click for: " + stat);
         if (virtual_score>=score_cost){
             if(stat.equals("health")){
-            virtual_add_hp+=a;
+                virtual_add_hp+=a;
+                healthLabel.setForeground(Color.GREEN);
+
             }
             if(stat.equals("attack")){
                 virtual_add_attack+=a;
+                attackLabel.setForeground(Color.GREEN);
             }
             if(stat.equals("defense")){
                 virtual_add_defense+=a;
+                defenseLabel.setForeground(Color.GREEN);
             }
             virtual_score-=score_cost;
+            pointsLabel.setForeground(Color.RED);
             score_cost+=3;
+            CostLabel.setForeground(Color.RED);
             virtual_level_add+= 1;
+            Level_Label.setForeground(Color.GREEN);
         }
         updateDisplay();
     }
@@ -265,10 +305,14 @@ public class Level_Up_Menu extends JPanel{
         if (virtual_score>=score_cost){
             if(stat.equals("speed")){
                 virtual_add_speed += a;
+                speedLabel.setForeground(Color.GREEN);
             }
             virtual_score-=score_cost;
+            pointsLabel.setForeground(Color.RED);
             score_cost+=3;
+            CostLabel.setForeground(Color.RED);
             virtual_level_add+= 1;
+            Level_Label.setForeground(Color.GREEN);
         }
         updateDisplay();
         

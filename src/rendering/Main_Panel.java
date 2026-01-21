@@ -527,7 +527,7 @@ public class Main_Panel extends JPanel{
         // Score box
         g.setComposite(alphaComposite08);
         g.setColor(colorGray);
-        g.fillRect(screenWidth - 310, 45, 300, 115);
+        g.fillRect(screenWidth - 310, 45, 300, 155);
         g.setColor(colorWhite);
         g.setFont(font30);
         FontMetrics metrics30 = g.getFontMetrics(font30);
@@ -539,8 +539,13 @@ public class Main_Panel extends JPanel{
     
         int tot_ennemies = gameWorld.getRemainingEnemies()+gameWorld.getEnemy().size();
         stringBuilder.setLength(0);
-        stringBuilder.append("Enemies Left:").append(tot_ennemies);
+        stringBuilder.append("Level: ").append(player.getLevel());
         g.drawString(stringBuilder.toString(),screenWidth - 310, 115);
+
+        stringBuilder.setLength(0);
+        stringBuilder.append("Enemies Left:").append(tot_ennemies);
+        g.drawString(stringBuilder.toString(),screenWidth - 310, 185);
+
         if(tot_ennemies==0){
             stringBuilder.setLength(0);
             stringBuilder.append("Go to the Purple Gate for next level");
