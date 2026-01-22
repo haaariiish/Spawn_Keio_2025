@@ -88,7 +88,7 @@ public class Simple_Projectiles extends Projectiles{
         int screenY = projY - y;
         
         g.fillOval(screenX, screenY, width, height);
-        g.drawRect(screenX, screenY, width, height);
+        //g.drawRect(screenX, screenY, width, height);
     }
 
     

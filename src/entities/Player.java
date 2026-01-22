@@ -141,7 +141,7 @@ public class Player extends Moving_Entity{
         
         g.setColor(COLOR_PLAYER);
         g.fillOval(x, y, width, height);
-        g.drawRect(x, y, width, height);
+        //g.drawRect(x, y, width, height);
         g.setColor(Color.WHITE);
         g.drawOval(x, y, width, height);
         
