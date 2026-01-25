@@ -66,6 +66,7 @@ public class GameWorld {
     private int lastPlayerTileX = -1;
     private int lastPlayerTileY = -1;
     private boolean pathDirty = true;
+    private double statMultiplier = 0;
 
     public GameWorld(int worldWidth, int worldHeight, int tileSize,Game game) {
         this.worldWidth = worldWidth;
@@ -84,6 +85,7 @@ public class GameWorld {
         this.enemies = null;
         this.score = 0;
         this.wave = 1;
+        this.statMultiplier = 1;
         this.remainingEnemies = 20;
         this.maxEnemy = remainingEnemies/4 + wave;
 
@@ -95,6 +97,7 @@ public class GameWorld {
         // Initialisation of the map ( default map for now)
         this.score = 0;
         this.wave=1;
+        this.statMultiplier = 1;
         this.remainingEnemies = 20;
         this.maxEnemy = remainingEnemies/4+wave;
         
@@ -117,8 +120,9 @@ public class GameWorld {
 
     public void nextWave(){
         this.wave +=1;
+        this.statMultiplier *= Math.exp(0.04);
         this.remainingEnemies = (int)(20*Math.pow(1.07, wave));
-        this.maxEnemy = remainingEnemies/4 + wave;
+        this.maxEnemy = Math.min(remainingEnemies/4 + wave,20);
 
         
         Point spawn = changeMap(worldWidth, worldHeight);
@@ -148,6 +152,12 @@ public class GameWorld {
     }
 
     public void update(InputHandler input, int which_frame_in_cycle) {
+        // For debugging reason I had this following line to check if some adds have been mades in higher waves
+        if(input.isNextWaveCheatPressed()){
+            score += remainingEnemies*wave;
+            this.nextWave();
+        }
+
         if(input.isInteractPressed()){
             if (remainingEnemies == 0 && enemies.size() == 0 && map.getTileAtPixel((int) player.getX(), (int) player.getY())==Map.GATELEVEL) {
                 this.getGame().changeGameState(GameState.WAVE_LOADING);
@@ -329,7 +339,7 @@ public class GameWorld {
         for (int i = size - 1; i >= 0; i--) {
             if (enemies.get(i).getIsDead()){
                 enemies.remove(i);
-                score++;
+                score+= wave;
                 
             }
         }
@@ -536,13 +546,13 @@ public class GameWorld {
     private Enemy createRandomEnemy(Point spawnPoint){
         double roll = Math.random();
         if (roll < 0.35) {
-            ChargerEnemy charger = new ChargerEnemy(spawnPoint.x, spawnPoint.y, this.tileSize/2-1,this.tileSize/2-1);
+            ChargerEnemy charger = new ChargerEnemy(spawnPoint.x, spawnPoint.y, this.tileSize/2-1,this.tileSize/2-1, statMultiplier);
             return charger;
         } else if (roll < 0.7) {
-            RangedEnemy ranged = new RangedEnemy(spawnPoint.x, spawnPoint.y, this.tileSize/2-1,this.tileSize/2-1, this.tileSize);
+            RangedEnemy ranged = new RangedEnemy(spawnPoint.x, spawnPoint.y, this.tileSize/2-1,this.tileSize/2-1, this.tileSize, statMultiplier);
             return ranged;
         } else {
-            HeavyEnemy heavy = new HeavyEnemy(spawnPoint.x, spawnPoint.y, this.tileSize/2-1,this.tileSize/2-1);
+            HeavyEnemy heavy = new HeavyEnemy(spawnPoint.x, spawnPoint.y, this.tileSize/2-1,this.tileSize/2-1, statMultiplier);
             return heavy;
         }
     }
@@ -582,6 +592,15 @@ public class GameWorld {
     public void setScore( int a){
         score =a;
     }
+
+    public void setStatMultiplier(double a){
+        statMultiplier =a;
+    }
+
+    public double getStatMultiplier(){
+        return statMultiplier ;
+    }
+
 
 }
 

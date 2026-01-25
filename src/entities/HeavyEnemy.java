@@ -3,13 +3,14 @@ import java.awt.Graphics;
 import java.awt.Color;
 import map.Map;
 import core.GameWorld;
+import entities.HeavyEnemyStats;
 
 
 public class HeavyEnemy extends Enemy {
     public double brighness = 0;
 
-    public HeavyEnemy(double x, double y, int width, int height) {
-        super(x, y,width, height, 80, 6, 4,40,(int) Math.round(4+Math.random()));
+    public HeavyEnemy(double x, double y, int width, int height, double statsModifier){
+        super(x, y,width, height, (int)(HeavyEnemyStats.baseHP*statsModifier),(int) (HeavyEnemyStats.baseAttack*statsModifier),(int) (statsModifier*HeavyEnemyStats.baseDefense),40,Math.min((int) (statsModifier+Math.round(HeavyEnemyStats.baseSpeed+Math.random())),HeavyEnemyStats.max_speed));
         setStunCoolDown(10);
     }
 

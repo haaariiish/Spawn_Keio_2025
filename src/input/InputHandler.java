@@ -135,6 +135,10 @@ public class InputHandler implements KeyListener, MouseListener, MouseMotionList
         return isKeyJustPressed(KeyEvent.VK_F);
     }
 
+    public boolean isNextWaveCheatPressed() {
+        return isKeyJustPressed(KeyEvent.VK_0);
+    }
+
     public boolean isMouseShootPressed() {
         return leftMousePressed;
     }

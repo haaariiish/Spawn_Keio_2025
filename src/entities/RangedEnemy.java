@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Color;
 import map.Map;
 import core.GameWorld;
+import entities.RangerEnemyStats;
 
 public class RangedEnemy extends Enemy {
     public double brighness = 0;
@@ -16,8 +17,8 @@ public class RangedEnemy extends Enemy {
     private int projectile_height;
      //I use tileSize/4
 
-    public RangedEnemy(double x, double y, int width, int height, int tileSize) {
-        super(x, y, width, height, 20, 2, 1, tileSize*25,(int) Math.round(5+Math.random()));
+    public RangedEnemy(double x, double y, int width, int height, int tileSize, double statsModifier) {
+        super(x, y, width, height, (int)(RangerEnemyStats.baseHP*statsModifier), (int)(RangerEnemyStats.baseAttack*statsModifier), (int)(RangerEnemyStats.baseDefense*statsModifier), tileSize*25,Math.min((int) (statsModifier*Math.round(RangerEnemyStats.baseSpeed+Math.random())),RangerEnemyStats.max_speed));
 
         //this.setBulletFast(tileSize);
         this.projectile_height=tileSize/4;

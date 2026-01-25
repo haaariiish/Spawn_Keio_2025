@@ -19,6 +19,7 @@ You can freeze the game when playing with F, it is practical to look at the Map 
 
 You can go to the Level Up Menu to exchange your score points against upgrade with M. 
 
+You can access to a cheat input for now : the Input "0" from the keyboard allows you to go to the next wave automatically, it does it instantanously, so it makes some bugs with minimap that doesn't have the time to load and the tile texture. It is used mainly for test and will be removed
 
 ## TILES
 

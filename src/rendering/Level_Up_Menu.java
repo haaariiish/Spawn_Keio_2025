@@ -302,17 +302,23 @@ public class Level_Up_Menu extends JPanel{
     
     private void onStatButtonClickedDouble(String stat,double a) {
         System.out.println("Button click for: " + stat);
+
         if (virtual_score>=score_cost){
-            if(stat.equals("speed")){
+            boolean update_applied = false;
+            if(stat.equals("speed")&&(player.getSpeed()+virtual_add_speed<20)){
                 virtual_add_speed += a;
                 speedLabel.setForeground(Color.GREEN);
+                update_applied =true;
             }
-            virtual_score-=score_cost;
-            pointsLabel.setForeground(Color.RED);
-            score_cost+=3;
-            CostLabel.setForeground(Color.RED);
-            virtual_level_add+= 1;
-            Level_Label.setForeground(Color.GREEN);
+            if (update_applied){
+                virtual_score-=score_cost;
+                pointsLabel.setForeground(Color.RED);
+                score_cost+=3;
+                CostLabel.setForeground(Color.RED);
+                virtual_level_add+= 1;
+                Level_Label.setForeground(Color.GREEN);
+            }
+
         }
         updateDisplay();
         
