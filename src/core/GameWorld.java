@@ -29,6 +29,7 @@ public class GameWorld {
 
     private double spawnEnemyproba=0.05;
     private int score=0;
+    private int tot_score = 0;
     //private int initialEnemy =1; not used
     private int maxEnemy ;
     private int remainingEnemies = 20;
@@ -155,6 +156,7 @@ public class GameWorld {
         // For debugging reason I had this following line to check if some adds have been mades in higher waves
         if(input.isNextWaveCheatPressed()){
             score += remainingEnemies*wave;
+            tot_score += remainingEnemies*wave;
             this.nextWave();
         }
 
@@ -251,6 +253,10 @@ public class GameWorld {
         return this.score;
     }
 
+    public int getTotScore(){
+        return this.tot_score;
+    }
+
     public int getRemainingEnemies(){
         return remainingEnemies;
     }
@@ -340,6 +346,7 @@ public class GameWorld {
             if (enemies.get(i).getIsDead()){
                 enemies.remove(i);
                 score+= wave;
+                tot_score+=wave;
                 
             }
         }
@@ -490,6 +497,16 @@ public class GameWorld {
         int w = map.getWidthInTiles();
         int h = map.getHeightInTiles();
 
+        // For penalty according to the position of enemies
+        int[][] enemyDensity = new int[h][w];
+        for (Enemy e : enemies) {
+            int tx = (int) (e.getX() / map.getTileSize());
+            int ty = (int) (e.getY() / map.getTileSize());
+            if (tx >= 0 && tx < w && ty >= 0 && ty < h) {
+                enemyDensity[ty][tx]++;
+            }
+        }
+
         if (distToPlayer == null || distToPlayer.length != h || distToPlayer[0].length != w) {
             distToPlayer = new int[h][w];
         }
@@ -512,6 +529,8 @@ public class GameWorld {
 
         final int[][] DIRS = { {1,0}, {-1,0}, {0,1}, {0,-1}};
 
+
+        //List<Enemy> enemies_copy = enemies;
         while (!queue.isEmpty()) {
             int[] cur = queue.poll();
             int cx = cur[0];
@@ -534,9 +553,11 @@ public class GameWorld {
                 int penalty = 0;
 
                 if(map.getTileAt(nx, ny)==Map.SPIKE){
-                    penalty = 5;
+                    penalty += 5;
                     
                 }
+                penalty += enemyDensity[ny][nx]*5;
+
                 distToPlayer[ny][nx] = baseDist + 1 + penalty;
                 queue.add(new int[]{nx, ny});
             }
@@ -592,6 +613,8 @@ public class GameWorld {
     public void setScore( int a){
         score =a;
     }
+
+    public void setTotScore(int a ){tot_score=a;}
 
     public void setStatMultiplier(double a){
         statMultiplier =a;

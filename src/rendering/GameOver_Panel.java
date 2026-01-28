@@ -14,9 +14,11 @@ import java.awt.Dimension;
 import java.awt.Font;
 
 public class GameOver_Panel extends JPanel {
-    private Frame1 mainFrame;
+    private final Frame1 mainFrame;
     private JLabel scoreLabel;
     private JLabel timeLabel;
+    private JLabel waveLabel;
+
 
     public GameOver_Panel(Frame1 mainFrame) {
         this.mainFrame = mainFrame;
@@ -30,7 +32,8 @@ public class GameOver_Panel extends JPanel {
 
         JLabel title = createLabel("Game Over", 48);
         JLabel subtitle = createLabel("You are dead", 20);
-        scoreLabel = createLabel("Score : 0", 24);
+        scoreLabel = createLabel("Total Score : 0", 24);
+        waveLabel = createLabel("Wave : 0", 24);
         timeLabel = createLabel("You survived : 0s", 24);
 
         JButton retryButton = new JButton("Retry");
@@ -47,6 +50,8 @@ public class GameOver_Panel extends JPanel {
         add(subtitle);
         add(Box.createRigidArea(new Dimension(0, 24)));
         add(scoreLabel);
+        add(Box.createRigidArea(new Dimension(0, 8)));
+        add(waveLabel);
         add(Box.createRigidArea(new Dimension(0, 8)));
         add(timeLabel);
         add(Box.createRigidArea(new Dimension(0, 32)));
@@ -67,11 +72,14 @@ public class GameOver_Panel extends JPanel {
     public void refreshStats() {
         int score = 0;
         int timeSeconds = 0;
+        int wave = 0;
         if (mainFrame.getGame().getGameWorld() != null) {
-            score = mainFrame.getGame().getGameWorld().getScore();
+            score = mainFrame.getGame().getGameWorld().getTotScore();
+            wave = mainFrame.getGame().getGameWorld().getWave();
         }
         timeSeconds = mainFrame.getGame().getInGameTime() / 1000;
-        scoreLabel.setText("Score : " + score);
+        scoreLabel.setText("Total Score : " + score);
+        waveLabel.setText("Wave : " + wave);
         timeLabel.setText("Time : " + timeSeconds + "s");
     }
 }
