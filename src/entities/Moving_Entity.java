@@ -240,19 +240,19 @@ public class Moving_Entity extends Basic_Entity{
     // Velocity update
 
     public void moveLeft(double speed) {
-        velocityX =- speed;
+        velocityX -= speed;
     }
     
     public void moveRight(double speed) {
-        velocityX = speed;
+        velocityX += speed;
     }
     
     public void moveUp(double speed) {
-        velocityY =- speed;
+        velocityY -= speed;
     }
     
     public void moveDown(double speed) {
-        velocityY = speed;
+        velocityY += speed;
     }
     
     public void stop() {
@@ -277,8 +277,11 @@ public class Moving_Entity extends Basic_Entity{
         }
         if(this.getIsKnockBack()){
             double angle = this.getImpactDirection();
-            vx += -(Math.cos(angle) ) * getKnockBackIntensity()/getWeight() * (getKnockBackFrame()/getKnockBackCoolDown());
-            vy += -(Math.sin(angle) ) * getKnockBackIntensity()/getWeight() * (getKnockBackFrame()/getKnockBackCoolDown());// Faut faire le calcul pour avoir une belle fonction avec poids etc
+            // Division en double : en int, 39/40=0 et intensity/weight pouvait tronquer
+            double decayFactor = (double)getKnockBackFrame() / getKnockBackCoolDown();
+            double intensityFactor = (double)getKnockBackIntensity() / getWeight();
+            vx += (Math.cos(angle) ) * intensityFactor * decayFactor/20;
+            vy += (Math.sin(angle) ) * intensityFactor * decayFactor/20;
         }
         setVelocityX(vx);
         setVelocityY(vy);

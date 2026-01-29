@@ -28,9 +28,12 @@ public class Player extends Moving_Entity{
         this.setBounds();
         this.setShadowDistance(600);
         this.level = 0;
+        setKnockBackCoolDown(20);
     }
 
     public void update_input(Map map, InputHandler input, List<Moving_Entity> movingEntity) {
+        TimerUpdate();
+        gotKnockback();
         // 1. handle input
         handleInput(input);
         //update the collision first
@@ -130,6 +133,7 @@ public class Player extends Moving_Entity{
 
     //  Rendering
     public void render(Graphics g, int x, int y){
+        
         int width = getWidthInPixels();
         int height = getHeightInPixels();
         int centerX =x+width/2 ;
@@ -139,8 +143,22 @@ public class Player extends Moving_Entity{
         g.setColor(Color.BLUE); 
         g.fillPolygon(xPoints, yPoints, 3); 
         
-        g.setColor(COLOR_PLAYER);
+        int knockBackFrame = getKnockBackFrame();
+        
+        if(knockBackFrame>0){
+            int knockbackmaxFrame = getKnockBackCoolDown();
+            double fraction_kb = (double) (2*knockBackFrame-knockbackmaxFrame)/knockbackmaxFrame;
+            int red = 246 -Math.abs((int)((-246) * fraction_kb));
+            int blue_green =3 -Math.abs((int)((- 3) * fraction_kb));
+            
+            g.setColor(new Color(red,blue_green,blue_green));
+
+        }
+        else{
+            g.setColor(COLOR_PLAYER);
+        }
         g.fillOval(x, y, width, height);
+        
         //g.drawRect(x, y, width, height);
         g.setColor(Color.WHITE);
         g.drawOval(x, y, width, height);

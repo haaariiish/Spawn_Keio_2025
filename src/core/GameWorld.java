@@ -1,8 +1,11 @@
 package core;
 
+
+
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.Rectangle;
+import java.io.IOException;
 
 import input.InputHandler;
 import entities.Basic_Entity;
@@ -15,6 +18,8 @@ import entities.Projectiles;
 import entities.RangedEnemy;
 import entities.Simple_Projectiles;
 import map.Map;
+//import debug.EnemyHeatmapDebug;
+import debug.SimpleHeatmapLogger;
 
 import java.awt.Point;
 
@@ -55,7 +60,7 @@ public class GameWorld {
     private int playerShootCooldown = 0;
 
     private int playerDamageCooldown = 0;
-    private static final int PLAYER_DAMAGE_COOLDOWN_FRAMES = 10;
+    private static final int PLAYER_DAMAGE_COOLDOWN_FRAMES = 120;
     
     // Reusable temporary list to avoid allocations
     private final List<Moving_Entity> tempMovingEntitiesList = new ArrayList<>();
@@ -68,6 +73,9 @@ public class GameWorld {
     private int lastPlayerTileY = -1;
     private boolean pathDirty = true;
     private double statMultiplier = 0;
+    //private EnemyHeatmapDebug heatmapdebug ;
+    private SimpleHeatmapLogger data_debug;
+    private boolean loggingEnabled = false;
 
     public GameWorld(int worldWidth, int worldHeight, int tileSize,Game game) {
         this.worldWidth = worldWidth;
@@ -117,6 +125,15 @@ public class GameWorld {
 
         player = new Player(spawn.x, spawn.y,this.tileSize/2-1,this.tileSize/2-1,50,10,1,this.tileSize*5/2);
         game.updateLoadingProgress(progression,totalSteps);
+        //heatmapdebug = new EnemyHeatmapDebug(getMap().getWidthInTiles(), getMap().getHeightInTiles(), getMap().getTileSize());
+        if(loggingEnabled){
+            try {
+                data_debug = new SimpleHeatmapLogger("heatmap.csv",getMap().getWidthInTiles(),getMap().getHeightInTiles(),getTileSize());
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
     public void nextWave(){
@@ -212,6 +229,14 @@ public class GameWorld {
         }
         updateEnemiesDeath();
         checkPlayerStatus();
+
+        if(data_debug!=null&&loggingEnabled) {
+            data_debug.log(distToPlayer, enemies);
+        }
+        /*if ((heatmapdebug!=null)&&(which_frame_in_cycle%120==0)){
+            heatmapdebug.update(distToPlayer,enemies);
+        }*/
+        
 
     }
 
@@ -313,6 +338,7 @@ public class GameWorld {
             if (shot != null) {
                 projectilesList.add(shot);
             }
+
         }
     }
  
@@ -363,6 +389,11 @@ public class GameWorld {
             boolean hitSomething = false;
             
             if (projBounds.intersects(playerBounds)) {
+                int knockBackIntensity = player.getKnockBackIntensity() + (int)(proj.getKnockBack() * 10);
+                player.setJustKnockBack(true);
+                player.setKnockBack(true);
+                player.setKnockBackFrame(player.getKnockBackCoolDown());
+                player.setKnockBackIntensity(knockBackIntensity);
                 player.take_damage(proj.getSourceEntity().getAttack());
                 player.setImpactDirection(proj.getDirectionAngle());
                 hitSomething = true;

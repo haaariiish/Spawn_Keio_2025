@@ -9,7 +9,7 @@ import map.Map;
 public abstract class Enemy extends Moving_Entity{
     private int shootCooldownFrames;
     private int shootCooldown;
-    private EnemyStates state ;
+    private EnemyStates state;
 
     public Enemy(double x, double y, int width, int height, int hp, int attack, int defense,int range,int speed){
         super();

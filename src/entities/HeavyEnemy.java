@@ -12,6 +12,7 @@ public class HeavyEnemy extends Enemy {
     public HeavyEnemy(double x, double y, int width, int height, double statsModifier){
         super(x, y,width, height, (int)(HeavyEnemyStats.baseHP*statsModifier),(int) (HeavyEnemyStats.baseAttack*statsModifier),(int) (statsModifier*HeavyEnemyStats.baseDefense),40,Math.min((int) (statsModifier+Math.round(HeavyEnemyStats.baseSpeed+Math.random())),HeavyEnemyStats.max_speed));
         setStunCoolDown(10);
+        setWeight(10);
     }
 
     protected void updateMovement(Player player, Map map, GameWorld gameWorld) {
