@@ -37,6 +37,10 @@ public class Basic_Entity {
     // This indicate at which frame the impact between bullet and entity happens
     private boolean justKnockBack = false; // 
 
+    
+    private int DAMAGED_COOLDOWN = 20;//20
+    private int actual_damaged_time = 0;
+
     private int weight = 1;
     
     //Rendering 
@@ -173,6 +177,12 @@ public class Basic_Entity {
         this.kNOCKBACK_COOLDOWN = frames;
     }
 
+    public void setDamagedCoolDown(int frames){
+        this.DAMAGED_COOLDOWN = frames;
+    }
+
+
+
     public void setMaxHp(int max){
         this.max_hp = max;
     }
@@ -246,6 +256,7 @@ public class Basic_Entity {
 
     // More Specific and practical
     public void take_damage(int damage){
+        actual_damaged_time=DAMAGED_COOLDOWN;
         if (!is_undying){
             // Prevent "healing" when defense > dazmage and clamp minimum damage to 0
             int effectiveDamage = damage - this.defense;
@@ -273,12 +284,20 @@ public class Basic_Entity {
                 this.isStun = false;
             }
         }
+
+        if (this.actual_damaged_time>0){
+            this.actual_damaged_time-=1;
+            if (this.actual_damaged_time==0){
+            }
+        }
     }
 
     
     public Rectangle getBounds(){
         return this.bound;
     }
+
+    
 
     public int getFrame(){
         return this.whichFrame;
@@ -304,6 +323,10 @@ public class Basic_Entity {
         return this.actual_knockback_time;
     }
 
+    public int getDamagedFrame(){
+        return this.actual_damaged_time;
+    }
+
     public boolean getJustKnockBack(){
         return this.justKnockBack;
     }
@@ -314,6 +337,10 @@ public class Basic_Entity {
 
     public int getKnockBackCoolDown(){
         return kNOCKBACK_COOLDOWN;
+    }
+
+    public int getDamagedCoolDown(){
+        return DAMAGED_COOLDOWN;
     }
 
     public int getKnockBackIntensity(){
@@ -334,6 +361,7 @@ public class Basic_Entity {
     public int getSpikeFrame(){
         return spikeFrame;
     }
+
 
 
 

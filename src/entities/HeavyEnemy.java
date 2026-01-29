@@ -72,8 +72,8 @@ public class HeavyEnemy extends Enemy {
         int y_subtile =(int) (getY()/subtile);
         if(visibilityMap[y_subtile][x_subtile]){
         // Calculate color without creating new Color every frame
-        int knockBackFrame = getKnockBackFrame();
-        int green = 255 - 5 * knockBackFrame;
+        int damageFrame= getDamagedFrame();
+        int green = 255 - 5 * damageFrame;
         if (green < 0) green = 0;
         if (green > 255) green = 255;
         

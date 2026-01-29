@@ -133,8 +133,9 @@ public class RangedEnemy extends Enemy {
         int x_subtile =(int) (getX()/subtile);
         int y_subtile =(int) (getY()/subtile);
         if(visibilityMap[y_subtile][x_subtile]){
-            int stunFrame = getStunFrame();
-            int green = 210 - 3 * stunFrame;
+            int damageFrame= getDamagedFrame();
+        
+            int green = 210 - 3 * damageFrame;
             if (green < 0) green = 0;
             if (green > 255) green = 255;
     

@@ -69,8 +69,8 @@ public class ChargerEnemy extends Enemy {
         int x_subtile =(int) (getX()/subtile);
         int y_subtile =(int) (getY()/subtile);
         if(visibilityMap[y_subtile][x_subtile]){
-            int knockBackFrame = getKnockBackFrame();
-            int red = 255 - 5 * knockBackFrame;
+            int damageFrame= getDamagedFrame();
+            int red = 255 - 5 * damageFrame;
             if (red < 0) red = 0;
             if (red > 255) red = 255;
             

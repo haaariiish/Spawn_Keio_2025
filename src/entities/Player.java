@@ -13,6 +13,7 @@ public class Player extends Moving_Entity{
     private boolean healable = false;
     private boolean interact= false;
     private int level=-1;
+
     
 
     public Player(double x, double y, int width, int height, int hp, int attack, int defense,int range){
@@ -29,6 +30,7 @@ public class Player extends Moving_Entity{
         this.setShadowDistance(600);
         this.level = 0;
         setKnockBackCoolDown(20);
+        setDamagedCoolDown(20);
     }
 
     public void update_input(Map map, InputHandler input, List<Moving_Entity> movingEntity) {
@@ -143,11 +145,11 @@ public class Player extends Moving_Entity{
         g.setColor(Color.BLUE); 
         g.fillPolygon(xPoints, yPoints, 3); 
         
-        int knockBackFrame = getKnockBackFrame();
+        int damageFrame = getDamagedFrame();
         
-        if(knockBackFrame>0){
-            int knockbackmaxFrame = getKnockBackCoolDown();
-            double fraction_kb = (double) (2*knockBackFrame-knockbackmaxFrame)/knockbackmaxFrame;
+        if(damageFrame>0){
+            int damagemaxFrame = getDamagedCoolDown();
+            double fraction_kb = (double) (2*damageFrame-damagemaxFrame)/damagemaxFrame;
             int red = 246 -Math.abs((int)((-246) * fraction_kb));
             int blue_green =3 -Math.abs((int)((- 3) * fraction_kb));
             
