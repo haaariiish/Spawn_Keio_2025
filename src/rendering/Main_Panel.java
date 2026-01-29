@@ -417,8 +417,8 @@ public class Main_Panel extends JPanel{
         int cameraY = yplayer - screenHeight / 2 + player.getHeightInPixels() / 2;
         int cameraX_tile =(int)( cameraX/map.getTileSize());
         int cameraY_tile =(int)( cameraY/map.getTileSize());
-        int xplayer_subtile = (int)(xplayer/subTileSize);
-        int yplayer_subtile = (int)(yplayer/subTileSize);
+        int xplayer_subtile = (int)((xplayer+ player.getWidthInPixels() / 2)/subTileSize);
+        int yplayer_subtile = (int)((yplayer+ player.getHeightInPixels() / 2)/subTileSize);
 
 
 
