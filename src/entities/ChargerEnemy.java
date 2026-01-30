@@ -6,6 +6,7 @@ import core.GameWorld;
 import entities.ChargerEnemyStats;
 public class ChargerEnemy extends Enemy {
     public double brighness = 0;
+    //public boolean debug_render_activation=false;
 
     public ChargerEnemy(double x, double y, int width, int height, double statsMultiplier){
         super(x, y, width, height,(int) (statsMultiplier*(ChargerEnemyStats.baseHP)),(int) (statsMultiplier*ChargerEnemyStats.baseAttack),(int) (statsMultiplier*ChargerEnemyStats.baseDefense), 30,Math.min((int) (statsMultiplier+Math.round(ChargerEnemyStats.baseSpeed+Math.random())),ChargerEnemyStats.max_speed));
@@ -23,8 +24,15 @@ public class ChargerEnemy extends Enemy {
             double py = player.getY() + player.getHeightInPixels() * 0.5;
         
             boolean hasLOS = map.hasLineOfSight(ex, ey, px, py);
+/* 
+            double dist_debug = Math.sqrt((px-ex)*(px-ex)+(py-ey)*(py-ey));
+            if (dist_debug<200&&(!hasLOS)){
+            System.out.println("hasLOS=" + hasLOS + " dist=" + dist_debug);
+            
+        }*/
         
             if (hasLOS) {
+                //debug_render_activation=false;
                 //System.out.println(1);
                 // if there is a direct look of the player
                 double angle = Math.atan2(py - ey, px - ex);
@@ -33,17 +41,26 @@ public class ChargerEnemy extends Enemy {
                 vx += Math.cos(angle) * speed;
                 vy += Math.sin(angle) * speed;
             } else {
+                //debug_render_activation=true;
                 // if not seen-able, we use djikstra
                 int[] best = Djikstra(gameWorld, map, ex, ey);
 
                 int bestX = best[0];
                 int bestY = best[1];
                 if (bestX != -1 && bestY != -1) {
-                    // calculate the angle to go to the center of the aimed tile
-                    double targetCenterX = bestX * map.getTileSize() + map.getTileSize() * 0.5;
-                    double targetCenterY = bestY * map.getTileSize() + map.getTileSize() * 0.5;
-                    
-                    double angle = Math.atan2(targetCenterY - ey, targetCenterX - ex);
+                    // Quand la cible est la tuile du joueur, viser le joueur directement
+                    // (sinon le centre de tuile peut être derrière le mur → oscillation sans toucher)
+                    int pxTile = (int)(px / map.getTileSize());
+                    int pyTile = (int)(py / map.getTileSize());
+                    double targetX, targetY;
+                    if (bestX == pxTile && bestY == pyTile) {
+                        targetX = px;
+                        targetY = py;
+                    } else {
+                        targetX = bestX * map.getTileSize() + map.getTileSize() * 0.5;
+                        targetY = bestY * map.getTileSize() + map.getTileSize() * 0.5;
+                    }
+                    double angle = Math.atan2(targetY - ey, targetX - ex);
                     setFacingAngle(angle);
                     
                     double speed = getSpeed();
@@ -91,7 +108,10 @@ public class ChargerEnemy extends Enemy {
             g.setColor(Color.WHITE);
             g.setColor(new Color((int)(brighness*g.getColor().getRed()), (int) (g.getColor().getGreen()*brighness), (int) (brighness*g.getColor().getBlue())));
             g.drawOval(screenX, screenY, width, height);
-            
+            /*if (debug_render_activation){
+                g.setColor(Color.RED);
+                g.drawRect(screenX, screenY, width, height);
+            }*/
     }
         //g.drawRect(screenX, screenY, width, height); // hitbox visualisation
         

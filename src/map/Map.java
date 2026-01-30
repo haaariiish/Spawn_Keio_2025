@@ -282,41 +282,37 @@ public class Map{
         double dx = x1 - x0;
         double dy = y1 - y0;
         double distance = Math.sqrt(dx * dx + dy * dy);
-        
-        
+
         if (distance < 1) return true;
-        
+
         double dirX = dx / distance;
         double dirY = dy / distance;
-        
-        
+
         double perpX = -dirY;
         double perpY = dirX;
-        
+
         double stepSize = tileSize / 8.0;
         int numSteps = (int)(distance / stepSize);
         
-        
-        double margin = tileSize / 2.0;  
-        
+        double margin = tileSize / 4.0;
+
         for (int i = 1; i < numSteps; i++) {
             double baseX = x0 + dirX * stepSize * i;
             double baseY = y0 + dirY * stepSize * i;
-            
-            
+
             for (int offset = -1; offset <= 1; offset++) {
                 double checkX = baseX + perpX * margin * offset;
                 double checkY = baseY + perpY * margin * offset;
-                
+
                 int tileX = (int)(checkX / tileSize);
                 int tileY = (int)(checkY / tileSize);
-                
+
                 if (isWall(tileX, tileY)) {
                     return false;
                 }
             }
         }
-        
+
         return true;
     }
     
