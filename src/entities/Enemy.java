@@ -42,6 +42,15 @@ public abstract class Enemy extends Moving_Entity{
         }
     }
 
+    protected int getShootCoolDownMAXFRAME(){
+        return shootCooldownFrames;
+    }
+
+    protected int getShootCoolDownFRAME(){
+        return shootCooldown;
+    }
+
+
     protected void tickCooldowns(){
         if (shootCooldown > 0){
             shootCooldown--;

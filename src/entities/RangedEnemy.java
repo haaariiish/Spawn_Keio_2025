@@ -24,7 +24,7 @@ public class RangedEnemy extends Enemy {
         this.projectile_height=tileSize/4;
         this.projectile_width=tileSize/4;
         this.setShootCooldownFrames(60);
-        this.estimatedRange = estimated_distance_future(this.getBulletFast(), 60);
+        this.estimatedRange = estimated_distance_future(this.getBulletFast(), 30);
         this.fireRange = this.estimatedRange; // Different from range because of the friciton
         this.retreatPadding = this.estimatedRange*0.2;
         this.preferredRange = this.estimatedRange*0.8;
@@ -143,12 +143,15 @@ public class RangedEnemy extends Enemy {
             int screenY = (int)this.getY() - y;
             int width = this.getWidthInPixels();
             int height = this.getHeightInPixels();
+            double proportion = Math.min(1,((double)( getShootCoolDownFRAME() +6)/ getShootCoolDownMAXFRAME()));
+            int width_appearence =(int) (width*proportion);
+            int height_appearence =(int) (width*proportion);
             
 
-            int centerX =screenX+width/2 ;
-            int centerY = screenY+height/2;
-            int[] xPoints = {centerX +(int) (width*Math.cos(getFacingAngle())), centerX+ +(int) (width*Math.cos(getFacingAngle()-Math.PI/2)/1.5) , centerX +(int) (width*Math.cos(getFacingAngle()+Math.PI/2)/1.5)};
-            int[] yPoints = {centerY+(int) (height*Math.sin(getFacingAngle())), centerY+(int) (height*Math.sin(getFacingAngle()-Math.PI/2)/1.5)   ,centerY +(int) (height*Math.sin(getFacingAngle()+Math.PI/2)/1.5)}; 
+            int centerX =screenX+width_appearence/2 ;
+            int centerY = screenY+height_appearence/2;
+            int[] xPoints = {centerX +(int) (width_appearence*Math.cos(getFacingAngle())), centerX+ +(int) (width_appearence*Math.cos(getFacingAngle()-Math.PI/2)/1.5) , centerX +(int) (width_appearence*Math.cos(getFacingAngle()+Math.PI/2)/1.5)};
+            int[] yPoints = {centerY+(int) (height_appearence*Math.sin(getFacingAngle())), centerY+(int) (height_appearence*Math.sin(getFacingAngle()-Math.PI/2)/1.5)   ,centerY +(int) (height_appearence*Math.sin(getFacingAngle()+Math.PI/2)/1.5)}; 
             brighness = Math.max(1 - Math.sqrt((centerX-screenWidth/2) *(centerX-screenWidth/2)  + (centerY-screenHeight/2)*(centerY-screenHeight/2)) / SHADOW_DISTANCE,0);
             //System.out.println(brighness);
         
@@ -159,11 +162,11 @@ public class RangedEnemy extends Enemy {
 
             g.setColor(new Color((int)(brighness*255), (int)(brighness*green), (int)(brighness*255)));
             
-            g.fillOval(screenX, screenY, width, height);
+            g.fillOval(screenX, screenY, width_appearence, height_appearence);
             
             g.setColor(Color.WHITE);
             g.setColor(new Color((int)(brighness*g.getColor().getRed()), (int) (g.getColor().getGreen()*brighness), (int) (brighness*g.getColor().getBlue())));
-            g.drawOval(screenX, screenY, width, height);
+            g.drawOval(screenX, screenY, width_appearence, height_appearence);
         }
        // g.drawRect(screenX, screenY, width, height);
     }

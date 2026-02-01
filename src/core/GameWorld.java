@@ -60,7 +60,7 @@ public class GameWorld {
     private int playerShootCooldown = 0;
 
     private int playerDamageCooldown = 0;
-    private static final int PLAYER_DAMAGE_COOLDOWN_FRAMES = 120;
+    private static final int PLAYER_DAMAGE_COOLDOWN_FRAMES = 50;
     
     // Reusable temporary list to avoid allocations
     private final List<Moving_Entity> tempMovingEntitiesList = new ArrayList<>();
