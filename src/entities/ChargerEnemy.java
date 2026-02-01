@@ -9,7 +9,7 @@ public class ChargerEnemy extends Enemy {
     //public boolean debug_render_activation=false;
 
     public ChargerEnemy(double x, double y, int width, int height, double statsMultiplier){
-        super(x, y, width, height,(int) (statsMultiplier*(ChargerEnemyStats.baseHP)),(int) (statsMultiplier*ChargerEnemyStats.baseAttack),(int) (statsMultiplier*ChargerEnemyStats.baseDefense), 30,Math.min((int) (statsMultiplier+Math.round(ChargerEnemyStats.baseSpeed+Math.random())),ChargerEnemyStats.max_speed));
+        super(x, y, width, height,(int) (statsMultiplier*(ChargerEnemyStats.baseHP)),(int) (statsMultiplier*ChargerEnemyStats.baseAttack), 30,Math.min((int) (statsMultiplier+Math.round(ChargerEnemyStats.baseSpeed+Math.random())),ChargerEnemyStats.max_speed));
         setStunCoolDown(20);
         setWeight(5);
     }

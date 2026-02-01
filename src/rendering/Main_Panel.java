@@ -592,9 +592,7 @@ public class Main_Panel extends JPanel{
         stringBuilder.append("Facing: ").append(player.getFacing());
         g.drawString(stringBuilder.toString(), 10, 65);
         
-        stringBuilder.setLength(0);
-        stringBuilder.append("Defense: ").append(player.getDefense());
-        g.drawString(stringBuilder.toString(), 10, 95);
+        
         
         stringBuilder.setLength(0);
         stringBuilder.append("Attack: ").append(player.getAttack());

@@ -209,7 +209,7 @@ public class GameWorld {
                 pathDirty = false;
                 //System.out.println(distToPlayer);
             }
-        }
+        
         //System.out.println("Player bounds: " + this.player.getBounds());
         updateEnemiesPosition(this.map,this.player);
         if (which_frame_in_cycle%30==0){ // If we are in a precise moment, the game will try to make spawn some enemies
@@ -233,6 +233,7 @@ public class GameWorld {
         if(data_debug!=null&&loggingEnabled) {
             data_debug.log(distToPlayer, enemies);
         }
+    }
         /*if ((heatmapdebug!=null)&&(which_frame_in_cycle%120==0)){
             heatmapdebug.update(distToPlayer,enemies);
         }*/
@@ -597,7 +598,11 @@ public class GameWorld {
 
     private Enemy createRandomEnemy(Point spawnPoint){
         double roll = Math.random();
-        if (roll < 0.35) {
+        //System.out.println(distToPlayer);
+        //System.out.println(spawnPoint.y);
+        //System.out.println(spawnPoint.x);
+       if(distToPlayer[spawnPoint.y/tileSize][spawnPoint.x/tileSize]>=0)
+        { if (roll < 0.35) {
             ChargerEnemy charger = new ChargerEnemy(spawnPoint.x, spawnPoint.y, this.tileSize/2-1,this.tileSize/2-1, statMultiplier);
             return charger;
         } else if (roll < 0.7) {
@@ -606,6 +611,9 @@ public class GameWorld {
         } else {
             HeavyEnemy heavy = new HeavyEnemy(spawnPoint.x, spawnPoint.y, this.tileSize/2-1,this.tileSize/2-1, statMultiplier);
             return heavy;
+        }}
+        else{
+            return null;
         }
     }
 
@@ -615,7 +623,7 @@ public class GameWorld {
         }
         else{
             if(map.getTileAtPixel((int) entity.getX(), (int) entity.getY())==Map.SPIKE){
-                entity.take_damage(SPIKEDAMAGE);
+                entity.take_damage((int) (((double)SPIKEDAMAGE/100)*entity.getMaxHP()));
                 entity.setSpikeFrame(spikeFrame);
             }
         }
@@ -653,6 +661,10 @@ public class GameWorld {
 
     public double getStatMultiplier(){
         return statMultiplier ;
+    }
+
+    public double getEnemySpawnproba(){
+        return spawnEnemyproba;
     }
 
 

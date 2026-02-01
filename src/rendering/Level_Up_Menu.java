@@ -24,7 +24,7 @@ import java.awt.event.ActionListener;
 public class Level_Up_Menu extends JPanel{
     private Frame1 mainFrame;
     private int virtual_add_attack=0;
-    private int virtual_add_defense=0;
+
     private int virtual_add_hp=0;
     private double virtual_add_speed=0;
     private int virtual_level_add =0;
@@ -36,7 +36,7 @@ public class Level_Up_Menu extends JPanel{
     // Labels pour afficher les valeurs des stats
     private JLabel healthLabel;
     private JLabel attackLabel;
-    private JLabel defenseLabel;
+   
     private JLabel speedLabel;
     private JLabel pointsLabel;
     private JLabel Level_Label;
@@ -45,7 +45,6 @@ public class Level_Up_Menu extends JPanel{
     // Boutons pour augmenter les stats
     private JButton healthButton;
     private JButton attackButton;
-    private JButton defenseButton;
     private JButton speedButton;
     
     public Level_Up_Menu(Frame1 mainFrame1){
@@ -96,8 +95,6 @@ public class Level_Up_Menu extends JPanel{
         add(createStatRow("Attack", attackLabel = new JLabel("0"), attackButton = new JButton("+")));
         add(Box.createVerticalStrut(15));
         
-        add(createStatRow("Defense", defenseLabel = new JLabel("0"), defenseButton = new JButton("+")));
-        add(Box.createVerticalStrut(15));
         
         add(createStatRow("Speed", speedLabel = new JLabel("0"), speedButton = new JButton("+")));
         add(Box.createVerticalStrut(30));
@@ -174,10 +171,7 @@ public class Level_Up_Menu extends JPanel{
             onStatButtonClickedInt("attack",1);
             restoreFocus();
         });
-        defenseButton.addActionListener(e -> {
-            onStatButtonClickedInt("defense",1);
-            restoreFocus();
-        });
+        
         speedButton.addActionListener(e -> {
             onStatButtonClickedDouble("speed",0.3);
             restoreFocus();
@@ -233,13 +227,13 @@ public class Level_Up_Menu extends JPanel{
     public void reset(){
         virtual_score = mainFrame.getGame().getGameWorld().getScore() ;
         virtual_add_attack=0;
-        virtual_add_defense=0;
+        
         virtual_add_hp=0;
         virtual_add_speed=0;
         virtual_level_add =0;
         healthLabel.setForeground(Color.CYAN);
         attackLabel.setForeground(Color.CYAN);
-        defenseLabel.setForeground(Color.CYAN);
+        
         speedLabel.setForeground(Color.CYAN);
         Level_Label.setForeground(Color.WHITE);
         pointsLabel.setForeground(Color.WHITE);
@@ -264,7 +258,7 @@ public class Level_Up_Menu extends JPanel{
             
             healthLabel.setText(String.valueOf(player.getMaxHP()+virtual_add_hp));
             attackLabel.setText(String.valueOf(player.getAttack()+virtual_add_attack));
-            defenseLabel.setText(String.valueOf(player.getDefense()+virtual_add_defense));
+            
             speedLabel.setText(String.valueOf(player.getSpeed()+virtual_add_speed));
             Level_Label.setText(String.valueOf("Level: "+ (player.getLevel()+virtual_level_add)));
             pointsLabel.setText("Score: " + virtual_score);
@@ -286,10 +280,7 @@ public class Level_Up_Menu extends JPanel{
                 virtual_add_attack+=a;
                 attackLabel.setForeground(Color.GREEN);
             }
-            if(stat.equals("defense")){
-                virtual_add_defense+=a;
-                defenseLabel.setForeground(Color.GREEN);
-            }
+            
             virtual_score-=score_cost;
             pointsLabel.setForeground(Color.RED);
             score_cost+=3;
@@ -329,7 +320,6 @@ public class Level_Up_Menu extends JPanel{
         System.out.println("Confirm ");
         if(player != null){
             player.setAttack(virtual_add_attack+player.getAttack());
-            player.setDefense(virtual_add_defense+player.getDefense());
             player.setSpeed(virtual_add_speed+player.getSpeed());
             player.setMaxHp(virtual_add_hp+player.getMaxHP());
             player.LevelUp(virtual_level_add);

@@ -18,7 +18,7 @@ public class RangedEnemy extends Enemy {
      //I use tileSize/4
 
     public RangedEnemy(double x, double y, int width, int height, int tileSize, double statsModifier) {
-        super(x, y, width, height, (int)(RangerEnemyStats.baseHP*statsModifier), (int)(RangerEnemyStats.baseAttack*statsModifier), (int)(RangerEnemyStats.baseDefense*statsModifier), tileSize*25,Math.min((int) (statsModifier*Math.round(RangerEnemyStats.baseSpeed+Math.random())),RangerEnemyStats.max_speed));
+        super(x, y, width, height, (int)(RangerEnemyStats.baseHP*statsModifier), (int)(RangerEnemyStats.baseAttack*statsModifier), tileSize*25,Math.min((int) (statsModifier*Math.round(RangerEnemyStats.baseSpeed+Math.random())),RangerEnemyStats.max_speed));
 
         //this.setBulletFast(tileSize);
         this.projectile_height=tileSize/4;

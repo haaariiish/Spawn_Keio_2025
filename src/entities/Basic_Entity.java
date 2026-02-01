@@ -52,7 +52,7 @@ public class Basic_Entity {
     // Stats -----------------------------------------------------------------
     private int hp=1;
     private int max_hp =1;
-    private int defense=1; // Same unit as hp for now
+    // Same unit as hp for now
     private int attack=1; // Same unit as hp for now
     private int range=1; // in pixel
     private int bullet_fast = 20; // initial speed of a bullet
@@ -87,9 +87,7 @@ public class Basic_Entity {
     public void setAttack(int attack){
         this.attack = attack;
     }
-    public void setDefense(int defense){
-        this.defense = defense;
-    }
+    
     public void setHeightinPixel(int height){
         this.height = height;
     }
@@ -214,9 +212,7 @@ public class Basic_Entity {
         return this.height;
     }
 
-    public int getDefense(){
-        return this.defense;
-    }
+   
 
     public int getRange(){
         return this.range;
@@ -259,7 +255,7 @@ public class Basic_Entity {
         actual_damaged_time=DAMAGED_COOLDOWN;
         if (!is_undying){
             // Prevent "healing" when defense > dazmage and clamp minimum damage to 0
-            int effectiveDamage = damage - this.defense;
+            int effectiveDamage = damage ;
             if (effectiveDamage < 0) {
                 effectiveDamage = 0;
             }

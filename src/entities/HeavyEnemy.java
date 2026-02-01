@@ -1,6 +1,8 @@
 package entities;
 import java.awt.Graphics;
 import java.awt.Color;
+import java.awt.Point;
+import java.util.List;
 import map.Map;
 import core.GameWorld;
 import entities.HeavyEnemyStats;
@@ -11,7 +13,7 @@ public class HeavyEnemy extends Enemy {
     //public boolean debug_render_activation=false;
 
     public HeavyEnemy(double x, double y, int width, int height, double statsModifier){
-        super(x, y,width, height, (int)(HeavyEnemyStats.baseHP*statsModifier),(int) (HeavyEnemyStats.baseAttack*statsModifier),(int) (statsModifier*HeavyEnemyStats.baseDefense),40,Math.min((int) (statsModifier+Math.round(HeavyEnemyStats.baseSpeed+Math.random())),HeavyEnemyStats.max_speed));
+        super(x, y,width, height, (int)(HeavyEnemyStats.baseHP*statsModifier),(int) (HeavyEnemyStats.baseAttack*statsModifier),40,Math.min((int) (statsModifier+Math.round(HeavyEnemyStats.baseSpeed+Math.random())),HeavyEnemyStats.max_speed));
         setStunCoolDown(10);
         setWeight(10);
     }
@@ -47,6 +49,7 @@ public class HeavyEnemy extends Enemy {
         
                     int bestX = best[0];
                     int bestY = best[1];
+                    
                     if (bestX != -1 && bestY != -1) {
                         // Quand la cible est la tuile du joueur, viser le joueur directement
                         // (sinon le centre de tuile peut être derrière le mur → oscillation sans toucher)
@@ -67,21 +70,32 @@ public class HeavyEnemy extends Enemy {
                         vx += Math.cos(angle) * speed;
                         vy += Math.sin(angle) * speed;
                     }
-                else {    
+                    else {    
+                    //replaceInCorrectTile(map, gameWorld);
                     // Fallback : old behavior
                     //System.out.println("else");
-                facePlayer(player);
-                double speed = getSpeed();
-                double angle = this.getFacingAngle();
+                    facePlayer(player);
+                    double speed = getSpeed();
+                    double angle = this.getFacingAngle();
                 
-                vx += Math.cos(angle) * speed;
-                vy += Math.sin(angle) * speed;   
-        }
+                    vx += Math.cos(angle) * speed;
+                    vy += Math.sin(angle) * speed;   
+            }
     }
 }
         setVelocityX(vx);
         setVelocityY(vy);
     }
+
+    /*public void replaceInCorrectTile(Map map, GameWorld gameWorld){
+        double proba_spawn = gameWorld.getEnemySpawnproba();
+        List<Point> spawnPoints = map.getEnemySpawnPoints();
+        int size = spawnPoints.size();
+        for(int x =0;x<size;x++){
+
+            
+        }
+    }*/
 
     public void render(Graphics g,int x, int y, int screenHeight, int screenWidth, int SHADOW_DISTANCE, boolean[][] visibilityMap, int subdiv, int subtile){
         int x_subtile =(int) (getX()/subtile);

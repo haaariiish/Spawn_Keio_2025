@@ -11,12 +11,12 @@ public abstract class Enemy extends Moving_Entity{
     private int shootCooldown;
     private EnemyStates state;
 
-    public Enemy(double x, double y, int width, int height, int hp, int attack, int defense,int range,int speed){
+    public Enemy(double x, double y, int width, int height, int hp, int attack,int range,int speed){
         super();
         this.setMaxHp(hp);
         this.setHP(hp);
         this.setAttack(attack);
-        this.setDefense(defense);
+        
         this.setRange(range);
         this.setX(x);
         this.setY(y);

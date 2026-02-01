@@ -21,7 +21,7 @@ public class Player extends Moving_Entity{
         this.setMaxHp(hp);
         this.setHP(hp);
         this.setAttack(attack);
-        this.setDefense(defense);
+       
         this.setX(x);
         this.setY(y);
         this.setWidthinPixel(width);
