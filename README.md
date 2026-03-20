@@ -4,8 +4,10 @@ This game will be a 2D game shooter where you will be able to see your character
 
 
 ![Title Page](images/HOME_MENU.png)
+Here is the title menu .
 
 ![In Game Screen](images/subdivision4.png)
+The previous image shows a in-game image. 
 
 ## Build and launch game 
 
@@ -32,3 +34,5 @@ In orange there are the spikes that makes damages
 In purple, there is a gate, when no emeny remains, you have to go to the get and push E button on your keyboard.
 
 
+## REMAINING BUGS :
+When moving to the next level, the minimap doesn't fit with the current map sometimes. 
