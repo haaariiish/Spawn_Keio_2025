@@ -5,7 +5,7 @@ This game will be a 2D game shooter where you will be able to see your character
 
 ## Build and launch game 
 
-The only thing you need to do in to download java to launch .jar files and then launch the 'Spawn_Keio_2025.jar' file
+The only thing you need to do in to download java to launch .jar files and then launch the 'Spawn_Keio_2025.jar' file. There is also a 'SpawnKeio.exe'
 
 ## INPUT
 
