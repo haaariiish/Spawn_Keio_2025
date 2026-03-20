@@ -3,6 +3,10 @@
 This game will be a 2D game shooter where you will be able to see your character from up view. To launch the game, you need Java on your computer ! The gameplay is as in an arcade game where you have to reach the higher wave by passing the waves and kill the enemies. 
 
 
+![Title Page](images/HOME_MENU.png)
+
+![In Game Screen](images/subdivision4.png)
+
 ## Build and launch game 
 
 The only thing you need to do in to download java to launch .jar files and then launch the 'Spawn_Keio_2025.jar' file. There is also a 'SpawnKeio.exe'
